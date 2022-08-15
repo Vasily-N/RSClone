@@ -1,0 +1,36 @@
+@use '../common.scss' as common;
+
+html {
+  cursor: default;
+  background-color: black;
+  font: bold 14px sans-serif;
+}
+
+.button {
+  cursor: pointer;
+  font: inherit;
+  border: solid 1px;
+  border-bottom-width: 3px;
+  border-radius: 4px;
+}
+
+.button_1 {
+  background-color: lightgreen;
+  border-color: green;
+}
+
+.button_disabled {
+  background-color: lightgrey;
+  border-color: grey;
+  cursor: default;
+}
+
+.content {
+  margin-top: common.$gap;
+}
+
+.navigation {
+  @include common.flex;
+  flex-wrap: wrap;
+  margin-bottom: common.$gap;
+}
