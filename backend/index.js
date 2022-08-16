@@ -2,7 +2,8 @@ import exppress from 'express';
 import mongoose from 'mongoose';
 
 const port = 5000;
-const URL_DB = `mongodb+srv://admin:admin@atlascluster.hi1wyqs.mongodb.net/?retryWrites=true&w=majority`;
+const LOGIN_PASSWORD = 'admin:admin';
+const URL_DB = `mongodb+srv://${LOGIN_PASSWORD}@atlascluster.hi1wyqs.mongodb.net/?retryWrites=true&w=majority`;
 
 const app = exppress();
 app.use(exppress.json());
