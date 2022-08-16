@@ -4,7 +4,10 @@ import SpriteFrame from './spriteFrame.type';
 class SpriteAnimation {
   private frames:SpriteFrame[] = [];
   private lastFrameEnds = 0;
+  public get Ends() { return this.lastFrameEnds; }
   private currentFrame = 0;
+
+  public static Empty = {} as SpriteAnimation;
 
   public imgSource:CanvasImageSource; // todo: remove placeholder
 

@@ -1,7 +1,5 @@
 import Character from './character';
 import Controls from './controls';
-import SpriteAnimation from './sprites';
-import sprites from './sprites/list';
 
 interface IGame {
   start:(context:CanvasRenderingContext2D)=>void;
@@ -9,7 +7,7 @@ interface IGame {
 
 class Game {
   private c?:CanvasRenderingContext2D;
-  private char:Character = new Character(new SpriteAnimation(sprites.character));
+  private char:Character = new Character();
   private controls:Controls = new Controls();
 
   public start(context:CanvasRenderingContext2D) {
