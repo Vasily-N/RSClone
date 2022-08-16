@@ -1,0 +1,11 @@
+$gap: 8px;
+
+@mixin flex {
+  display: flex;
+  gap: $gap;
+}
+
+@mixin flex-coumns {
+  flex-direction: column;
+  @include flex;
+}
