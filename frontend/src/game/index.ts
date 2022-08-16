@@ -16,13 +16,15 @@ class Game {
     window.requestAnimationFrame(this.frame.bind(this));
   }
 
+  private processFrame(c:CanvasRenderingContext2D, elapsed:number) {
+    c.clearRect(0, 0, 500, 500); // temporal
+    this.char.frame(elapsed);
+    this.char.draw(c);
+  }
+
   private frame(frametime:number) {
     if (!this.c) return;
-    if (this.lastFrame) {
-      this.c.clearRect(0, 0, 500, 500); // temporal
-      this.char.frame(frametime - this.lastFrame);
-      this.char.draw(this.c);
-    }
+    if (this.lastFrame) this.processFrame(this.c, frametime - this.lastFrame);
     this.lastFrame = frametime;
     window.requestAnimationFrame(this.frame.bind(this));
   }
