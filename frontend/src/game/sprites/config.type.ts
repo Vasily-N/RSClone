@@ -1,6 +1,6 @@
 type SpriteConfig = {
   link:string
-  frameRate: number
+  frameLength: number
   frameWidth: number
   frameLengthOverride?: Record<number, number>
   frameWidthOverride?: Record<number, number>

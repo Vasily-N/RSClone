@@ -9,6 +9,7 @@ class Game {
   private c?:CanvasRenderingContext2D;
   private char:Character = new Character();
   private controls:Controls = new Controls();
+  private lastFrame = 0;
 
   public start(context:CanvasRenderingContext2D) {
     this.c = context;
@@ -17,8 +18,13 @@ class Game {
 
   private frame(frametime:number) {
     if (!this.c) return;
-    this.char.frame(frametime);
-    this.char.draw(this.c);
+    if (this.lastFrame) {
+      this.c.clearRect(0, 0, 500, 500); // temporal
+      this.char.frame(frametime - this.lastFrame);
+      this.char.draw(this.c);
+    }
+    this.lastFrame = frametime;
+    window.requestAnimationFrame(this.frame.bind(this));
   }
 }
 

@@ -14,12 +14,12 @@ enum CharacterStates {
   AttackRange,
 }
 
-const normalHibox = new Rectangle(10, 10, 10, 10);
+const normalHitbox = new Rectangle(10, 10, 10, 10); // temporal
 
 const states: Partial<Record<CharacterStates, State>> = {
-  [CharacterStates.Idle]: { spite: idle, hitbox: normalHibox },
-  [CharacterStates.Walk]: { spite: walk, hitbox: normalHibox },
-  [CharacterStates.Run]: { spite: run, hitbox: normalHibox },
+  [CharacterStates.Idle]: { spite: idle, hitbox: normalHitbox },
+  [CharacterStates.Walk]: { spite: walk, hitbox: normalHitbox },
+  [CharacterStates.Run]: { spite: run, hitbox: normalHitbox },
 };
 
 export default states;

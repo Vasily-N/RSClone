@@ -1,10 +1,10 @@
 import sprite from './index.png';
-import SpriteConfig from '../config.type';
+import SpriteConfig from '../../config.type';
 
-const character:SpriteConfig = {
+const sc:SpriteConfig = {
   link: sprite,
-  frameRate: 30,
-  frameWidth: 32,
+  frameLength: 1 / 15,
+  frameWidth: 34,
 };
 
-export default character;
+export default sc;

@@ -3,8 +3,8 @@ import SpriteConfig from '../../config.type';
 
 const character:SpriteConfig = {
   link: sprite,
-  frameRate: 60,
-  frameWidth: 32,
+  frameLength: 1 / 20,
+  frameWidth: 34,
 };
 
 export default character;
