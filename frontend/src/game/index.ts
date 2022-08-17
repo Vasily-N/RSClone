@@ -11,9 +11,12 @@ class Game {
   private controls:Controls = new Controls();
   private lastFrame = 0;
   private static readonly drawBoxes = true; // Temporal
+  private static readonly displayFps = true; // Temporal
 
   public start(context:CanvasRenderingContext2D) {
     this.c = context;
+    this.c.font = '48px serif';
+    this.c.fillStyle = 'white';
     window.requestAnimationFrame(this.frame.bind(this));
   }
 
@@ -21,6 +24,7 @@ class Game {
     c.clearRect(0, 0, 500, 500); // temporal
     this.char.frame(elapsed);
     this.char.draw(c, Game.drawBoxes);
+    if (Game.displayFps) c.fillText(`FPS: ${(1000 / elapsed).toFixed(1)}`, 5, 10);
   }
 
   private frame(frametime:number) {
