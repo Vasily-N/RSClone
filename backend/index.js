@@ -1,7 +1,6 @@
 import exppress from 'express';
 import mongoose from 'mongoose';
-// import Post from './post.js';
-import router from './router.js';
+import router from './registration/router.js';
 
 const port = 5000;
 const LOGIN_PASSWORD = 'admin:admin';
