@@ -5,7 +5,12 @@ class Box {
   private rect:Rectangle;
 
   constructor(rectangle:Rectangle) {
-    this.rect = rectangle;
+    this.rect = new Rectangle(
+      rectangle.X - rectangle.Width / 2,
+      -rectangle.Y,
+      rectangle.Width,
+      rectangle.Height,
+    );
   }
 
   public hit(rectangle:Rectangle):boolean {
@@ -17,8 +22,8 @@ class Box {
     const cLocal = c;
     cLocal.strokeStyle = color;
     c.strokeRect(
-      position.X + this.rect.X - this.rect.Width / 2,
-      position.Y - this.rect.Y,
+      position.X + this.rect.X,
+      position.Y + this.rect.Y,
       this.rect.Width,
       this.rect.Height,
     );
