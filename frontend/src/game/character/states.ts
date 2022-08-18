@@ -1,8 +1,8 @@
-import State from '../entity/state.type';
+import State from '../entity/typeState';
 import walk from '../sprites/character/walk';
 import run from '../sprites/character/run';
 import idle from '../sprites/character/idle';
-import Rectangle from '../types/Rectangle';
+import Rectangle from '../helperTypes/rectangle';
 import Box from '../box';
 
 enum CharacterState {

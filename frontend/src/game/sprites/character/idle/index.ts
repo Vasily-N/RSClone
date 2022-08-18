@@ -1,10 +1,14 @@
 import sprite from '../walk/index.png';
-import SpriteConfig from '../../config.type';
+import SpriteConfig from '../../typeConfig';
+import Point from '../../../helperTypes/point';
 
-const character:SpriteConfig = {
+const sc:SpriteConfig = {
   link: sprite,
   frameLength: 1 / 15,
-  frameSize: 40,
+  frameSize: 43,
+  vertical: true,
+  hasReverse: true,
+  position: new Point(-6, 0),
 };
 
-export default character;
+export default sc;

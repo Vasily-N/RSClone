@@ -1,27 +1,47 @@
-import Point from '../types/Point';
-import Rectangle from '../types/Rectangle';
-import SpriteConfig from './config.type';
-import SpriteFrame from './spriteFrame.type';
+import Point from '../helperTypes/point';
+import Rectangle from '../helperTypes/rectangle';
+import SpriteConfig from './typeConfig';
+import SpriteFrame from './typeSpriteFrame';
 
 class SpriteAnimation {
-  private imgSource:CanvasImageSource;
-  private frames:SpriteFrame[] = [];
+  private readonly imgSource:CanvasImageSource;
+  private readonly frames:SpriteFrame[];
+  private readonly drawPosition:Point = new Point(0, 0);
+  private readonly drawReversePosition:Point = new Point(0, 0);
   private lastFrameEnds = 0;
   public get Ends() { return this.lastFrameEnds; }
   private currentFrame = 0;
 
   public static Empty = {} as SpriteAnimation;
 
-  private static initFramesHorizontal(img:HTMLImageElement, sprite:SpriteConfig):SpriteFrame[] {
-    let i = 0; let x = 0; let e = 0;
+  private static initFrames(img:HTMLImageElement, sprite:SpriteConfig):SpriteFrame[] {
+    let i = 0; let posInSprite = 0; let ends = 0;
     const frames:SpriteFrame[] = [];
+    const endCondition = sprite.vertical ? img.naturalHeight : img.naturalWidth;
+    const size = (sprite.vertical ? img.naturalWidth : img.naturalHeight)
+                / (sprite.hasReverse ? 2 : 1);
     do {
-      const w = (sprite.frameSizeOverride && sprite.frameSizeOverride[i]) || sprite.frameSize;
-      const s = (sprite.frameLengthOverride && sprite.frameLengthOverride[i]) || sprite.frameLength;
-      e += s;
-      frames.push({ position: new Rectangle(x, 0, w, img.naturalHeight), ends: e });
-      i += 1; x += w;
-    } while (x < img.naturalWidth);
+      const frameSize = (sprite.frameSizeOverride && sprite.frameSizeOverride[i])
+                      || sprite.frameSize;
+      const frameLength = (sprite.frameLengthOverride && sprite.frameLengthOverride[i])
+                      || sprite.frameLength;
+
+      ends += frameLength;
+      const position = sprite.vertical
+        ? new Rectangle(0, posInSprite, size, frameSize)
+        : new Rectangle(posInSprite, 0, frameSize, size);
+
+      const frame:SpriteFrame = { position, ends };
+
+      if (sprite.hasReverse) {
+        frame.positionReverse = sprite.vertical
+          ? new Rectangle(size, posInSprite, size, frameSize)
+          : new Rectangle(posInSprite, size, frameSize, size);
+      }
+
+      frames.push(frame);
+      i += 1; posInSprite += frameSize;
+    } while (posInSprite < endCondition);
     return frames;
   }
 
@@ -33,7 +53,7 @@ class SpriteAnimation {
     return record && Object.keys(record).find((v) => SpriteAnimation.isBelow0(Number(v)));
   }
 
-  constructor(sprite:SpriteConfig) {
+  private static checkConfig(sprite:SpriteConfig) {
     if (SpriteAnimation.isBelow0(sprite.frameSize)
     || SpriteAnimation.isAnyBelow0(sprite.frameSizeOverride)) {
       throw new Error(`${sprite.link} - frameWidth can't be below 1`);
@@ -43,13 +63,21 @@ class SpriteAnimation {
     || SpriteAnimation.isAnyBelow0(sprite.frameLengthOverride)) {
       throw new Error(`${sprite.link} - frameLength can't be below 1`);
     }
+  }
+
+  constructor(sprite:SpriteConfig) {
+    SpriteAnimation.checkConfig(sprite);
 
     this.imgSource = new Image();
     this.imgSource.src = sprite.link;
 
-    this.frames = SpriteAnimation.initFramesHorizontal(this.imgSource, sprite);
-    const lastFrame = this.frames.at(-1) as SpriteFrame;
-    this.lastFrameEnds = lastFrame.ends;
+    this.frames = SpriteAnimation.initFrames(this.imgSource, sprite);
+    this.lastFrameEnds = (this.frames.at(-1) as SpriteFrame).ends;
+
+    if (sprite.position) {
+      this.drawPosition = sprite.position;
+      this.drawReversePosition = new Point(-sprite.position.X, sprite.position.Y);
+    }
   }
 
   private getFrame(elapsed:number):SpriteFrame {
@@ -67,24 +95,26 @@ class SpriteAnimation {
     img:CanvasImageSource,
     c:CanvasRenderingContext2D,
     position:Point,
-    frame:SpriteFrame,
+    framePosition:Rectangle,
   ) {
     c.drawImage(
       img,
-      frame.position.X,
-      frame.position.Y,
-      frame.position.Width,
-      frame.position.Height,
-      position.X - frame.position.Width / 2,
-      position.Y - frame.position.Height,
-      frame.position.Width,
-      frame.position.Height,
+      framePosition.X,
+      framePosition.Y,
+      framePosition.Width,
+      framePosition.Height,
+      position.X - framePosition.Width / 2,
+      position.Y - framePosition.Height,
+      framePosition.Width,
+      framePosition.Height,
     );
   }
 
-  public drawFrame(c:CanvasRenderingContext2D, position:Point, elapsed:number) {
-    const spiteFrame = this.getFrame(elapsed);
-    SpriteAnimation.drawSprite(this.imgSource, c, position, spiteFrame);
+  public drawFrame(c:CanvasRenderingContext2D, position:Point, elapsed:number, reverse?:boolean) {
+    const frame = this.getFrame(elapsed);
+    const drawPosition = position.plus(reverse ? this.drawReversePosition : this.drawPosition);
+    const framePos = reverse && frame.positionReverse ? frame.positionReverse : frame.position;
+    SpriteAnimation.drawSprite(this.imgSource, c, drawPosition, framePos);
   }
 }
 

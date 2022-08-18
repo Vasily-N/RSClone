@@ -5,7 +5,8 @@ class ControlsSettings implements IControlsSettings {
   private settings: Record<Action, Set<string>> = {
     [Action.moveRight]: new Set(['KeyD', 'ArrowRight']),
     [Action.moveLeft]: new Set(['KeyA', 'ArrowLeft']),
-    [Action.moveDown]: new Set(['KeyS', 'ArrowDown']),
+    [Action.jump]: new Set(['KeyW', 'ArrowUp']),
+    [Action.sit]: new Set(['KeyS', 'ArrowDown']),
     [Action.run]: new Set(['Space']),
     [Action.attackLight]: new Set(['KeyI']),
     [Action.attackHeavy]: new Set(['KeyO']),

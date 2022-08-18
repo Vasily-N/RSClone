@@ -1,7 +1,8 @@
-import Rectangle from '../types/Rectangle';
+import Rectangle from '../helperTypes/rectangle';
 
 type SpriteFrame = {
   position:Rectangle;
+  positionReverse?:Rectangle;
   ends:number;
 };
 

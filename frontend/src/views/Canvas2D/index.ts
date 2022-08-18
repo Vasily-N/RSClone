@@ -1,7 +1,7 @@
 import template from './index.html';
 import style from './canvas.scss';
 import { View } from '..';
-import Point from '../../game/types/Point';
+import Point from '../../game/helperTypes/point';
 
 class Canvas2D extends View {
   private readonly bg:HTMLDivElement;
@@ -20,6 +20,7 @@ class Canvas2D extends View {
     super(parentId, template, style);
     this.bg = this.getElementById('bg') as HTMLDivElement;
     this.c = this.initCanvas(size);
+    this.c.imageSmoothingEnabled = false;
   }
 
   private showCoords(event:MouseEvent) {
