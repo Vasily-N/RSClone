@@ -1,8 +1,8 @@
-import Line from '../types/Line';
-import SurfaceType from './surfaceType';
-import EntityType from '../entity/entityIds';
-import Point from '../types/Point';
-import LevelId from './levelIds';
+import Line from '../helperTypes/line';
+import SurfaceType from './typeSurface';
+import EntityType from '../entity/typeEntityIds';
+import Point from '../helperTypes/point';
+import LevelId from './typeLevelIds';
 
 type Surface = {
   type?:SurfaceType

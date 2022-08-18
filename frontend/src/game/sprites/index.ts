@@ -1,7 +1,7 @@
-import Point from '../types/Point';
-import Rectangle from '../types/Rectangle';
-import SpriteConfig from './config.type';
-import SpriteFrame from './spriteFrame.type';
+import Point from '../helperTypes/point';
+import Rectangle from '../helperTypes/rectangle';
+import SpriteConfig from './typeConfig';
+import SpriteFrame from './typeSpriteFrame';
 
 class SpriteAnimation {
   private readonly imgSource:CanvasImageSource;

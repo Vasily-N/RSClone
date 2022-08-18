@@ -1,8 +1,8 @@
 import Controls from '../controls';
 import Action from '../controls/actions.enum';
 import Entity from '../entity';
-import Direction from '../types/direction';
-import Point from '../types/Point';
+import Direction from '../helperTypes/direction';
+import Point from '../helperTypes/point';
 import { CharacterState, states } from './states';
 
 class Character extends Entity {

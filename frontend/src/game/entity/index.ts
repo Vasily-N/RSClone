@@ -1,7 +1,7 @@
 import SpriteAnimation from '../sprites';
-import Direction from '../types/direction';
-import Point from '../types/Point';
-import State from './state.type';
+import Direction from '../helperTypes/direction';
+import Point from '../helperTypes/point';
+import State from './typeState';
 
 type States = Partial<Record<number, State>>;
 

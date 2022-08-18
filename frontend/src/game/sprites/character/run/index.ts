@@ -1,5 +1,5 @@
 import sprite from '../walk/index.png';
-import SpriteConfig from '../../config.type';
+import SpriteConfig from '../../typeConfig';
 
 const character:SpriteConfig = {
   link: sprite,

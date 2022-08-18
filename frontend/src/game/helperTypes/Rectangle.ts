@@ -1,5 +1,5 @@
-import Line from './Line';
-import Point from './Point';
+import Line from './line';
+import Point from './point';
 
 class Rectangle {
   private x:number;

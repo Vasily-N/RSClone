@@ -1,13 +1,13 @@
 import {
   LevelConfig, Loading, Surface, Entity as EntityConfig,
-} from './config.type';
-import SurfaceType from './surfaceType';
+} from './typeConfigs';
+import SurfaceType from './typeSurface';
 
-import Point from '../types/Point';
+import Point from '../helperTypes/point';
 import Entity from '../entity';
 
 import entitiesList from '../entity/list';
-import EntityClass from '../entity/classType';
+import EntityClass from '../entity/typeClass';
 
 class Level {
   private readonly surfaces:Surface[];

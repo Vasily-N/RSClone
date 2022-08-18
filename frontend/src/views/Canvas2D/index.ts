@@ -1,7 +1,7 @@
 import template from './index.html';
 import style from './canvas.scss';
 import { View } from '..';
-import Point from '../../game/types/Point';
+import Point from '../../game/helperTypes/point';
 
 class Canvas2D extends View {
   private readonly bg:HTMLDivElement;

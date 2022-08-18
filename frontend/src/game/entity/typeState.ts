@@ -1,5 +1,5 @@
 import Box from '../box';
-import SpriteConfig from '../sprites/config.type';
+import SpriteConfig from '../sprites/typeConfig';
 
 type State = {
   spite?:SpriteConfig;

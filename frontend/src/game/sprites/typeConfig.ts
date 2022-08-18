@@ -1,4 +1,4 @@
-import Point from '../types/Point';
+import Point from '../helperTypes/point';
 
 type SpriteConfig = {
   link:string

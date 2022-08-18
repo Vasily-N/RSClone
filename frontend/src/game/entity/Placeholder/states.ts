@@ -1,4 +1,4 @@
-import State from '../state.type';
+import State from '../typeState';
 
 enum PlaceholderState {
   Idle,

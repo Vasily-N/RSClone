@@ -1,4 +1,4 @@
-import Point from './Point';
+import Point from './point';
 
 type CanvasHelper = {
   c:CanvasRenderingContext2D;

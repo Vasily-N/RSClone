@@ -1,8 +1,8 @@
-import LevelId from '../levelIds';
-import Rectangle from '../../types/Rectangle';
+import LevelId from '../typeLevelIds';
+import Rectangle from '../../helperTypes/rectangle';
 import {
   Entity, LevelConfig, Loading, Surface,
-} from '../config.type';
+} from '../typeConfigs';
 
 const entities:Entity[] = [];
 

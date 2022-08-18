@@ -1,8 +1,8 @@
 import Character from './character';
 import Controls from './controls';
 import IControlsSettings from './controls/iControlsSettings.interface';
-import CanvasHelper from './types/canvasHelper';
-import Point from './types/Point';
+import CanvasHelper from './helperTypes/canvasHelper';
+import Point from './helperTypes/point';
 
 interface IGame {
   start:(context:CanvasRenderingContext2D)=>void;
