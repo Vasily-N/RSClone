@@ -41,8 +41,6 @@ class Character extends Entity {
     const xVelocityChange = elapsedSeconds * Character.cntrlChangeXVel[+run];
     if (left || right) this.processWalk(run, left, right, xVelocityChange);
     else this.processSlowDown(xVelocityChange);
-
-    console.log(CharacterState[this.currentState], this.velocityPerSecond);
   }
 
   public frame(elapsedSeconds:number):void {
