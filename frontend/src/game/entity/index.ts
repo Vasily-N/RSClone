@@ -5,11 +5,12 @@ import State from './state.type';
 type States = Partial<Record<number, State>>;
 
 class Entity {
-  private position:Point = new Point(100, 100);
-  private velocityPerSecond:Point = new Point(0, 0);
+  protected position:Point = new Point(100, 100);
+  protected velocityPerSecond:Point = new Point(0, 0);
+  private gravity = 100;
   private states:States = {};
-  private stateElapsed = 0;
-  private currentState = -1;
+  protected stateElapsedSeconds = 0;
+  protected currentState = -1;
   private animation:SpriteAnimation | null = null;
 
   public set State(value:number) {
@@ -30,10 +31,11 @@ class Entity {
     this.State = defaultState || Number(Object.keys(states)[0]);
   }
 
-  public frame(elapsed:number):void {
-    this.stateElapsed += elapsed;
-    this.position.X += elapsed * this.velocityPerSecond.X;
-    this.position.Y += elapsed * this.velocityPerSecond.Y;
+  public frame(elapsedSeconds:number):void {
+    this.stateElapsedSeconds += elapsedSeconds;
+    this.velocityPerSecond.Y += elapsedSeconds * this.gravity;
+    this.position.X += elapsedSeconds * this.velocityPerSecond.X;
+    this.position.Y += elapsedSeconds * this.velocityPerSecond.Y;
   }
 
   private static readonly hitBoxC = 'red';
@@ -50,7 +52,7 @@ class Entity {
 
   public draw(c:CanvasRenderingContext2D, drawBoxes = false) {
     if (!this.animation) return;
-    this.animation.drawFrame(c, this.position, this.stateElapsed);
+    this.animation.drawFrame(c, this.position, this.stateElapsedSeconds);
     if (drawBoxes) this.drawBoxes(c);
   }
 }

@@ -12,13 +12,13 @@ class SpriteAnimation {
 
   public static Empty = {} as SpriteAnimation;
 
-  private static initFrames(img:HTMLImageElement, sprite:SpriteConfig):SpriteFrame[] {
+  private static initFramesHorizontal(img:HTMLImageElement, sprite:SpriteConfig):SpriteFrame[] {
     let i = 0; let x = 0; let e = 0;
     const frames:SpriteFrame[] = [];
     do {
-      const w = (sprite.frameWidthOverride && sprite.frameWidthOverride[i]) || sprite.frameWidth;
+      const w = (sprite.frameSizeOverride && sprite.frameSizeOverride[i]) || sprite.frameSize;
       const s = (sprite.frameLengthOverride && sprite.frameLengthOverride[i]) || sprite.frameLength;
-      e += s * 1000;
+      e += s;
       frames.push({ position: new Rectangle(x, 0, w, img.naturalHeight), ends: e });
       i += 1; x += w;
     } while (x < img.naturalWidth);
@@ -34,8 +34,8 @@ class SpriteAnimation {
   }
 
   constructor(sprite:SpriteConfig) {
-    if (SpriteAnimation.isBelow0(sprite.frameWidth)
-    || SpriteAnimation.isAnyBelow0(sprite.frameWidthOverride)) {
+    if (SpriteAnimation.isBelow0(sprite.frameSize)
+    || SpriteAnimation.isAnyBelow0(sprite.frameSizeOverride)) {
       throw new Error(`${sprite.link} - frameWidth can't be below 1`);
     }
 
@@ -47,7 +47,7 @@ class SpriteAnimation {
     this.imgSource = new Image();
     this.imgSource.src = sprite.link;
 
-    this.frames = SpriteAnimation.initFrames(this.imgSource, sprite);
+    this.frames = SpriteAnimation.initFramesHorizontal(this.imgSource, sprite);
     const lastFrame = this.frames.at(-1) as SpriteFrame;
     this.lastFrameEnds = lastFrame.ends;
   }
@@ -76,7 +76,7 @@ class SpriteAnimation {
       frame.position.Width,
       frame.position.Height,
       position.X - frame.position.Width / 2,
-      position.y - frame.position.Height,
+      position.Y - frame.position.Height,
       frame.position.Width,
       frame.position.Height,
     );

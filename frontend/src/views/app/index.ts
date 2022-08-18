@@ -3,21 +3,28 @@ import style from './app.scss';
 import { IView, View } from '..';
 import Canvas2D from '../Canvas2D';
 import Placeholder from '../Placeholder';
-import ApiServices from '../../apiServices/apiServices';
 import { Game } from '../../game';
+import Services from '../../services';
+import Point from '../../game/types/Point';
 
 enum ViewId { canvas, placaholder }
 
 class AppPage extends View {
   private static contentId = style.content;
-  private apiServices?:ApiServices; // TODO:
+  private services:Services; // TODO:
   private currentViewId?:ViewId;
   private views:Record<string, IView> = {};
+  private game?:Game;
 
   private createView(viewId:ViewId):IView {
     switch (viewId) {
-      case ViewId.canvas: return new Canvas2D(AppPage.contentId, new Game()); // bad? tempotal?
-      case ViewId.placaholder: return new Placeholder(AppPage.contentId, this.apiServices);
+      case ViewId.canvas: {
+        const size = new Point(640, 480); // temporarily
+        const canvasView = new Canvas2D(AppPage.contentId, size);
+        this.game = new Game(this.services.controlsSetting, { c: canvasView.Context, size });
+        return canvasView;
+      }
+      case ViewId.placaholder: return new Placeholder(AppPage.contentId, this.services);
       default: throw new Error(`${viewId} doesn't exit`);
     }
   }
@@ -27,9 +34,9 @@ class AppPage extends View {
     return this.views[viewId];
   }
 
-  constructor(parentId:string, services?:ApiServices) {
+  constructor(parentId:string, services:Services) {
     super(parentId, template, style);
-    this.apiServices = services;
+    this.services = services;
   }
 
   private initListeners() {
