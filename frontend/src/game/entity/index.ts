@@ -46,7 +46,7 @@ class Entity {
   private drawPosition(c:CanvasRenderingContext2D):void {
     const cLocal = c;
     cLocal.strokeStyle = Entity.clrs.pos;
-    cLocal.fillRect(this.position.X, this.position.Y, 1, 1);
+    cLocal.fillRect(Math.round(this.position.X), Math.round(this.position.Y), 1, 1);
   }
 
   private drawBoxes(c:CanvasRenderingContext2D):void {

@@ -1,7 +1,8 @@
 enum Action {
   moveRight,
   moveLeft,
-  moveDown,
+  jump,
+  sit,
   run,
   attackLight,
   attackHeavy,

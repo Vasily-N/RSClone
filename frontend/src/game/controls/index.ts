@@ -15,7 +15,7 @@ class Controls {
     this.initListeners();
   }
 
-  private static readonly ignoreKeys = new Set(['ControlLeft', 'F5']);
+  private static readonly ignoreKeys = new Set(['ControlLeft', 'F5', 'AltLeft', 'AltRight', 'Tab']);
 
   private buttonPress(e:KeyboardEvent):void {
     if (e.repeat) return;

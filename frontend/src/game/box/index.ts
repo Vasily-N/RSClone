@@ -18,8 +18,6 @@ class Box {
       rectangle.Width,
       rectangle.Height,
     );
-
-    console.log(this);
   }
 
   public hit(rectangle:Rectangle):boolean {
@@ -31,7 +29,9 @@ class Box {
     const cLocal = c;
     cLocal.strokeStyle = color;
     const rect = reverse ? this.rectReverse : this.rect;
-    c.strokeRect(position.X + rect.X, position.Y + rect.Y, rect.Width, rect.Height);
+    const x = Math.round(position.X + rect.X);
+    const y = Math.round(position.Y + rect.Y);
+    c.strokeRect(x, y, rect.Width, rect.Height);
   }
 }
 

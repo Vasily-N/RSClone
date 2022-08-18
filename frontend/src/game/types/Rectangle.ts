@@ -1,3 +1,6 @@
+import Line from './Line';
+import Point from './Point';
+
 class Rectangle {
   private x:number;
   public get X() { return this.x; }
@@ -11,6 +14,9 @@ class Rectangle {
   private h:number;
   public get Height() { return this.h; }
   public set Height(value:number) { this.h = value; }
+  public get Diagonal():Line {
+    return new Line(new Point(this.x, this.y), new Point(this.w, this.h));
+  }
 
   constructor(x:number, y:number, width:number, height:number) {
     this.x = x;
