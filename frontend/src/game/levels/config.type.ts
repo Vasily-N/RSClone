@@ -1,6 +1,6 @@
 import Line from '../types/Line';
 import SurfaceType from './surfaceType';
-import EntityType from '../entity/entityTypes';
+import EntityType from '../entity/entityIds';
 import Point from '../types/Point';
 import LevelId from './levelIds';
 

@@ -5,8 +5,8 @@ import State from './state.type';
 
 type States = Partial<Record<number, State>>;
 
-class Entity {
-  protected position:Point = new Point(100, 100);
+abstract class Entity {
+  protected position:Point;
   protected velocityPerSecond:Point = new Point(0, 0);
   private gravity = 100;
   private states:States = {};
@@ -27,7 +27,8 @@ class Entity {
     this.animation = (sprite) ? new SpriteAnimation(sprite) : null;
   }
 
-  constructor(states?:States, defaultState?:number) {
+  constructor(position:Point, states?:States, defaultState?:number) {
+    this.position = position;
     if (!states) return;
     this.states = states;
     this.State = defaultState || Number(Object.keys(states)[0]);

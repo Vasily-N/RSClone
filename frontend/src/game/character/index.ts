@@ -2,6 +2,7 @@ import Controls from '../controls';
 import Action from '../controls/actions.enum';
 import Entity from '../entity';
 import Direction from '../types/direction';
+import Point from '../types/Point';
 import { CharacterState, states } from './states';
 
 class Character extends Entity {
@@ -9,8 +10,8 @@ class Character extends Entity {
   private static readonly cntrlMaxXVel:Record<number, number> = { [+false]: 100, [+true]: 200 };
   private static readonly cntrlChangeXVel:number = 1500;
 
-  constructor(controls:Controls) {
-    super(states);
+  constructor(position:Point, controls:Controls) {
+    super(position, states);
     this.conrols = controls;
   }
 

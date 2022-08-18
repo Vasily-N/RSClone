@@ -2,6 +2,7 @@ import Character from './character';
 import Controls from './controls';
 import IControlsSettings from './controls/iControlsSettings.interface';
 import CanvasHelper from './types/canvasHelper';
+import Point from './types/Point';
 
 interface IGame {
   start:(context:CanvasRenderingContext2D)=>void;
@@ -18,7 +19,7 @@ class Game {
 
   constructor(controlsSettings:IControlsSettings, c:CanvasHelper) {
     this.controls = new Controls(controlsSettings);
-    this.char = new Character(this.controls);
+    this.char = new Character(new Point(100, 100), this.controls);
     this.c = c;
     this.c.c.font = '48px serif';
     this.c.c.fillStyle = 'white';
