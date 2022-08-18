@@ -1,9 +1,10 @@
 type SpriteConfig = {
   link:string
   frameLength: number
-  frameWidth: number
+  frameSize: number
   frameLengthOverride?: Record<number, number>
-  frameWidthOverride?: Record<number, number>
+  frameSizeOverride?: Record<number, number>
+  vertical?:boolean
 };
 
 export default SpriteConfig;

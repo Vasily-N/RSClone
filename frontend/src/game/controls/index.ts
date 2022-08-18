@@ -15,9 +15,11 @@ class Controls {
     this.initListeners();
   }
 
+  private static readonly ignoreKeys = new Set(['ControlLeft', 'F5']);
+
   private buttonPress(e:KeyboardEvent):void {
-    e.preventDefault();
     if (e.repeat) return;
+    if (Controls.ignoreKeys.has(e.code)) return;
     this.buttons.add(e.code);
     console.log('press', this.buttons);
   }
@@ -29,7 +31,8 @@ class Controls {
   }
 
   public has(action:Action):boolean {
-    return this.buttons.has(this.settings.get(action));
+    const buttons = [...this.settings.get(action)];
+    return buttons.some((b) => this.buttons.has(b));
   }
 }
 

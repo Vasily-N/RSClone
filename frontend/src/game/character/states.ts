@@ -5,7 +5,7 @@ import idle from '../sprites/character/idle';
 import Rectangle from '../types/Rectangle';
 import Box from '../box';
 
-enum CharacterStates {
+enum CharacterState {
   Idle,
   Walk,
   Run,
@@ -17,10 +17,10 @@ enum CharacterStates {
 
 const normalHurtBox = new Box(new Rectangle(2, 40, 10, 36)); // temporal
 
-const states: Partial<Record<CharacterStates, State>> = {
-  [CharacterStates.Idle]: { spite: idle, hurtbox: normalHurtBox },
-  [CharacterStates.Walk]: { spite: walk, hurtbox: normalHurtBox },
-  [CharacterStates.Run]: { spite: run, hurtbox: normalHurtBox },
+const states: Partial<Record<CharacterState, State>> = {
+  [CharacterState.Idle]: { spite: idle, hurtbox: normalHurtBox },
+  [CharacterState.Walk]: { spite: walk, hurtbox: normalHurtBox },
+  [CharacterState.Run]: { spite: run, hurtbox: normalHurtBox },
 };
 
-export default states;
+export { CharacterState, states };
