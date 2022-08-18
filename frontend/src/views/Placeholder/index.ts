@@ -1,12 +1,12 @@
 import template from './index.html';
 import style from './placeholder.scss';
 import { View } from '..';
-import ApiServices from '../../apiServices/apiServices';
+import Services from '../../services';
 
 class Placeholder extends View {
-  services?:ApiServices;
+  services?:Services;
 
-  constructor(parentId:string, services?:ApiServices) {
+  constructor(parentId:string, services?:Services) {
     super(parentId, template, style);
     this.services = services;
   }

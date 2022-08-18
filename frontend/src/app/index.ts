@@ -1,16 +1,21 @@
 import { Api } from '../apiServices/api';
-import Services from '../apiServices/apiServices';
-import { Game, IGame } from '../game';
+import Services from '../services';
+import ControlsSettings from '../game/controls/settings';
 import { IView } from '../views';
 import AppPage from '../views/app';
 
 class App {
   page:IView;
 
+  contolsSettings = new ControlsSettings();
+
   constructor() {
     const api = new Api('http://localhost:3000/');
     const serviceOptions = { };
-    const services:Services = { placeholder1: null, placeholder2: null };
+    const services:Services = {
+      controlsSetting: new ControlsSettings(),
+      api: { placeholder1: null, placeholder2: null },
+    };
     this.page = new AppPage('body', services);
   }
 
