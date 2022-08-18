@@ -10,6 +10,10 @@ class Point {
     this.x = x;
     this.y = y;
   }
+
+  public plus(point:Point):Point { // operator overloading for now doesn't exist in js/ts
+    return new Point(this.x + point.X, this.y + point.Y);
+  }
 }
 
 export default Point;

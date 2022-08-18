@@ -20,6 +20,7 @@ class Canvas2D extends View {
     super(parentId, template, style);
     this.bg = this.getElementById('bg') as HTMLDivElement;
     this.c = this.initCanvas(size);
+    this.c.imageSmoothingEnabled = false;
   }
 
   private showCoords(event:MouseEvent) {

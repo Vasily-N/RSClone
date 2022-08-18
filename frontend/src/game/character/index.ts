@@ -1,12 +1,13 @@
 import Controls from '../controls';
 import Action from '../controls/actions.enum';
 import Entity from '../entity';
+import Direction from '../types/direction';
 import { CharacterState, states } from './states';
 
 class Character extends Entity {
   private readonly conrols:Controls;
   private static readonly cntrlMaxXVel:Record<number, number> = { [+false]: 100, [+true]: 200 };
-  private static readonly cntrlChangeXVel:Record<number, number> = { [+false]: 600, [+true]: 600 };
+  private static readonly cntrlChangeXVel:number = 1500;
 
   constructor(controls:Controls) {
     super(states);
@@ -15,8 +16,14 @@ class Character extends Entity {
 
   private processWalk(run:boolean, left:boolean, right:boolean, xVelocityChange:number) {
     const maxXvel = Character.cntrlMaxXVel[+run];
-    if (left) this.velocityPerSecond.X -= xVelocityChange;
-    if (right) this.velocityPerSecond.X += xVelocityChange;
+    if (left) {
+      this.velocityPerSecond.X -= xVelocityChange;
+      this.direction = Direction.left;
+    }
+    if (right) {
+      this.velocityPerSecond.X += xVelocityChange;
+      this.direction = Direction.right;
+    }
     if (Math.abs(this.velocityPerSecond.X) > maxXvel) {
       this.velocityPerSecond.X = left ? -maxXvel : maxXvel;
     }
@@ -38,7 +45,7 @@ class Character extends Entity {
     const run = this.conrols.has(Action.run);
     const left = this.conrols.has(Action.moveLeft);
     const right = this.conrols.has(Action.moveRight);
-    const xVelocityChange = elapsedSeconds * Character.cntrlChangeXVel[+run];
+    const xVelocityChange = elapsedSeconds * Character.cntrlChangeXVel;
     if (left || right) this.processWalk(run, left, right, xVelocityChange);
     else this.processSlowDown(xVelocityChange);
   }

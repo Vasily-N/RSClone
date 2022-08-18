@@ -1,3 +1,5 @@
+import Point from '../types/Point';
+
 type SpriteConfig = {
   link:string
   frameLength: number
@@ -5,6 +7,8 @@ type SpriteConfig = {
   frameLengthOverride?: Record<number, number>
   frameSizeOverride?: Record<number, number>
   vertical?:boolean
+  hasReverse?:boolean
+  position?:Point
 };
 
 export default SpriteConfig;

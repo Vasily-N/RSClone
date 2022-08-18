@@ -1,4 +1,5 @@
 import SpriteAnimation from '../sprites';
+import Direction from '../types/direction';
 import Point from '../types/Point';
 import State from './state.type';
 
@@ -12,6 +13,7 @@ class Entity {
   protected stateElapsedSeconds = 0;
   protected currentState = -1;
   private animation:SpriteAnimation | null = null;
+  protected direction:Direction = Direction.right;
 
   public set State(value:number) {
     if (!this.states[value]) {
@@ -50,16 +52,20 @@ class Entity {
   private drawBoxes(c:CanvasRenderingContext2D):void {
     if (this.currentState < 0) return;
     const state:State = this.states[this.currentState] as State;
-    if (state.hurtbox) state.hurtbox.draw(c, Entity.clrs.hurt, this.position);
-    if (state.hurtboxes) state.hurtboxes.forEach((v) => v.draw(c, Entity.clrs.hurt, this.position));
-    if (state.hitbox) state.hitbox.draw(c, Entity.clrs.hit, this.position);
-    if (state.hitboxes) state.hitboxes.forEach((v) => v.draw(c, Entity.clrs.hit, this.position));
+    const pos = this.position;
+    const reverse = !!this.direction;
+    if (state.hurtbox) state.hurtbox.draw(c, Entity.clrs.hurt, pos, reverse);
+    if (state.hurtboxes) state.hurtboxes.forEach((v) => v.draw(c, Entity.clrs.hurt, pos, reverse));
+    if (state.hitbox) state.hitbox.draw(c, Entity.clrs.hit, pos, reverse);
+    if (state.hitboxes) state.hitboxes.forEach((v) => v.draw(c, Entity.clrs.hit, pos, reverse));
     this.drawPosition(c);
   }
 
   public draw(c:CanvasRenderingContext2D, drawBoxes = false) {
-    if (!this.animation) return;
-    this.animation.drawFrame(c, this.position, this.stateElapsedSeconds);
+    if (this.animation) {
+      const elapsed = this.stateElapsedSeconds;
+      this.animation.drawFrame(c, this.position, elapsed, !!this.direction);
+    }
     if (drawBoxes) this.drawBoxes(c);
   }
 }
