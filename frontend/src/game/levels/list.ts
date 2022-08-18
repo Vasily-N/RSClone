@@ -1,9 +1,9 @@
-import { LevelConfig } from './config.type';
-import LevelId from './levelIds';
+import { LevelConfig } from './typeConfigs';
+import LevelId from './typeLevelIds';
 import testLevel from './testLevel';
 
-const list:Record<LevelId, LevelConfig> = {
+const levelList:Record<LevelId, LevelConfig> = {
   [LevelId.test]: testLevel,
 };
 
-export default list;
+export default levelList;
