@@ -11,12 +11,13 @@ const URL_DB = `mongodb+srv://${LOGIN_PASSWORD}@atlascluster.hi1wyqs.mongodb.net
 // const cors = require('cors');
 
 const app = exppress();
+app.use(cors());
 app.use(exppress.json());
 app.use('/api', router);
-app.use(cors({
-  methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH'],
-  origin: '*',
-}));
+// {
+//   methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH'],
+//   origin: '*',
+// }
 // app.options('*', cors());
 // app.use('/users', router); // create userrouter
 
