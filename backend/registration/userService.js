@@ -3,8 +3,18 @@ import User from './user.js';
 
 class UserService {
   async create(user) {
-    const userLoginPassword = await User.create(user);
-    return userLoginPassword;
+    const userNameAndPass = await User.find({ name: user.name, password: user.password });
+    const userName = await User.find({ name: user.name });
+
+    if (userNameAndPass.length !== 0) {
+      console.log(userNameAndPass, 'you are entry');
+    } else if (userName.length !== 0) {
+      console.log(userName, 'name already exist');
+    } else {
+      const userLoginPassword = await User.create(user);
+      console.log(userLoginPassword, 'created');
+      return userLoginPassword;
+    }
   }
 
   async getAll() {
