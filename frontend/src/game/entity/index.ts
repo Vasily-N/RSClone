@@ -34,20 +34,27 @@ class Entity {
   public frame(elapsedSeconds:number):void {
     this.stateElapsedSeconds += elapsedSeconds;
     this.velocityPerSecond.Y += elapsedSeconds * this.gravity;
+    this.velocityPerSecond.Y = 0;
     this.position.X += elapsedSeconds * this.velocityPerSecond.X;
     this.position.Y += elapsedSeconds * this.velocityPerSecond.Y;
   }
 
-  private static readonly hitBoxC = 'red';
-  private static readonly hurtBoxC = 'blue';
+  private static readonly clrs = { hit: 'red', hurt: 'blue', pos: 'green' };
+
+  private drawPosition(c:CanvasRenderingContext2D):void {
+    const cLocal = c;
+    cLocal.strokeStyle = Entity.clrs.pos;
+    cLocal.fillRect(this.position.X, this.position.Y, 1, 1);
+  }
 
   private drawBoxes(c:CanvasRenderingContext2D):void {
     if (this.currentState < 0) return;
     const state:State = this.states[this.currentState] as State;
-    if (state.hurtbox) state.hurtbox.draw(c, Entity.hurtBoxC, this.position);
-    if (state.hurtboxes) state.hurtboxes.forEach((v) => v.draw(c, Entity.hurtBoxC, this.position));
-    if (state.hitbox) state.hitbox.draw(c, Entity.hitBoxC, this.position);
-    if (state.hitboxes) state.hitboxes.forEach((v) => v.draw(c, Entity.hitBoxC, this.position));
+    if (state.hurtbox) state.hurtbox.draw(c, Entity.clrs.hurt, this.position);
+    if (state.hurtboxes) state.hurtboxes.forEach((v) => v.draw(c, Entity.clrs.hurt, this.position));
+    if (state.hitbox) state.hitbox.draw(c, Entity.clrs.hit, this.position);
+    if (state.hitboxes) state.hitboxes.forEach((v) => v.draw(c, Entity.clrs.hit, this.position));
+    this.drawPosition(c);
   }
 
   public draw(c:CanvasRenderingContext2D, drawBoxes = false) {

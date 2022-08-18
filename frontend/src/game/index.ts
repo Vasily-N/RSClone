@@ -29,15 +29,17 @@ class Game {
     window.requestAnimationFrame(this.frame.bind(this));
   }
 
-  private processFrame(c:CanvasRenderingContext2D, elapsed:number):void {
-    c.clearRect(0, 0, this.c.size.X, this.c.size.Y); // temporal
+  private processFrame(elapsed:number):void {
+    const { c, size } = this.c;
+    c.clearRect(0, 0, size.X, size.Y); // temporal
     this.char.frame(elapsed / 1000);
     this.char.draw(c, Game.drawBoxes);
+
     if (Game.displayFps) c.fillText(`FPS: ${(1000 / elapsed).toFixed(1)}`, 5, 10);
   }
 
   private frame(frametime:number):void {
-    if (this.lastFrame) this.processFrame(this.c.c, frametime - this.lastFrame);
+    if (this.lastFrame) this.processFrame(frametime - this.lastFrame);
     this.lastFrame = frametime;
     this.requestNextFrame();
   }
