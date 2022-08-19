@@ -1,4 +1,6 @@
 /* eslint-disable no-underscore-dangle */
+import { Types } from 'mongoose';
+// import user from './user';
 import User from './user';
 
 export interface IUser {
@@ -13,7 +15,7 @@ class UserService {
     const userName = await User.find({ name: user.name });
 
     if (userNameAndPass.length !== 0) {
-      console.log(userNameAndPass, 'you are entry');
+      this.startUserGame(userNameAndPass[0]._id);
     } else if (userName.length !== 0) {
       console.log(userName, 'name already exist');
     } else {
@@ -50,6 +52,11 @@ class UserService {
     }
     const user = await User.findByIdAndDelete(id);
     return user;
+  }
+
+  startUserGame(id: Types.ObjectId) {
+    const userID = (id.toString().match(/[0-9a-z]/g) as string[]).join('');
+    return userID;
   }
 }
 

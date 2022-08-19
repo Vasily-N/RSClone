@@ -11,6 +11,7 @@ class UserController {
   async create(request: TypedRequestBody<IUserBodyReq>, response: ResponseType) {
     try {
       const userLoginPassword = await UserService.create(request.body);
+      // response.status(201).json(userLoginPassword);
       return response.json(userLoginPassword);
     } catch (error) {
       response.status(500).json(error);
