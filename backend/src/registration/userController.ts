@@ -1,17 +1,20 @@
+/* eslint-disable import/no-duplicates */
 /* eslint-disable no-underscore-dangle */
-import UserService from './userService.js';
+import { IModelUser } from './user';
+import UserService from './userService';
+import { IUser } from './userService';
 
 class UserController {
-  async create(request, response) {
+  async create(request: any, response: any) {
     try {
       const userLoginPassword = await UserService.create(request.body);
-      response.json(userLoginPassword);
+      return response.json(userLoginPassword); // response.json(userLoginPassword);
     } catch (error) {
       response.status(500).json(error);
     }
   }
 
-  async getAll(request, response) {
+  async getAll(request: any, response: any) {
     try {
       const users = await UserService.getAll();
       return response.json(users);
@@ -20,7 +23,7 @@ class UserController {
     }
   }
 
-  async getOne(request, response) {
+  async getOne(request: any, response: any) {
     try {
       const user = await UserService.getOne(request.params.id);
       return response.json(user);
@@ -29,16 +32,16 @@ class UserController {
     }
   }
 
-  async update(request, response) {
+  async update(request: any, response: any) {
     try {
       const updatedUser = await UserService.update(request.body);
       return response.json(updatedUser);
-    } catch (error) {
+    } catch (error: any) {
       response.status(500).json(error.message);
     }
   }
 
-  async delete(request, response) {
+  async delete(request: any, response: any) {
     try {
       const user = await UserService.delete(request.params.id);
       return response.json(user);

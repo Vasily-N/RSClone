@@ -1,8 +1,14 @@
 /* eslint-disable no-underscore-dangle */
-import User from './user.js';
+import User from './user';
+
+export interface IUser {
+  _id?: string;
+  name: string,
+  password: string,
+}
 
 class UserService {
-  async create(user) {
+  async create(user: IUser) {
     const userNameAndPass = await User.find({ name: user.name, password: user.password });
     const userName = await User.find({ name: user.name });
 
@@ -22,7 +28,7 @@ class UserService {
     return users;
   }
 
-  async getOne(id) {
+  async getOne(id: string) {
     if (!id) {
       throw new Error('no ID');
     }
@@ -30,7 +36,7 @@ class UserService {
     return user;
   }
 
-  async update(user) {
+  async update(user: IUser) {
     if (!user._id) {
       throw new Error('no ID');
     }
@@ -38,7 +44,7 @@ class UserService {
     return updatedData;
   }
 
-  async delete(id) {
+  async delete(id: string) {
     if (!id) {
       throw new Error('no ID');
     }
