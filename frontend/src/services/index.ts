@@ -1,4 +1,4 @@
-import ApiServices from '../apiServices/apiServices';
+import ApiServices from './apiServices/apiServices';
 import IControlsSettings from '../game/controls/iControlsSettings.interface';
 
 type Services = {

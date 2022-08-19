@@ -1,8 +1,8 @@
 import template from './index.html';
 import style from './app.scss';
 import { IView, View } from '..';
-import Canvas2D from '../Canvas2D';
-import Placeholder from '../Placeholder';
+import Canvas2D from '../canvas2D';
+import Placeholder from '../placeholder';
 import { Game } from '../../game';
 import Services from '../../services';
 import Point from '../../game/helperTypes/point';

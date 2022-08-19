@@ -1,4 +1,4 @@
-import { Api } from '../apiServices/api';
+import { Api } from '../services/apiServices/api';
 import Services from '../services';
 import ControlsSettings from '../game/controls/settings';
 import { IView } from '../views';
