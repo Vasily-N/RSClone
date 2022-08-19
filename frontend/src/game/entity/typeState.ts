@@ -1,12 +1,11 @@
 import Box from '../box';
-import SpriteConfig from '../sprites/typeConfig';
+import SpriteAnimation from '../sprites';
 
 type State = {
-  spite?:SpriteConfig;
-  hitbox?:Box;
-  hitboxes?:Box[];
-  hurtbox?:Box;
-  hurtboxes?:Box[];
+  animation?:SpriteAnimation;
+  hitboxes:Box[];
+  hurtboxes:Box[];
+  collisionboxes:Box[];
 };
 
 export default State;

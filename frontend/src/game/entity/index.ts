@@ -1,9 +1,10 @@
 import SpriteAnimation from '../sprites';
 import Direction from '../helperTypes/direction';
 import Point from '../helperTypes/point';
+import StateConfig from './typeStateConfig';
 import State from './typeState';
 
-type States = Partial<Record<number, State>>;
+type States = Record<number, State>;
 
 abstract class Entity {
   protected position:Point = Point.Zero;
@@ -23,14 +24,32 @@ abstract class Entity {
     }
 
     this.currentState = value;
-    const sprite = this.states[this.currentState]?.spite;
-    this.animation = (sprite) ? new SpriteAnimation(sprite) : null;
+    this.animation = this.states[this.currentState]?.animation || null;
   }
 
-  constructor(position:Point, states?:States, defaultState?:number) {
+  private static concatBoxes<T>(box?:T, boxes?:T[]):T[] {
+    return (boxes || []).concat(box || []);
+  }
+
+  private static initStates(states:Partial<Record<number, StateConfig>>) {
+    return Object.keys(states).reduce((result:States, key:string) => {
+      const stateCf:StateConfig = states[+key] as StateConfig;
+      const hitboxes = Entity.concatBoxes(stateCf.hitbox, stateCf.hitboxes);
+      const hurtboxes = Entity.concatBoxes(stateCf.hurtbox, stateCf.hurtboxes);
+      const collisionboxesTmp = Entity.concatBoxes(stateCf.collisionbox, stateCf.collisionboxes);
+      const collisionboxes = collisionboxesTmp.length ? collisionboxesTmp : hurtboxes;
+      const state:State = { hitboxes, hurtboxes, collisionboxes };
+
+      if (stateCf.spite) Object.assign(state, { animation: new SpriteAnimation(stateCf.spite) });
+      Object.assign(result, { [+key]: state });
+      return result;
+    }, {});
+  }
+
+  constructor(position:Point, states?:Partial<Record<number, StateConfig>>, defaultState?:number) {
     this.position = position;
     if (!states) return;
-    this.states = states;
+    this.states = Entity.initStates(states);
     this.State = defaultState || Number(Object.keys(states)[0]);
   }
 
@@ -52,7 +71,7 @@ abstract class Entity {
 
   private drawBoxes(c:CanvasRenderingContext2D):void {
     if (this.currentState < 0) return;
-    const state:State = this.states[this.currentState] as State;
+    const state:StateConfig = this.states[this.currentState] as StateConfig;
     const pos = this.position;
     const reverse = !!this.direction;
     if (state.hurtbox) state.hurtbox.draw(c, Entity.clrs.hurt, pos, reverse);

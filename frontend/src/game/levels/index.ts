@@ -28,7 +28,7 @@ class Level {
   }
 
   constructor(config:LevelConfig) {
-    this.surfaces = config.surfaces.map((v) => ({ ...v, type: SurfaceType.Normal }));
+    this.surfaces = config.surfaces.map((s) => ({ ...s, type: SurfaceType.Normal }));
     this.entitiesConfig = config.entities;
     this.loadEnter = config.loading;
     this.loadExit = config.loading.filter((v) => v.zone !== undefined);
