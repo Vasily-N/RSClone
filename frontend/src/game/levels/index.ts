@@ -46,21 +46,24 @@ class Level {
     this.char.Position = position;
   }
 
-  private processGravityCollision(posBefore:Point, posAfter:Point):SurfaceCollision {
+  private gravityCollision(posBefore:Point, posAfter:Point, onFloor:boolean):SurfaceCollision {
     const surfaces = this.surfaces
       .filter((s) => s.position.MinX <= posAfter.X
                   && s.position.MaxX >= posAfter.X
-                  && s.position.MaxY >= Math.min(posBefore.Y, posAfter.Y)
-                  && s.position.MinY <= Math.max(posAfter.Y, posAfter.Y));
+                  && s.position.MinY <= Math.max(posAfter.Y, posBefore.Y)
+                  && s.position.MaxY >= Math.min(posAfter.Y, posBefore.Y));
     if (!surfaces.length) return undefined;
+    if (surfaces.length > 1) surfaces.sort((a, b) => a.position.MinY - b.position.MinY);
+    // prevent teleport down with very low fps aka 10 seconds per frame
 
     for (let i = 0; i < surfaces.length; i += 1) {
       const surface = surfaces[i];
       const percentegeBefore = (posBefore.X - surface.position.MinX) / surface.position.DifX;
       const yBefore = surface.position.DifY * percentegeBefore + surface.position.MinY;
-      if (yBefore < posBefore.Y) continue;
+      if (yBefore < Math.floor(posBefore.Y)) continue;
       const percentegeAfter = (posAfter.X - surface.position.MinX) / surface.position.DifX;
       const yAfter = Math.floor(surface.position.DifY * percentegeAfter + surface.position.MinY);
+      if (!onFloor && yAfter > Math.ceil(posAfter.Y)) continue;
       return { surface, point: new Point(posAfter.X, yAfter) };
     }
 
@@ -70,7 +73,7 @@ class Level {
   private processCollision(e:Entity, elapsedSeconds:number) {
     const posBefore = new Point(e.Position.X, e.Position.Y);
     e.frame(elapsedSeconds);
-    const collision = this.processGravityCollision(posBefore, e.Position);
+    const collision = this.gravityCollision(posBefore, e.Position, e.OnSurface);
     if (collision) {
       e.Position = collision.point;
     }

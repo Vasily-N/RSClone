@@ -11,9 +11,19 @@ class GameSettings implements IGameSettings {
   private frameTimeLimit = Infinity;
   public get FrameTimeLimit():number { return this.frameTimeLimit; }
   public set FrameTimeLimit(value:number) { this.FpsLimit = Math.ceil(1000 / value); }
-  public get FpsLimit():number { return this.fpsLimit; }
+  private static readonly fpsLimitAdd = 1;
+  private static readonly fpsLimitMult = 1.1;
+  public get FpsLimit():number {
+    return Math.max(
+      this.fpsLimit - GameSettings.fpsLimitAdd,
+      Math.round(this.fpsLimit / GameSettings.fpsLimitMult),
+    );
+  }
+
   public set FpsLimit(value:number) {
-    this.fpsLimit = value && value + 1; // because some 60 Hz screens are ackshually 60.5 Hz
+    this.fpsLimit = value
+                && Math.min(value + GameSettings.fpsLimitAdd, value * GameSettings.fpsLimitMult);
+    // because some 60 Hz screens are ackshually 60.5 Hz
     this.frameTimeLimit = 1000 / this.fpsLimit;
   }
 

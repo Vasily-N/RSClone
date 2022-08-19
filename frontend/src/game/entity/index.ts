@@ -5,7 +5,6 @@ import StateConfig from './typeStateConfig';
 import State from './typeState';
 import Box from '../box';
 import Rectangle from '../helperTypes/rectangle';
-import SurfaceType from '../levels/typeSurface';
 import { SurfaceConfig } from '../levels/typeConfigs';
 
 type States = Record<number, State>;
@@ -26,9 +25,13 @@ abstract class Entity {
   public get Collision():Rectangle { return this.collision; }
 
   protected surface?:SurfaceConfig;
-  public set Surface(value:SurfaceConfig | undefined) { this.surface = value; }
+  public set Surface(value:SurfaceConfig | undefined) {
+    this.surface = value; if (value) this.velocityPerSecond.Y = this.gravity / 1.8;
+  }
 
-  // because I'm too dumb to code it in very limited time
+  public get OnSurface():boolean { return !!this.surface; }
+
+  // because I'm too dumb to code it correctly with very limited time
   private static getCollisionSimplified(boxes:Box[]):Rectangle {
     return boxes.map((b) => b.RectCombined).reduce((p, c) => Box.initCombined(p, c));
   }
