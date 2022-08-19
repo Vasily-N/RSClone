@@ -27,6 +27,7 @@ type LoadingConfig = {
 };
 
 type LevelConfig = {
+  size:Point
   surfaces:SurfaceConfig[]
   entities:EntityConfig[]
   loading:LoadingConfig[]

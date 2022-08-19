@@ -18,6 +18,7 @@ class Game {
   private readonly gameSettings:IGameSettings;
   private lastFrame = 0;
   private levels:Partial<Record<LevelId, Level>> = {};
+  private levelCurrent:Level;
 
   private initContext() {
     this.canvasHelper.c.font = '48px serif';
@@ -30,7 +31,7 @@ class Game {
     this.canvasHelper = c;
     this.initContext();
     this.requestNextFrame();
-    this.changeLevel({ levelId: LevelId.test }); // temporal
+    this.levelCurrent = this.changeLevel({ levelId: LevelId.test }); // temporal
   }
 
   private getLevel(id:LevelId):Level {
@@ -38,9 +39,10 @@ class Game {
     return this.levels[id] as Level;
   }
 
-  private changeLevel(load:LevelLoad) {
+  private changeLevel(load:LevelLoad):Level {
     const level = this.getLevel(load.levelId);
     level.load(this.char, load.zone, load.position);
+    return level;
   }
 
   private requestNextFrame() {
@@ -50,8 +52,10 @@ class Game {
   private processFrame(elapsed:number):void {
     const { c, size } = this.canvasHelper;
     c.clearRect(0, 0, size.X, size.Y);
-    this.char.frame(elapsed / 1000);
-    this.char.draw(c, this.gameSettings.DrawBoxes);
+    c.beginPath();
+
+    this.levelCurrent.frame(elapsed / 1000);
+    this.levelCurrent.draw(c, this.gameSettings.DrawBoxes);
 
     if (this.gameSettings.FpsDisplay) c.fillText(`FPS: ${(1000 / elapsed).toFixed(1)}`, 5, 10);
   }
