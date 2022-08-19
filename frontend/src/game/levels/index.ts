@@ -1,5 +1,5 @@
 import {
-  LevelConfig, Loading, Surface, Entity as EntityConfig,
+  LevelConfig, LoadingConfig, SurfaceConfig, EntityConfig,
 } from './typeConfigs';
 import SurfaceType from './typeSurface';
 
@@ -10,10 +10,10 @@ import entitiesList from '../entity/list';
 import EntityClass from '../entity/typeClass';
 
 class Level {
-  private readonly surfaces:Surface[];
+  private readonly surfaces:SurfaceConfig[];
   private readonly entitiesConfig:EntityConfig[];
   private entities?:Entity[];
-  private readonly loading:Loading[];
+  private readonly loading:LoadingConfig[];
 
   private static newEntity<A extends Entity>(EntityConstructor:EntityClass<A>, position:Point):A {
     return new EntityConstructor(position);

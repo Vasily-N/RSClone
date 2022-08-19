@@ -1,14 +1,14 @@
 import LevelId from '../typeLevelIds';
 import Rectangle from '../../helperTypes/rectangle';
 import {
-  Entity, LevelConfig, Loading, Surface,
+  EntityConfig, LevelConfig, LoadingConfig, SurfaceConfig,
 } from '../typeConfigs';
 
-const entities:Entity[] = [];
+const entities:EntityConfig[] = [];
 
-const surfaces:Surface[] = [];
+const surfaces:SurfaceConfig[] = [];
 
-const loading:Loading[] = [];
+const loading:LoadingConfig[] = [];
 
 surfaces.push({ position: new Rectangle(0, 500, 100500, 500).Diagonal });
 surfaces.push({ position: new Rectangle(0, 400, 100500, 500).Diagonal, platform: true });
