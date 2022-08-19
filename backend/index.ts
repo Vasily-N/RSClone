@@ -1,4 +1,4 @@
-import exppress from 'express';
+import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import router from './src/registration/router';
@@ -7,10 +7,16 @@ const port = 5000;
 const LOGIN_PASSWORD = 'admin:admin';
 const URL_DB = `mongodb+srv://${LOGIN_PASSWORD}@atlascluster.hi1wyqs.mongodb.net/?retryWrites=true&w=majority`;
 
-const app = exppress();
+const app = express();
 app.use(cors());
-app.use(exppress.json());
+app.use(express.json());
 app.use('/api', router);
+
+export interface TypedRequestBody<T> extends express.Request {
+  body: T
+}
+
+export type ResponseType = express.Response;
 
 async function startClone() {
   try {
