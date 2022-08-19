@@ -42,8 +42,12 @@ class Game {
   }
 
   private frame(frametime:number):void {
-    if (this.lastFrame) this.processFrame(frametime - this.lastFrame);
-    this.lastFrame = frametime;
+    const elapsed = frametime - this.lastFrame;
+    if (!Number.isFinite(this.gameSettings.FrameTimeLimit)
+    || elapsed > this.gameSettings.FrameTimeLimit) {
+      if (this.lastFrame) this.processFrame(elapsed);
+      this.lastFrame = frametime;
+    }
     this.requestNextFrame();
   }
 }
