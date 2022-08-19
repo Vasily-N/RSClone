@@ -1,28 +1,30 @@
 import Character from './character';
 import Controls from './controls';
-import IControlsSettings from './controls/iControlsSettings.interface';
 import CanvasHelper from './helperTypes/canvasHelper';
 import Point from './helperTypes/point';
+import IControlsSettings from './controls/iControlsSettings.interface';
+import IGameSettings from './settings.interface';
 
 interface IGame {
   start:(context:CanvasRenderingContext2D)=>void;
 }
 
 class Game {
-  private c:CanvasHelper;
+  private canvasHelper:CanvasHelper;
   private readonly char:Character;
+  private readonly gameSettings:IGameSettings;
   private lastFrame = 0;
-  private static readonly drawBoxes = true; // Temporal
-  private static readonly displayFps = true; // Temporal
 
-  private readonly controls:Controls;
+  private initContext() {
+    this.canvasHelper.c.font = '48px serif';
+    this.canvasHelper.c.fillStyle = 'white';
+  }
 
-  constructor(controlsSettings:IControlsSettings, c:CanvasHelper) {
-    this.controls = new Controls(controlsSettings);
-    this.char = new Character(new Point(100, 100), this.controls);
-    this.c = c;
-    this.c.c.font = '48px serif';
-    this.c.c.fillStyle = 'white';
+  constructor(controlsSettings:IControlsSettings, gameSettings:IGameSettings, c:CanvasHelper) {
+    this.char = new Character(new Point(100, 100), new Controls(controlsSettings));
+    this.gameSettings = gameSettings;
+    this.canvasHelper = c;
+    this.initContext();
     this.requestNextFrame();
   }
 
@@ -31,12 +33,12 @@ class Game {
   }
 
   private processFrame(elapsed:number):void {
-    const { c, size } = this.c;
-    c.clearRect(0, 0, size.X, size.Y); // temporal
+    const { c, size } = this.canvasHelper;
+    c.clearRect(0, 0, size.X, size.Y);
     this.char.frame(elapsed / 1000);
-    this.char.draw(c, Game.drawBoxes);
+    this.char.draw(c, this.gameSettings.DrawBoxes);
 
-    if (Game.displayFps) c.fillText(`FPS: ${(1000 / elapsed).toFixed(1)}`, 5, 10);
+    if (this.gameSettings.FpsDisplay) c.fillText(`FPS: ${(1000 / elapsed).toFixed(1)}`, 5, 10);
   }
 
   private frame(frametime:number):void {
