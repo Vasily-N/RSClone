@@ -2,7 +2,7 @@ import Point from './point';
 
 class Line {
   private a:Point;
-  public get A():Point { return this.A; }
+  public get A():Point { return this.a; }
   public set A(value:Point) { this.A = value; }
   private b:Point;
   public get B():Point { return this.b; }

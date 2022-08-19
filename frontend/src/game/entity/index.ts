@@ -6,8 +6,8 @@ import State from './typeState';
 type States = Partial<Record<number, State>>;
 
 abstract class Entity {
-  protected position:Point;
-  protected velocityPerSecond:Point = new Point(0, 0);
+  protected position:Point = Point.Zero;
+  protected velocityPerSecond:Point = Point.Zero;
   private gravity = 100;
   private states:States = {};
   protected stateElapsedSeconds = 0;

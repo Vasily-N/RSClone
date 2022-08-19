@@ -1,9 +1,12 @@
 import Character from './character';
 import Controls from './controls';
 import CanvasHelper from './helperTypes/canvasHelper';
-import Point from './helperTypes/point';
 import IControlsSettings from './controls/iControlsSettings.interface';
 import IGameSettings from './settings.interface';
+import LevelId from './levels/typeLevelIds';
+import Level from './levels';
+import levelList from './levels/list';
+import LevelLoad from './levels/typeLoad';
 
 interface IGame {
   start:(context:CanvasRenderingContext2D)=>void;
@@ -14,6 +17,7 @@ class Game {
   private readonly char:Character;
   private readonly gameSettings:IGameSettings;
   private lastFrame = 0;
+  private levels:Partial<Record<LevelId, Level>> = {};
 
   private initContext() {
     this.canvasHelper.c.font = '48px serif';
@@ -21,11 +25,22 @@ class Game {
   }
 
   constructor(controlsSettings:IControlsSettings, gameSettings:IGameSettings, c:CanvasHelper) {
-    this.char = new Character(new Point(100, 100), new Controls(controlsSettings));
+    this.char = new Character(new Controls(controlsSettings));
     this.gameSettings = gameSettings;
     this.canvasHelper = c;
     this.initContext();
     this.requestNextFrame();
+    this.changeLevel({ levelId: LevelId.test }); // temporal
+  }
+
+  private getLevel(id:LevelId):Level {
+    if (!this.levels[id]) this.levels[id] = new Level(levelList[id]);
+    return this.levels[id] as Level;
+  }
+
+  private changeLevel(load:LevelLoad) {
+    const level = this.getLevel(load.levelId);
+    level.load(this.char, load.zone, load.position);
   }
 
   private requestNextFrame() {
