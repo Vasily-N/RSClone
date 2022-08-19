@@ -6,17 +6,21 @@ import Point from '../helperTypes/point';
 import SurfaceType from '../levels/typeSurface';
 import { CharacterState, states } from './states';
 
+type CntrlChangeXVel = { [t in SurfaceType]: number } & {
+  default: number
+  air: number
+};
+
 class Character extends Entity {
   private readonly conrols:Controls;
-  private static readonly cntrlMaxXVel:Record<number, number> = { [+false]: 100, [+true]: 200 };
-  private static readonly cntrlChangeXVelDefault:number = 1500;
-  private static readonly cntrlChangeXVelSurface:Partial<Record<SurfaceType, number>> = {
-    [SurfaceType.Ice]: 50,
+  private static readonly cntrlMaxXVel:Record<number, number> = { [+false]: 100, [+true]: 180 };
+  private static readonly cntrlChangeXVel:Partial<CntrlChangeXVel> = {
+    default: 1500, air: 700, [SurfaceType.Ice]: 400,
   };
 
   private jumps = 1;
   private jumpHold = false;
-  private static readonly jumpPower = 120; // todo: to character stats
+  private static readonly jumpPower = 110; // todo: to character stats
 
   constructor(controls:Controls) {
     super(Point.Zero, states);
@@ -24,7 +28,9 @@ class Character extends Entity {
   }
 
   private processWalk(run:boolean, left:boolean, right:boolean, xVelocityChange:number):void {
-    const maxXvel = Character.cntrlMaxXVel[+run];
+    const maxXvel = this.surface
+      ? Character.cntrlMaxXVel[+run]
+      : Math.max(Math.abs(this.velocityPerSecond.X), Character.cntrlMaxXVel[0]);
     if (left) {
       this.velocityPerSecond.X -= xVelocityChange;
       this.direction = Direction.left;
@@ -69,11 +75,12 @@ class Character extends Entity {
     const run = this.conrols.has(Action.run);
     const left = this.conrols.has(Action.moveLeft);
     const right = this.conrols.has(Action.moveRight);
-    const xVelChangePerSec = (this.surface && this.surface.type
-                              && Character.cntrlChangeXVelSurface[this.surface.type])
-                              || Character.cntrlChangeXVelDefault;
-    if (xVelChangePerSec !== Character.cntrlChangeXVelDefault) console.log(xVelChangePerSec);
-    const xVelocityChange = elapsedSeconds * xVelChangePerSec;
+    const xVelChangePerSec = this.surface
+      ? ((this.surface.type && Character.cntrlChangeXVel[this.surface.type])
+        || Character.cntrlChangeXVel.default)
+      : Character.cntrlChangeXVel.air;
+
+    const xVelocityChange = elapsedSeconds * (xVelChangePerSec as number);
     if (left || right) this.processWalk(run, left, right, xVelocityChange);
     else this.processSlowDown(xVelocityChange);
 
