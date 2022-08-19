@@ -53,10 +53,10 @@ class Level {
                   && s.position.MinY <= Math.max(posAfter.Y, posBefore.Y)
                   && s.position.MaxY >= Math.min(posAfter.Y, posBefore.Y));
     if (!surfaces.length) return undefined;
-    if (surfaces.length > 1) surfaces.sort((a, b) => a.position.MinY - b.position.MinY);
+    if (surfaces.length > 1) surfaces.sort((a, b) => b.position.MinY - a.position.MinY);
     // prevent teleport down with very low fps aka 10 seconds per frame
 
-    for (let i = 0; i < surfaces.length; i += 1) {
+    for (let i = surfaces.length - 1; i > -1; i -= 1) {
       const surface = surfaces[i];
       const percentegeBefore = (posBefore.X - surface.position.MinX) / surface.position.DifX;
       const yBefore = surface.position.DifY * percentegeBefore + surface.position.MinY;
