@@ -5,7 +5,8 @@ import SpriteFrame from './typeSpriteFrame';
 
 class SpriteAnimation {
   private readonly imgSource:CanvasImageSource;
-  private readonly frames:SpriteFrame[];
+  private readonly sprite:SpriteConfig; // used only for lazy img load
+  private frames:SpriteFrame[] = []; // not readonly because lazy load
   private readonly drawPosition:Point = new Point(0, 0);
   private readonly drawReversePosition:Point = new Point(0, 0);
   private lastFrameEnds = 0;
@@ -65,14 +66,17 @@ class SpriteAnimation {
     }
   }
 
+  private imgOnload() {
+    this.frames = SpriteAnimation.initFrames(this.imgSource as HTMLImageElement, this.sprite);
+    this.lastFrameEnds = (this.frames.at(-1) as SpriteFrame).ends;
+  }
+
   constructor(sprite:SpriteConfig) {
     SpriteAnimation.checkConfig(sprite);
-
+    this.sprite = sprite;
     this.imgSource = new Image();
     this.imgSource.src = sprite.link;
-
-    this.frames = SpriteAnimation.initFrames(this.imgSource, sprite);
-    this.lastFrameEnds = (this.frames.at(-1) as SpriteFrame).ends;
+    this.imgSource.addEventListener('load', this.imgOnload.bind(this));
 
     if (sprite.position) {
       this.drawPosition = sprite.position;
@@ -80,7 +84,8 @@ class SpriteAnimation {
     }
   }
 
-  private getFrame(elapsed:number):SpriteFrame {
+  private getFrame(elapsed:number):SpriteFrame | undefined {
+    if (!this.lastFrameEnds) return undefined;
     const elapsedF = elapsed % this.lastFrameEnds;
     while (!((elapsedF > (this.currentFrame ? this.frames[this.currentFrame - 1].ends : 0))
         && (elapsedF < this.frames[this.currentFrame].ends))) {
@@ -103,8 +108,8 @@ class SpriteAnimation {
       framePosition.Y,
       framePosition.Width,
       framePosition.Height,
-      position.X - framePosition.Width / 2,
-      position.Y - framePosition.Height,
+      Math.round(position.X - framePosition.Width / 2),
+      Math.round(position.Y - framePosition.Height),
       framePosition.Width,
       framePosition.Height,
     );
@@ -112,6 +117,7 @@ class SpriteAnimation {
 
   public drawFrame(c:CanvasRenderingContext2D, position:Point, elapsed:number, reverse?:boolean) {
     const frame = this.getFrame(elapsed);
+    if (!frame) return;
     const drawPosition = position.plus(reverse ? this.drawReversePosition : this.drawPosition);
     const framePos = reverse && frame.positionReverse ? frame.positionReverse : frame.position;
     SpriteAnimation.drawSprite(this.imgSource, c, drawPosition, framePos);

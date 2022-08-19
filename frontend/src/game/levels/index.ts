@@ -11,12 +11,14 @@ import EntityClass from '../entity/typeClass';
 import Character from '../character';
 import Line from '../helperTypes/line';
 
+type SurfaceCollision = { surface:Surface, point:Point } | undefined;
+
 class Level {
   private readonly surfaces:Surface[];
   private readonly loadEnter:LoadZone[];
   private readonly loadExit:LoadZone[];
   private readonly entitiesConfig:EntityConfig[];
-  private entities?:Entity[];
+  private entities:Entity[] = [];
   private char?:Character;
 
   private static newEntity<A extends Entity>(EntityConstructor:EntityClass<A>, position:Point):A {
@@ -44,9 +46,41 @@ class Level {
     this.char.Position = position;
   }
 
+  private processGravityCollision(posBefore:Point, posAfter:Point):SurfaceCollision {
+    const surfaces = this.surfaces
+      .filter((s) => s.position.MinX <= posAfter.X
+                  && s.position.MaxX >= posAfter.X
+                  && s.position.MaxY >= Math.min(posBefore.Y, posAfter.Y)
+                  && s.position.MinY <= Math.max(posAfter.Y, posAfter.Y));
+    if (!surfaces.length) return undefined;
+
+    for (let i = 0; i < surfaces.length; i += 1) {
+      const surface = surfaces[i];
+      const percentegeBefore = (posBefore.X - surface.position.MinX) / surface.position.DifX;
+      const yBefore = surface.position.DifY * percentegeBefore + surface.position.MinY;
+      if (yBefore < posBefore.Y) continue;
+      const percentegeAfter = (posAfter.X - surface.position.MinX) / surface.position.DifX;
+      const yAfter = Math.floor(surface.position.DifY * percentegeAfter + surface.position.MinY);
+      return { surface, point: new Point(posAfter.X, yAfter) };
+    }
+
+    return undefined;
+  }
+
+  private processCollision(e:Entity, elapsedSeconds:number) {
+    const posBefore = new Point(e.Position.X, e.Position.Y);
+    e.frame(elapsedSeconds);
+    const collision = this.processGravityCollision(posBefore, e.Position);
+    if (collision) {
+      e.Position = collision.point;
+    }
+
+    e.Surface = collision?.surface;
+  }
+
   public frame(elapsedSeconds:number):void {
-    // todo: process surfaces and hitboxes
-    this.char?.frame(elapsedSeconds);
+    const char = this.char as Character;
+    this.processCollision(char, elapsedSeconds);
     this.entities?.forEach((entity) => entity.frame(elapsedSeconds));
   }
 

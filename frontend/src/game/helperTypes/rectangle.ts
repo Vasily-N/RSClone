@@ -11,18 +11,24 @@ class Rectangle {
   private h:number;
   public get Height() { return this.h; }
 
-  private diagonal = Line.Zero;
+  private diagonal:Line;
   public get Diagonal():Line { return this.diagonal; }
-  private leftLine = Line.Zero;
+  private leftLine:Line;
   public get LeftLine():Line { return this.leftLine; }
-  private rightLine = Line.Zero;
+  private rightLine:Line;
   public get RightLine():Line { return this.rightLine; }
-  private topLine = Line.Zero;
+  private topLine:Line;
   public get TopLine():Line { return this.topLine; }
-  private bottomLine = Line.Zero;
+  private bottomLine:Line;
   public get BottomLine():Line { return this.bottomLine; }
 
-  private initLines() {
+  public static get Zero():Rectangle { return new Rectangle(0, 0, 0, 0); }
+
+  constructor(x:number, y:number, width:number, height:number) {
+    this.x = x;
+    this.y = y;
+    this.w = width;
+    this.h = height;
     const rightX = this.x + this.w;
     const bottomY = this.y + this.h;
 
@@ -35,14 +41,6 @@ class Rectangle {
     this.rightLine = new Line(topRight, bottomRight);
     this.topLine = new Line(topLeft, topRight);
     this.bottomLine = new Line(bottomLeft, bottomRight);
-  }
-
-  constructor(x:number, y:number, width:number, height:number) {
-    this.x = x;
-    this.y = y;
-    this.w = width;
-    this.h = height;
-    this.initLines();
   }
 }
 

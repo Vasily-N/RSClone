@@ -4,6 +4,16 @@ import Rectangle from '../helperTypes/rectangle';
 class Box {
   private rect:Rectangle;
   private rectReverse:Rectangle;
+  private rectCombined:Rectangle;
+  public get RectCombined():Rectangle { return this.rectCombined; }
+
+  public static initCombined(rect1:Rectangle, rect2:Rectangle):Rectangle {
+    const combinedX1 = Math.min(rect1.X, rect2.X);
+    const combinedX2 = Math.max(rect1.X + rect1.Width, rect2.X + rect2.Width);
+    const combinedY1 = Math.min(rect1.Y, rect2.Y);
+    const combinedY2 = Math.min(rect1.Y, rect2.Y);
+    return new Rectangle(combinedX1, combinedX2, combinedY1, combinedY2);
+  }
 
   constructor(rectangle:Rectangle) {
     this.rect = new Rectangle(
@@ -18,6 +28,8 @@ class Box {
       rectangle.Width,
       rectangle.Height,
     );
+
+    this.rectCombined = Box.initCombined(this.rect, this.rectReverse);
   }
 
   public hit(rectangle:Rectangle):boolean {

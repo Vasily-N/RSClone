@@ -2,7 +2,7 @@ import Box from '../box';
 import SpriteConfig from '../sprites/typeConfig';
 
 type StateConfig = {
-  spite?:SpriteConfig;
+  sprite?:SpriteConfig;
   hitbox?:Box;
   hitboxes?:Box[];
   hurtbox?:Box;

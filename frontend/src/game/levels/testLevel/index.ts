@@ -18,6 +18,7 @@ surfaces.push(...surfaceListHelper([
 ]));
 
 surfaces.push({ position: new Rectangle(200, 300, 200, 0).Diagonal, platform: true });
+surfaces.push({ position: new Rectangle(100, 0, 200, 200).Diagonal, platform: true });
 
 const levelId = LevelId.test;
 loading[0] = { position: new Rectangle(100, 100, 0, 100).Diagonal, levelId, zone: 1 };

@@ -10,8 +10,6 @@ class Character extends Entity {
   private static readonly cntrlMaxXVel:Record<number, number> = { [+false]: 100, [+true]: 200 };
   private static readonly cntrlChangeXVel:number = 1500;
 
-  public set Position(value:Point) { this.position = value; }
-
   constructor(controls:Controls) {
     super(Point.Zero, states);
     this.conrols = controls;

@@ -3,28 +3,47 @@ import Direction from '../helperTypes/direction';
 import Point from '../helperTypes/point';
 import StateConfig from './typeStateConfig';
 import State from './typeState';
+import Box from '../box';
+import Rectangle from '../helperTypes/rectangle';
+import SurfaceType from '../levels/typeSurface';
+import { SurfaceConfig } from '../levels/typeConfigs';
 
 type States = Record<number, State>;
 
 abstract class Entity {
   protected position:Point = Point.Zero;
+  public set Position(value:Point) { this.position = value; }
+  public get Position():Point { return this.position; }
   protected velocityPerSecond:Point = Point.Zero;
   private gravity = 100;
   private states:States = {};
   protected stateElapsedSeconds = 0;
+  protected direction:Direction = Direction.right;
+
   protected currentState = -1;
   private animation:SpriteAnimation | null = null;
-  protected direction:Direction = Direction.right;
+  private collision:Rectangle = Rectangle.Zero;
+  public get Collision():Rectangle { return this.collision; }
+
+  protected surface?:SurfaceConfig;
+  public set Surface(value:SurfaceConfig | undefined) { this.surface = value; }
+
+  // because I'm too dumb to code it in very limited time
+  private static getCollisionSimplified(boxes:Box[]):Rectangle {
+    return boxes.map((b) => b.RectCombined).reduce((p, c) => Box.initCombined(p, c));
+  }
 
   public set State(value:number) {
     if (!this.states[value]) {
       this.currentState = -1;
       this.animation = null;
+      this.collision = Rectangle.Zero;
       return;
     }
 
     this.currentState = value;
-    this.animation = this.states[this.currentState]?.animation || null;
+    this.collision = Entity.getCollisionSimplified(this.states[this.currentState].collisionboxes);
+    this.animation = this.states[this.currentState].animation || null;
   }
 
   private static concatBoxes<T>(box?:T, boxes?:T[]):T[] {
@@ -35,12 +54,13 @@ abstract class Entity {
     return Object.keys(states).reduce((result:States, key:string) => {
       const stateCf:StateConfig = states[+key] as StateConfig;
       const hitboxes = Entity.concatBoxes(stateCf.hitbox, stateCf.hitboxes);
-      const hurtboxes = Entity.concatBoxes(stateCf.hurtbox, stateCf.hurtboxes);
+      const hurtboxesTmp = Entity.concatBoxes(stateCf.hurtbox, stateCf.hurtboxes);
+      const hurtboxes = hurtboxesTmp.length ? hurtboxesTmp : hitboxes;
       const collisionboxesTmp = Entity.concatBoxes(stateCf.collisionbox, stateCf.collisionboxes);
-      const collisionboxes = collisionboxesTmp.length ? collisionboxesTmp : hurtboxes;
+      const collisionboxes = collisionboxesTmp.length ? collisionboxesTmp : hurtboxesTmp;
       const state:State = { hitboxes, hurtboxes, collisionboxes };
 
-      if (stateCf.spite) Object.assign(state, { animation: new SpriteAnimation(stateCf.spite) });
+      if (stateCf.sprite) Object.assign(state, { animation: new SpriteAnimation(stateCf.sprite) });
       Object.assign(result, { [+key]: state });
       return result;
     }, {});
@@ -56,7 +76,6 @@ abstract class Entity {
   public frame(elapsedSeconds:number):void {
     this.stateElapsedSeconds += elapsedSeconds;
     this.velocityPerSecond.Y += elapsedSeconds * this.gravity;
-    this.velocityPerSecond.Y = 0;
     this.position.X += elapsedSeconds * this.velocityPerSecond.X;
     this.position.Y += elapsedSeconds * this.velocityPerSecond.Y;
   }

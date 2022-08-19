@@ -1,4 +1,4 @@
-import StateConfig from '../entity/typeState';
+import StateConfig from '../entity/typeStateConfig';
 import walk from '../sprites/character/walk';
 import run from '../sprites/character/run';
 import idle from '../sprites/character/idle';
@@ -18,9 +18,9 @@ enum CharacterState {
 const normalHurtBox = new Box(new Rectangle(2, 40, 10, 36)); // temporal
 
 const states: Partial<Record<CharacterState, StateConfig>> = {
-  [CharacterState.Idle]: { spite: idle, hurtbox: normalHurtBox },
-  [CharacterState.Walk]: { spite: walk, hurtbox: normalHurtBox },
-  [CharacterState.Run]: { spite: run, hurtbox: normalHurtBox },
+  [CharacterState.Idle]: { sprite: idle, hurtbox: normalHurtBox },
+  [CharacterState.Walk]: { sprite: walk, hurtbox: normalHurtBox },
+  [CharacterState.Run]: { sprite: run, hurtbox: normalHurtBox },
 };
 
 export { CharacterState, states };
