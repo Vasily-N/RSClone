@@ -24,8 +24,8 @@ abstract class Entity {
   private collision:Rectangle = Rectangle.Zero;
   public get Collision():Rectangle { return this.collision; }
 
-  protected surface?:SurfaceConfig;
-  public set Surface(value:SurfaceConfig | undefined) {
+  protected surface:SurfaceConfig | null = null;
+  public set Surface(value:SurfaceConfig | null) {
     if (value) this.velocityPerSecond.Y = 0;
     else if (this.surface) this.velocityPerSecond.Y = this.gravity / 1.8;
     this.surface = value;

@@ -17,8 +17,10 @@ class Rectangle {
   private bottom:number;
   public get Bottom() { return this.bottom; }
 
-  private diagonal:Line;
-  public get Diagonal():Line { return this.diagonal; }
+  private diagonalA:Line;
+  public get DiagonalA():Line { return this.diagonalA; }
+  private diagonalB:Line;
+  public get DiagonalB():Line { return this.diagonalB; }
   private leftLine:Line;
   public get LeftLine():Line { return this.leftLine; }
   private rightLine:Line;
@@ -42,7 +44,8 @@ class Rectangle {
     const topRight = new Point(this.right, this.y);
     const bottomLeft = new Point(this.x, this.bottom);
     const bottomRight = new Point(this.right, this.bottom);
-    this.diagonal = new Line(topLeft, bottomRight);
+    this.diagonalA = new Line(topLeft, bottomRight);
+    this.diagonalB = new Line(topRight, bottomLeft);
     this.leftLine = new Line(topLeft, bottomLeft);
     this.rightLine = new Line(topRight, bottomRight);
     this.topLine = new Line(topLeft, topRight);

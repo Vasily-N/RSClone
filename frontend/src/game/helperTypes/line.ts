@@ -15,10 +15,10 @@ class Line {
   public get MinY():number { return this.minY; }
   private maxY:number;
   public get MaxY():number { return this.maxY; }
-  private difX:number;
-  public get DifX():number { return this.difX; }
-  private difY:number;
-  public get DifY():number { return this.difY; }
+  private difXabs:number;
+  public get DifXabs():number { return this.difXabs; }
+  private difYabs:number;
+  public get DifYabs():number { return this.difYabs; }
 
   constructor(a:Point, b:Point) {
     this.a = a;
@@ -27,8 +27,8 @@ class Line {
     this.maxX = Math.max(this.a.X, this.b.X);
     this.minY = Math.min(this.a.Y, this.b.Y);
     this.maxY = Math.max(this.a.Y, this.b.Y);
-    this.difX = this.maxX - this.minX;
-    this.difY = this.maxY - this.minY;
+    this.difXabs = this.maxX - this.minX;
+    this.difYabs = this.maxY - this.minY;
   }
 }
 

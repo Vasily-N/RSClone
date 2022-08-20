@@ -66,7 +66,7 @@ class Character extends Entity {
     if (!this.surface) {
       if (!this.airJumps) return;
       this.airJumps -= 1;
-    } else this.surface = undefined;
+    } else this.surface = null;
     // because surfaces are sticky (to prevent "floating" from stairs)
     this.velocityPerSecond.Y = -Character.jumpPower;
     this.jumpHold = true;

@@ -18,6 +18,7 @@ class Game {
   private readonly gameSettings:IGameSettings;
   private lastFrame = 0;
   private levels:Partial<Record<LevelId, Level>> = {};
+  private levelIdCurrent?:LevelId;
   private levelCurrent:Level;
 
   private initContext() {
@@ -31,7 +32,7 @@ class Game {
     this.canvasHelper = c;
     this.initContext();
     this.requestNextFrame();
-    this.levelCurrent = this.changeLevel({ levelId: LevelId.test }); // temporal
+    this.levelCurrent = this.changeLevel({ levelId: LevelId.test, zone: 0, position: 1 }); // temp
   }
 
   private getLevel(id:LevelId):Level {
@@ -40,9 +41,13 @@ class Game {
   }
 
   private changeLevel(load:LevelLoad):Level {
-    const level = this.getLevel(load.levelId);
-    level.load(this.char, load.zone, load.position);
-    return level;
+    const portal = this.levelIdCurrent === load.levelId;
+    if (!portal) {
+      this.levelIdCurrent = load.levelId;
+      this.levelCurrent = this.getLevel(load.levelId);
+    }
+    this.levelCurrent.load(this.char, load.zone, load.position, portal);
+    return this.levelCurrent;
   }
 
   private requestNextFrame() {
@@ -51,7 +56,8 @@ class Game {
 
   private processFrame(elapsed:number):void {
     const { c, size } = this.canvasHelper;
-    this.levelCurrent.frame(elapsed / 1000);
+    const load = this.levelCurrent.frame(elapsed / 1000);
+    if (load) this.changeLevel(load);
 
     c.clearRect(0, 0, size.X, size.Y);
     c.beginPath();

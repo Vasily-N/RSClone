@@ -22,7 +22,7 @@ type EntityConfig = {
 
 type LoadingConfig = {
   position:Line
-  levelId:LevelId
+  levelId?:LevelId
   zone?:number
 };
 
