@@ -1,15 +1,14 @@
-import { LevelConfig, LoadingConfig as LoadZone, EntityConfig } from './typeConfigs';
-import SurfaceType from './typeSurface';
+import {
+  LevelConfig, LevelLoadingConfig as LoadZone, LevelEntityConfig,
+  SurfaceType, LevelLoad as Load, LevelId,
+} from './types';
 
 import { Point, Line, Rectangle } from '../../shapes';
 
-import Entity from '../entity';
-import Character from '../character';
-
+import { Entity, EntityClass } from '../entity';
 import entitiesList from '../entity/list';
-import EntityClass from '../entity/typeClass';
-import Load from './typeLoad';
-import LevelId from './typeLevelIds';
+
+import Character from '../character';
 
 type Surface = { type:SurfaceType, platform:boolean, position:Line } ;
 type SurfaceCollision = { surface:Surface, point:Point } | null;
@@ -19,7 +18,7 @@ class Level {
   private readonly surfaces:Surface[];
   private readonly loadEnter:LoadZone[];
   private readonly loadExit:LoadZone[];
-  private readonly entitiesConfig:EntityConfig[];
+  private readonly entitiesConfig:LevelEntityConfig[];
   private entities:Entity[] = [];
   private char?:Character;
 
@@ -27,7 +26,7 @@ class Level {
     return new EntityConstructor(position);
   }
 
-  private static initEntities(entitiesConfig:EntityConfig[]):Entity[] {
+  private static initEntities(entitiesConfig:LevelEntityConfig[]):Entity[] {
     return entitiesConfig.map((v) => Level.newEntity(entitiesList[v.type], v.position));
   }
 
@@ -133,8 +132,10 @@ class Level {
     const nearFloors = Level.filterNear<Surface>(this.surfaces, floorsCheckZone);
     const floorCollision = Level.processFloors(nearFloors, move, e.OnSurface);
 
-    if (floorCollision) e.Position = floorCollision.point;
-    e.Surface = floorCollision?.surface || null;
+    if (floorCollision) {
+      e.Position = floorCollision.point;
+      e.SurfaceType = floorCollision.surface.type;
+    } else e.SurfaceType = null;
 
     return null;
   }

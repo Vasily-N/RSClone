@@ -1,4 +1,4 @@
-import Entity from '..';
+import { Entity } from '..';
 import { Point } from '../../../shapes';
 import { PlaceholderState, states } from './states';
 

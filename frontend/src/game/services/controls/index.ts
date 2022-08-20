@@ -1,5 +1,6 @@
 import Action from './actions.enum';
 import IControlsSettings from './iControlsSettings';
+import ControlsSettings from './settings';
 
 class Controls {
   private readonly buttons:Set<string> = new Set();
@@ -37,4 +38,6 @@ class Controls {
   }
 }
 
-export default Controls;
+export {
+  Controls, IControlsSettings, ControlsSettings, Action as ControlsAction,
+};

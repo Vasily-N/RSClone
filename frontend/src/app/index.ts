@@ -1,7 +1,6 @@
-import { Api } from '../services/apiServices/api';
-import { Services, ControlsAction } from '../services';
-import ControlsSettings from '../game/services/controls/settings';
-import GameSettings from '../game/services/settings';
+import {
+  Api, Services, GameSettings, ControlsSettings, ControlsAction,
+} from '../services';
 import { IView } from '../views';
 import AppPage from '../views/app';
 

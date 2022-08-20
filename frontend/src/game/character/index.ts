@@ -1,10 +1,8 @@
-import Controls from '../services/controls';
-import Action from '../services/controls/actions.enum';
-import Entity from '../entity';
-import Direction from '../entity/typeDirection';
+import { Controls, ControlsAction as Action } from '../services/controls';
+import { Entity, Direction } from '../entity';
 import { Point } from '../../shapes';
-import SurfaceType from '../levels/typeSurface';
 import { CharacterState, states } from './states';
+import { SurfaceType } from '../levels/types';
 
 type CntrlChangeXVel = { [t in SurfaceType]: number } & {
   default: number
@@ -28,7 +26,7 @@ class Character extends Entity {
   }
 
   private processWalk(run:boolean, left:boolean, right:boolean, xVelocityChange:number):void {
-    const maxXvel = this.surface
+    const maxXvel = this.OnSurface
       ? Character.cntrlMaxXVel[+run]
       : Math.max(Math.abs(this.velocityPerSecond.X), Character.cntrlMaxXVel[0]);
     if (left) {
@@ -57,16 +55,16 @@ class Character extends Entity {
   }
 
   private processJump():void {
-    if (this.surface) this.airJumps = 1;
+    if (this.OnSurface) this.airJumps = 1;
     if (!this.conrols.has(Action.jump)) {
       this.jumpHold = false;
       return;
     }
     if (this.jumpHold) return;
-    if (!this.surface) {
+    if (!this.OnSurface) {
       if (!this.airJumps) return;
       this.airJumps -= 1;
-    } else this.surface = null;
+    } else this.surfaceType = null;
     // because surfaces are sticky (to prevent "floating" from stairs)
     this.velocityPerSecond.Y = -Character.jumpPower;
     this.jumpHold = true;
@@ -76,8 +74,8 @@ class Character extends Entity {
     const run = this.conrols.has(Action.run);
     const left = this.conrols.has(Action.moveLeft);
     const right = this.conrols.has(Action.moveRight);
-    const xVelChangePerSec = this.surface
-      ? ((this.surface.type && Character.cntrlChangeXVel[this.surface.type])
+    const xVelChangePerSec = this.OnSurface
+      ? (Character.cntrlChangeXVel[this.surfaceType as SurfaceType]
         || Character.cntrlChangeXVel.default)
       : Character.cntrlChangeXVel.air;
 

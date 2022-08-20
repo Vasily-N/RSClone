@@ -1,13 +1,10 @@
 import Character from './character';
-import Controls from './services/controls';
-import IControlsSettings from './services/controls/iControlsSettings';
-import Action from './services/controls/actions.enum';
+import { IControlsSettings, Controls, ControlsAction as Action } from './services/controls';
 
-import IGameSettings from './services/settings/iGameSettings';
-import LevelId from './levels/typeLevelIds';
+import { IGameSettings } from './services/settings';
+import { LevelId, LevelLoad } from './levels/types';
 import Level from './levels';
 import levelList from './levels/list';
-import LevelLoad from './levels/typeLoad';
 
 interface IGame {
   start:(context:CanvasRenderingContext2D)=>void;

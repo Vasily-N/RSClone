@@ -1,5 +1,5 @@
-import Box from '../box';
-import SpriteAnimation from '../sprites';
+import Box from '../../box';
+import SpriteAnimation from '../../sprites';
 
 type State = {
   animation?:SpriteAnimation;

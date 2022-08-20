@@ -1,10 +1,11 @@
+import {
+  Direction, EntityClass, EntityId, State, StateConfig,
+} from './types';
+
 import SpriteAnimation from '../sprites';
-import Direction from './typeDirection';
 import { Point, Rectangle } from '../../shapes';
-import StateConfig from './typeStateConfig';
-import State from './typeState';
 import Box from '../box';
-import { SurfaceConfig } from '../levels/typeConfigs';
+import { SurfaceType } from '../levels/types';
 
 type States = Record<number, State>;
 
@@ -23,14 +24,14 @@ abstract class Entity {
   private collision:Rectangle = Rectangle.Zero;
   public get Collision():Rectangle { return this.collision; }
 
-  protected surface:SurfaceConfig | null = null;
-  public set Surface(value:SurfaceConfig | null) {
+  protected surfaceType:SurfaceType | null = null;
+  public set SurfaceType(value:SurfaceType | null) {
     if (value) this.velocityPerSecond.Y = 0;
-    else if (this.surface) this.velocityPerSecond.Y = this.gravity / 1.8;
-    this.surface = value;
+    else if (this.OnSurface) this.velocityPerSecond.Y = this.gravity / 1.8;
+    this.surfaceType = value;
   }
 
-  public get OnSurface():boolean { return !!this.surface; }
+  public get OnSurface():boolean { return this.surfaceType !== null; }
 
   // because I'm too dumb to code it correctly with very limited time
   private static getCollisionSimplified(boxes:Box[]):Rectangle {
@@ -80,7 +81,7 @@ abstract class Entity {
   public frame(elapsedSeconds:number):void {
     this.stateElapsedSeconds += elapsedSeconds;
 
-    if (!this.surface) {
+    if (!this.OnSurface) {
       this.velocityPerSecond.Y += elapsedSeconds * this.gravity;
       this.position.Y += elapsedSeconds * this.velocityPerSecond.Y;
     }
@@ -117,4 +118,6 @@ abstract class Entity {
   }
 }
 
-export default Entity;
+export {
+  Entity, EntityClass, Direction, EntityId, State, StateConfig,
+};

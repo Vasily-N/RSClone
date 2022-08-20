@@ -1,9 +1,10 @@
-import StateConfig from '../entity/typeStateConfig';
+import { StateConfig } from '../entity';
+import { Rectangle } from '../../shapes';
+import Box from '../box';
+
 import walk from '../sprites/character/walk';
 import run from '../sprites/character/run';
 import idle from '../sprites/character/idle';
-import { Rectangle } from '../../shapes';
-import Box from '../box';
 
 enum CharacterState {
   Idle,

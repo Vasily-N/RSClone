@@ -35,6 +35,9 @@ class GameSettings implements IGameSettings {
   private renderSize:Point = Point.Zero;
   public get RenderSize():Point { return this.renderSize; }
   public set RenderSize(value:Point) { this.renderSize = value; }
+  public RenderSizeSet(value:{ width:number, height:number }):void {
+    this.renderSize = new Point(value.width, value.height);
+  }
 
   private renderZone:CanvasRenderingContext2D | null = null;
   public set RenderZone(value:CanvasRenderingContext2D) { this.renderZone = value; }
@@ -67,4 +70,4 @@ class GameSettings implements IGameSettings {
   }
 }
 
-export default GameSettings;
+export { GameSettings, IGameSettings };

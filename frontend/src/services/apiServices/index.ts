@@ -1,4 +1,4 @@
-import { IApi, Data as Query } from './api';
+import { IApi, Data as Query, Api } from './api';
 
 type ListResponse<T> = { // to types?
   totalCount: number,
@@ -52,4 +52,4 @@ abstract class ApiService {
   }
 }
 
-export default ApiService;
+export { ApiService, IApi, Api };

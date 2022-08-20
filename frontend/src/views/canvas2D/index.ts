@@ -1,7 +1,6 @@
 import template from './index.html';
 import style from './canvas.scss';
 import { View } from '..';
-import { Point } from '../../shapes';
 import { IGameSettings } from '../../services';
 
 class Canvas2D extends View {
@@ -45,12 +44,16 @@ class Canvas2D extends View {
     this.bg.innerHTML = '\xa0';
   }
 
-  private previousWindow:Point = Point.Zero;
+  private previousWindowX = 0;
+  private previousWindowY = 0;
   private setCanvasSize() {
-    if (this.previousWindow.X === window.innerWidth
-      && this.previousWindow.Y === window.innerHeight) {
+    if (this.previousWindowX === window.innerWidth
+      && this.previousWindowY === window.innerHeight) {
       return;
     }
+
+    this.previousWindowX = window.innerWidth;
+    this.previousWindowY = window.innerHeight;
 
     this.canvas.style.width = '100%';
     const { Zoom: zoom } = this.gameSettings;
@@ -58,11 +61,10 @@ class Canvas2D extends View {
     const canvasTop = this.canvas.getBoundingClientRect().top;
     const width = Math.floor((window.innerWidth - outsidePadding) / zoom);
     const height = Math.floor((window.innerHeight - canvasTop - outsidePadding) / zoom);
-    const size = new Point(width, height);
 
-    this.gameSettings.RenderSize = size;
-    this.canvas.width = size.X;
-    this.canvas.height = size.Y;
+    this.gameSettings.RenderSizeSet({ width, height });
+    this.canvas.width = width;
+    this.canvas.height = height;
     this.canvas.style.width = `${width * zoom}px`;
   }
 

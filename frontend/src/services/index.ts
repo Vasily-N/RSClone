@@ -1,7 +1,7 @@
+import { ApiService, IApi, Api } from './apiServices';
 import ApiServices from './apiServices/apiServices';
-import IControlsSettings from '../game/services/controls/iControlsSettings';
-import ControlsAction from '../game/services/controls/actions.enum';
-import IGameSettings from '../game/services/settings/iGameSettings';
+import { ControlsSettings, IControlsSettings, ControlsAction } from '../game/services/controls';
+import { GameSettings, IGameSettings } from '../game/services/settings';
 
 type Services = {
   controls: { settings: IControlsSettings, action: typeof ControlsAction }
@@ -10,5 +10,8 @@ type Services = {
 };
 
 export {
-  Services, ApiServices, IGameSettings, IControlsSettings, ControlsAction,
+  Services,
+  ApiServices, ApiService, IApi, Api,
+  IGameSettings, GameSettings,
+  IControlsSettings, ControlsSettings, ControlsAction,
 };
