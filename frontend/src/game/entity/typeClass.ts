@@ -1,4 +1,4 @@
-import Point from '../helperTypes/point';
+import { Point } from '../../shapes';
 
 type EntityClass<A> = new(position:Point)=>A;
 

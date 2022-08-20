@@ -1,9 +1,8 @@
 import LevelId from '../typeLevelIds';
-import Rectangle from '../../helperTypes/rectangle';
+import { Point, Rectangle } from '../../../shapes';
 import {
   EntityConfig, LevelConfig, LoadingConfig, SurfaceConfig, surfaceListHelper,
 } from '../typeConfigs';
-import Point from '../../helperTypes/point';
 
 const entities:EntityConfig[] = [];
 

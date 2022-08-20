@@ -1,7 +1,6 @@
-import Line from '../helperTypes/line';
 import SurfaceType from './typeSurface';
 import EntityType from '../entity/typeEntityIds';
-import Point from '../helperTypes/point';
+import { Point, Line } from '../../shapes';
 import LevelId from './typeLevelIds';
 
 type SurfaceConfig = {

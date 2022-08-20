@@ -5,7 +5,7 @@ import Canvas2D from '../canvas2D';
 import Placeholder from '../placeholder';
 import { Game } from '../../game';
 import Services from '../../services';
-import Point from '../../game/helperTypes/point';
+import { Point } from '../../shapes/';
 
 enum ViewId { canvas, placaholder }
 

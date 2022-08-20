@@ -1,10 +1,9 @@
 import SpriteAnimation from '../sprites';
 import Direction from '../helperTypes/direction';
-import Point from '../helperTypes/point';
+import { Point, Rectangle } from '../../shapes';
 import StateConfig from './typeStateConfig';
 import State from './typeState';
 import Box from '../box';
-import Rectangle from '../helperTypes/rectangle';
 import { SurfaceConfig } from '../levels/typeConfigs';
 
 type States = Record<number, State>;

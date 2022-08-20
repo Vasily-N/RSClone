@@ -1,5 +1,5 @@
 import Entity from '..';
-import Point from '../../helperTypes/point';
+import { Point } from '../../../shapes';
 import { PlaceholderState, states } from './states';
 
 class Placeholder extends Entity {

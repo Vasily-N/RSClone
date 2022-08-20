@@ -1,5 +1,4 @@
-import Point from '../helperTypes/point';
-import Rectangle from '../helperTypes/rectangle';
+import { Point, Rectangle } from '../../shapes/';
 import SpriteConfig from './typeConfig';
 import SpriteFrame from './typeSpriteFrame';
 

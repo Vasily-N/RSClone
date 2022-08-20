@@ -1,4 +1,4 @@
-import Rectangle from '../helperTypes/rectangle';
+import { Rectangle } from '../../shapes';
 
 type SpriteFrame = {
   position:Rectangle;

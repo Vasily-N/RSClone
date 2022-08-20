@@ -1,5 +1,4 @@
-import Point from '../helperTypes/point';
-import Rectangle from '../helperTypes/rectangle';
+import { Point, Rectangle } from '../../shapes';
 
 class Box {
   private rect:Rectangle;

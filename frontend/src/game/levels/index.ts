@@ -1,16 +1,13 @@
-import {
-  LevelConfig, LoadingConfig as LoadZone, SurfaceConfig, EntityConfig,
-} from './typeConfigs';
+import { LevelConfig, LoadingConfig as LoadZone, EntityConfig } from './typeConfigs';
 import SurfaceType from './typeSurface';
 
-import Point from '../helperTypes/point';
+import { Point, Line, Rectangle } from '../../shapes';
+
 import Entity from '../entity';
+import Character from '../character';
 
 import entitiesList from '../entity/list';
 import EntityClass from '../entity/typeClass';
-import Character from '../character';
-import Line from '../helperTypes/line';
-import Rectangle from '../helperTypes/rectangle';
 import Load from './typeLoad';
 import LevelId from './typeLevelIds';
 
