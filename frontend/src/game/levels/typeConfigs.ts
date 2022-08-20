@@ -4,29 +4,35 @@ import EntityType from '../entity/typeEntityIds';
 import Point from '../helperTypes/point';
 import LevelId from './typeLevelIds';
 
-type Surface = {
+type SurfaceConfig = {
   type?:SurfaceType
   platform?:boolean
   position:Line
 };
 
-type Entity = {
+const surfaceListHelper = (points:Point[]):SurfaceConfig[] => points
+  .reduce((res:Line[], p:Point) => res.concat(new Line(res.at(-1)?.B || new Point(0, 0), p)), [])
+  .slice(1)
+  .map((position:Line) => ({ position }));
+
+type EntityConfig = {
   type:EntityType
   position:Point
 };
 
-type Loading = {
+type LoadingConfig = {
   position:Line
   levelId:LevelId
-  zone:number
+  zone?:number
 };
 
 type LevelConfig = {
-  surfaces:Surface[]
-  entities:Entity[]
-  loading:Loading[]
+  size:Point
+  surfaces:SurfaceConfig[]
+  entities:EntityConfig[]
+  loading:LoadingConfig[]
 };
 
 export {
-  Surface, Entity, Loading, LevelConfig,
+  SurfaceConfig, EntityConfig, LoadingConfig, LevelConfig, surfaceListHelper,
 };

@@ -1,6 +1,7 @@
 import { Api } from '../services/apiServices/api';
 import Services from '../services';
 import ControlsSettings from '../game/controls/settings';
+import GameSettings from '../game/setiings';
 import { IView } from '../views';
 import AppPage from '../views/app';
 
@@ -13,7 +14,8 @@ class App {
     const api = new Api('http://localhost:3000/');
     const serviceOptions = { };
     const services:Services = {
-      controlsSetting: new ControlsSettings(),
+      controlsSettings: new ControlsSettings(),
+      gameSettings: new GameSettings(),
       api: { placeholder1: null, placeholder2: null },
     };
     this.page = new AppPage('body', services);

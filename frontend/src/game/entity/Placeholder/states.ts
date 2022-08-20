@@ -1,10 +1,10 @@
-import State from '../typeState';
+import StateConfig from '../typeStateConfig';
 
 enum PlaceholderState {
   Idle,
 }
 
-const states:Partial<Record<PlaceholderState, State>> = {
+const states:Partial<Record<PlaceholderState, StateConfig>> = {
   [PlaceholderState.Idle]: { },
 };
 

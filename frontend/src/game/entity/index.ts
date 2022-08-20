@@ -1,43 +1,84 @@
 import SpriteAnimation from '../sprites';
 import Direction from '../helperTypes/direction';
 import Point from '../helperTypes/point';
+import StateConfig from './typeStateConfig';
 import State from './typeState';
+import Box from '../box';
+import Rectangle from '../helperTypes/rectangle';
+import { SurfaceConfig } from '../levels/typeConfigs';
 
-type States = Partial<Record<number, State>>;
+type States = Record<number, State>;
 
 abstract class Entity {
-  protected position:Point;
-  protected velocityPerSecond:Point = new Point(0, 0);
+  protected position:Point = Point.Zero;
+  public set Position(value:Point) { this.position = value; }
+  public get Position():Point { return this.position; }
+  protected velocityPerSecond:Point = Point.Zero;
   private gravity = 100;
   private states:States = {};
   protected stateElapsedSeconds = 0;
+  protected direction:Direction = Direction.right;
+
   protected currentState = -1;
   private animation:SpriteAnimation | null = null;
-  protected direction:Direction = Direction.right;
+  private collision:Rectangle = Rectangle.Zero;
+  public get Collision():Rectangle { return this.collision; }
+
+  protected surface?:SurfaceConfig;
+  public set Surface(value:SurfaceConfig | undefined) {
+    this.surface = value; if (value) this.velocityPerSecond.Y = this.gravity / 1.8;
+  }
+
+  public get OnSurface():boolean { return !!this.surface; }
+
+  // because I'm too dumb to code it correctly with very limited time
+  private static getCollisionSimplified(boxes:Box[]):Rectangle {
+    return boxes.map((b) => b.RectCombined).reduce((p, c) => Box.initCombined(p, c));
+  }
 
   public set State(value:number) {
     if (!this.states[value]) {
       this.currentState = -1;
       this.animation = null;
+      this.collision = Rectangle.Zero;
       return;
     }
 
     this.currentState = value;
-    const sprite = this.states[this.currentState]?.spite;
-    this.animation = (sprite) ? new SpriteAnimation(sprite) : null;
+    this.collision = Entity.getCollisionSimplified(this.states[this.currentState].collisionboxes);
+    this.animation = this.states[this.currentState].animation || null;
   }
 
-  constructor(position:Point, states?:States, defaultState?:number) {
+  private static concatBoxes<T>(box?:T, boxes?:T[]):T[] {
+    return (boxes || []).concat(box || []);
+  }
+
+  private static initStates(states:Partial<Record<number, StateConfig>>) {
+    return Object.keys(states).reduce((result:States, key:string) => {
+      const stateCf:StateConfig = states[+key] as StateConfig;
+      const hitboxes = Entity.concatBoxes(stateCf.hitbox, stateCf.hitboxes);
+      const hurtboxesTmp = Entity.concatBoxes(stateCf.hurtbox, stateCf.hurtboxes);
+      const hurtboxes = hurtboxesTmp.length ? hurtboxesTmp : hitboxes;
+      const collisionboxesTmp = Entity.concatBoxes(stateCf.collisionbox, stateCf.collisionboxes);
+      const collisionboxes = collisionboxesTmp.length ? collisionboxesTmp : hurtboxesTmp;
+      const state:State = { hitboxes, hurtboxes, collisionboxes };
+
+      if (stateCf.sprite) Object.assign(state, { animation: new SpriteAnimation(stateCf.sprite) });
+      Object.assign(result, { [+key]: state });
+      return result;
+    }, {});
+  }
+
+  constructor(position:Point, states?:Partial<Record<number, StateConfig>>, defaultState?:number) {
     this.position = position;
     if (!states) return;
-    this.states = states;
+    this.states = Entity.initStates(states);
     this.State = defaultState || Number(Object.keys(states)[0]);
   }
 
   public frame(elapsedSeconds:number):void {
     this.stateElapsedSeconds += elapsedSeconds;
     this.velocityPerSecond.Y += elapsedSeconds * this.gravity;
-    this.velocityPerSecond.Y = 0;
     this.position.X += elapsedSeconds * this.velocityPerSecond.X;
     this.position.Y += elapsedSeconds * this.velocityPerSecond.Y;
   }
@@ -52,7 +93,7 @@ abstract class Entity {
 
   private drawBoxes(c:CanvasRenderingContext2D):void {
     if (this.currentState < 0) return;
-    const state:State = this.states[this.currentState] as State;
+    const state:StateConfig = this.states[this.currentState] as StateConfig;
     const pos = this.position;
     const reverse = !!this.direction;
     if (state.hurtbox) state.hurtbox.draw(c, Entity.clrs.hurt, pos, reverse);

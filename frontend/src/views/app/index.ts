@@ -21,7 +21,9 @@ class AppPage extends View {
       case ViewId.canvas: {
         const size = new Point(640, 480); // temporarily
         const canvasView = new Canvas2D(AppPage.contentId, size);
-        this.game = new Game(this.services.controlsSetting, { c: canvasView.Context, size });
+        const canvasHelper = { c: canvasView.Context, size };
+        const { controlsSettings, gameSettings } = this.services;
+        this.game = new Game(controlsSettings, gameSettings, canvasHelper);
         return canvasView;
       }
       case ViewId.placaholder: return new Placeholder(AppPage.contentId, this.services);
