@@ -161,10 +161,10 @@ class Level {
     c.closePath();
   }
 
-  public draw(c: CanvasRenderingContext2D, drawBoxes?: boolean):void {
+  public draw(c: CanvasRenderingContext2D, drawBoxes = false, drawSurfaces = false):void {
     this.char?.draw(c, drawBoxes);
     this.entities?.forEach((entity) => entity.draw(c, drawBoxes));
-    if (drawBoxes) {
+    if (drawSurfaces) {
       Level.drawPositions(c, this.surfaces, 'black');
       Level.drawPositions(c, this.loadEnter, 'white');
       Level.drawPositions(c, this.loadExit, 'yellow');

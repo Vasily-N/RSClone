@@ -25,8 +25,8 @@ loading[0] = { position: new Rectangle(100, 100, 0, 100).DiagonalA };
 loading[1] = { position: new Rectangle(500, 100, 0, 100).DiagonalA, levelId, zone: 0 };
 loading[2] = { position: new Rectangle(400, 100, 100, 0).DiagonalA, levelId, zone: 3 };
 loading[3] = { position: new Rectangle(400, 300, 100, 0).DiagonalA, levelId, zone: 2 };
-loading[4] = { position: new Rectangle(50, 300, 100, 100).DiagonalB, levelId, zone: 5 };
-loading[5] = { position: new Rectangle(500, 300, 100, 100).DiagonalB, levelId, zone: 4 };
+loading[4] = { position: new Rectangle(60, 300, 50, 50).DiagonalB, levelId, zone: 5 };
+loading[5] = { position: new Rectangle(500, 300, 50, 50).DiagonalB, levelId, zone: 4 };
 
 const size = new Point(2000, 2000);
 const cfg:LevelConfig = {

@@ -25,6 +25,14 @@ class Point {
   public multiply(n:number):Point {
     return new Point(this.x * n, this.y * n);
   }
+
+  public divide(n:number):Point {
+    return new Point(this.x / n, this.y / n);
+  }
+
+  public divideFloor(n:number):Point {
+    return new Point(Math.floor(this.x / n), Math.floor(this.y / n));
+  }
 }
 
 export default Point;

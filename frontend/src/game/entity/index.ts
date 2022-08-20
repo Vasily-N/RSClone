@@ -1,5 +1,5 @@
 import SpriteAnimation from '../sprites';
-import Direction from '../helperTypes/direction';
+import Direction from './typeDirection';
 import { Point, Rectangle } from '../../shapes';
 import StateConfig from './typeStateConfig';
 import State from './typeState';

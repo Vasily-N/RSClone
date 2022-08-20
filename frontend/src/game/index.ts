@@ -1,7 +1,8 @@
 import Character from './character';
 import Controls from './services/controls';
-import CanvasHelper from './helperTypes/canvasHelper';
 import IControlsSettings from './services/controls/iControlsSettings';
+import Action from './services/controls/actions.enum';
+
 import IGameSettings from './services/settings/iGameSettings';
 import LevelId from './levels/typeLevelIds';
 import Level from './levels';
@@ -13,24 +14,19 @@ interface IGame {
 }
 
 class Game {
-  private canvasHelper:CanvasHelper;
   private readonly char:Character;
   private readonly gameSettings:IGameSettings;
   private lastFrame = 0;
   private levels:Partial<Record<LevelId, Level>> = {};
   private levelIdCurrent?:LevelId;
   private levelCurrent:Level;
+  private controls:Controls;
 
-  private initContext() {
-    this.canvasHelper.c.font = '48px serif';
-    this.canvasHelper.c.fillStyle = 'white';
-  }
-
-  constructor(controlsSettings:IControlsSettings, gameSettings:IGameSettings, c:CanvasHelper) {
-    this.char = new Character(new Controls(controlsSettings));
+  constructor(controlsSettings:IControlsSettings, gameSettings:IGameSettings) {
+    this.controls = new Controls(controlsSettings);
+    this.char = new Character(this.controls);
     this.gameSettings = gameSettings;
-    this.canvasHelper = c;
-    this.initContext();
+    this.gameSettings.RenderZone.imageSmoothingEnabled = false;
     this.requestNextFrame();
     this.levelCurrent = this.changeLevel({ levelId: LevelId.test, zone: 0, position: 1 }); // temp
   }
@@ -54,20 +50,30 @@ class Game {
     window.requestAnimationFrame(this.frame.bind(this));
   }
 
+  private static fontSize = 48;
+  private static drawFps(c:CanvasRenderingContext2D, fontSize:number, elapsedMs:number) {
+    const cLocal = c;
+    cLocal.font = `${fontSize}px serif`;
+    cLocal.fillStyle = 'white';
+    cLocal.fillText(`FPS: ${(1000 / elapsedMs).toFixed(1)}`, 5, fontSize);
+  }
+
   private processFrame(elapsed:number):void {
-    const { c, size } = this.canvasHelper;
+    const { RenderZone: c, RenderSize: size, Zoom: zoom } = this.gameSettings;
+
     const load = this.levelCurrent.frame(elapsed / 1000);
     if (load) this.changeLevel(load);
 
     c.clearRect(0, 0, size.X, size.Y);
-    c.beginPath();
-    this.levelCurrent.draw(c, this.gameSettings.DrawBoxes);
+    this.levelCurrent.draw(c, this.gameSettings.DrawBoxes, this.gameSettings.DrawSurfaces);
 
-    if (this.gameSettings.FpsDisplay) c.fillText(`FPS: ${(1000 / elapsed).toFixed(1)}`, 5, 10);
+    if (this.gameSettings.FpsDisplay) Game.drawFps(c, Game.fontSize / zoom, elapsed);
   }
 
   private frame(frametime:number):void {
     const elapsed = frametime - this.lastFrame;
+    if (this.controls.has(Action.zoomUp, true)) this.gameSettings.Zoom += 1;
+    if (this.controls.has(Action.zoomDown, true)) this.gameSettings.Zoom -= 1;
     if (!Number.isFinite(this.gameSettings.FrameTimeLimit)
     || elapsed > this.gameSettings.FrameTimeLimit) {
       if (this.lastFrame) this.processFrame(elapsed);

@@ -1,7 +1,7 @@
 import Controls from '../services/controls';
 import Action from '../services/controls/actions.enum';
 import Entity from '../entity';
-import Direction from '../helperTypes/direction';
+import Direction from '../entity/typeDirection';
 import { Point } from '../../shapes';
 import SurfaceType from '../levels/typeSurface';
 import { CharacterState, states } from './states';

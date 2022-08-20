@@ -1,6 +1,6 @@
 import sprite from '../walk/index.png';
 import SpriteConfig from '../../typeConfig';
-import { Point } from '../../../../shapes/';
+import { Point } from '../../../../shapes';
 
 const sc:SpriteConfig = {
   link: sprite,
