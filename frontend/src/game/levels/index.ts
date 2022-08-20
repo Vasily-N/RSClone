@@ -22,6 +22,10 @@ class Level {
   private entities:Entity[] = [];
   private char?:Character;
 
+  private cameraTargetPosition:Point = Point.Zero;
+  private cameraCurrentPosition:Point = new Point(0, 0);
+  private static readonly cameraSpeed = 100;
+
   private static newEntity<A extends Entity>(EntityConstructor:EntityClass<A>, position:Point):A {
     return new EntityConstructor(position);
   }
@@ -148,27 +152,28 @@ class Level {
     return undefined;
   }
 
-  private static drawLine(c:CanvasRenderingContext2D, line:Line):void {
-    c.moveTo(line.A.X, line.A.Y);
-    c.lineTo(line.B.X, line.B.Y);
+  private static drawLine(c:CanvasRenderingContext2D, camPos:Point, line:Line):void {
+    c.moveTo(line.A.X - camPos.X, line.A.Y - camPos.Y);
+    c.lineTo(line.B.X - camPos.X, line.B.Y - camPos.Y);
   }
 
-  private static drawPositions(c:CanvasRenderingContext2D, pArr:Position[], color:string) {
+  private static drawPositions(c:CanvasRenderingContext2D, p:Point, arr:Position[], color:string) {
     const cLocal = c;
     c.beginPath();
     cLocal.strokeStyle = color;
-    pArr.forEach((pos) => Level.drawLine(c, pos.position));
+    arr.forEach((pos) => Level.drawLine(c, p, pos.position));
     c.stroke();
     c.closePath();
   }
 
   public draw(c: CanvasRenderingContext2D, drawBoxes = false, drawSurfaces = false):void {
-    this.char?.draw(c, drawBoxes);
-    this.entities?.forEach((entity) => entity.draw(c, drawBoxes));
+    const camPos = this.cameraCurrentPosition;
+    this.char?.draw(c, camPos, drawBoxes);
+    this.entities?.forEach((entity) => entity.draw(c, camPos, drawBoxes));
     if (drawSurfaces) {
-      Level.drawPositions(c, this.surfaces, 'black');
-      Level.drawPositions(c, this.loadEnter, 'white');
-      Level.drawPositions(c, this.loadExit, 'yellow');
+      Level.drawPositions(c, camPos, this.surfaces, 'black');
+      Level.drawPositions(c, camPos, this.loadEnter, 'white');
+      Level.drawPositions(c, camPos, this.loadExit, 'yellow');
     }
   }
 }

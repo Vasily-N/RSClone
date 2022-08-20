@@ -89,32 +89,37 @@ abstract class Entity {
     this.position.X += elapsedSeconds * this.velocityPerSecond.X;
   }
 
-  private static readonly clrs = { hit: 'red', hurt: 'blue', pos: 'green' };
+  private static readonly colors = {
+    hit: 'red', hurt: 'blue', collision: 'pink', position: 'green',
+  };
 
-  private drawPosition(c:CanvasRenderingContext2D):void {
+  private static drawPosition(c:CanvasRenderingContext2D, drawPos:Point):void {
     const cLocal = c;
-    cLocal.strokeStyle = Entity.clrs.pos;
-    cLocal.fillRect(Math.round(this.position.X), Math.round(this.position.Y), 1, 1);
+    cLocal.strokeStyle = Entity.colors.position;
+    cLocal.fillRect(Math.round(drawPos.X), Math.round(drawPos.Y), 1, 1);
   }
 
-  private drawBoxes(c:CanvasRenderingContext2D):void {
+  private drawBoxes(c:CanvasRenderingContext2D, drawPos:Point):void {
     if (this.currentState < 0) return;
-    const state:StateConfig = this.states[this.currentState] as StateConfig;
-    const pos = this.position;
+    const state = this.states[this.currentState];
     const reverse = !!this.direction;
-    if (state.hurtbox) state.hurtbox.draw(c, Entity.clrs.hurt, pos, reverse);
-    if (state.hurtboxes) state.hurtboxes.forEach((v) => v.draw(c, Entity.clrs.hurt, pos, reverse));
-    if (state.hitbox) state.hitbox.draw(c, Entity.clrs.hit, pos, reverse);
-    if (state.hitboxes) state.hitboxes.forEach((v) => v.draw(c, Entity.clrs.hit, pos, reverse));
-    this.drawPosition(c);
+    const cLocal = c;
+    cLocal.strokeStyle = Entity.colors.collision;
+    state.hurtboxes.forEach((v) => v.draw(c, drawPos, reverse));
+    cLocal.strokeStyle = Entity.colors.hurt;
+    state.hurtboxes.forEach((v) => v.draw(c, drawPos, reverse));
+    cLocal.strokeStyle = Entity.colors.hit;
+    state.hitboxes.forEach((v) => v.draw(c, drawPos, reverse));
+    Entity.drawPosition(c, drawPos);
   }
 
-  public draw(c:CanvasRenderingContext2D, drawBoxes = false) {
+  public draw(c:CanvasRenderingContext2D, camPos:Point, drawBoxes = false) {
+    const drawPos = this.position.minus(camPos);
     if (this.animation) {
       const elapsed = this.stateElapsedSeconds;
-      this.animation.drawFrame(c, this.position, elapsed, !!this.direction);
+      this.animation.drawFrame(c, drawPos, elapsed, !!this.direction);
     }
-    if (drawBoxes) this.drawBoxes(c);
+    if (drawBoxes) this.drawBoxes(c, drawPos);
   }
 }
 

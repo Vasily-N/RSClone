@@ -46,14 +46,17 @@ class Canvas2D extends View {
 
   private previousWindowX = 0;
   private previousWindowY = 0;
+  private prevZoom = 0;
   private setCanvasSize() {
     if (this.previousWindowX === window.innerWidth
-      && this.previousWindowY === window.innerHeight) {
+      && this.previousWindowY === window.innerHeight
+      && this.prevZoom === this.gameSettings.Zoom) {
       return;
     }
 
     this.previousWindowX = window.innerWidth;
     this.previousWindowY = window.innerHeight;
+    this.prevZoom = this.gameSettings.Zoom;
 
     this.canvas.style.width = '100%';
     const { Zoom: zoom } = this.gameSettings;
@@ -69,9 +72,8 @@ class Canvas2D extends View {
   }
 
   private changeZoom(event:WheelEvent) {
-    const prevZoom = this.gameSettings.Zoom;
     this.gameSettings.Zoom += event.deltaY < 0 ? 1 : -1;
-    if (prevZoom !== this.gameSettings.Zoom) this.setCanvasSize();
+    this.setCanvasSize();
   }
 }
 
