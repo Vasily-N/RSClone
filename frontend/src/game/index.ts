@@ -51,10 +51,10 @@ class Game {
 
   private processFrame(elapsed:number):void {
     const { c, size } = this.canvasHelper;
+    this.levelCurrent.frame(elapsed / 1000);
+
     c.clearRect(0, 0, size.X, size.Y);
     c.beginPath();
-
-    this.levelCurrent.frame(elapsed / 1000);
     this.levelCurrent.draw(c, this.gameSettings.DrawBoxes);
 
     if (this.gameSettings.FpsDisplay) c.fillText(`FPS: ${(1000 / elapsed).toFixed(1)}`, 5, 10);

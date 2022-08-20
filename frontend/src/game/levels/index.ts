@@ -10,6 +10,7 @@ import entitiesList from '../entity/list';
 import EntityClass from '../entity/typeClass';
 import Character from '../character';
 import Line from '../helperTypes/line';
+import Rectangle from '../helperTypes/rectangle';
 
 type SurfaceCollision = { surface:Surface, point:Point } | undefined;
 
@@ -46,39 +47,48 @@ class Level {
     this.char.Position = position;
   }
 
-  private gravityCollision(posBefore:Point, posAfter:Point, onFloor:boolean):SurfaceCollision {
-    const surfaces = this.surfaces
-      .filter((s) => s.position.MinX <= posAfter.X
-                  && s.position.MaxX >= posAfter.X
-                  && s.position.MinY <= Math.max(posAfter.Y, posBefore.Y)
-                  && s.position.MaxY >= Math.min(posAfter.Y, posBefore.Y));
-    if (!surfaces.length) return undefined;
-    if (surfaces.length > 1) surfaces.sort((a, b) => b.position.MinY - a.position.MinY);
+  private static filterNear(surfaces:Surface[], checkZone:Rectangle):Surface[] {
+    return surfaces
+      .filter((s) => s.position.MinX <= checkZone.Right
+                  && s.position.MaxX >= checkZone.Left
+                  && s.position.MinY <= checkZone.Bottom
+                  && s.position.MaxY >= checkZone.Top);
+  }
+
+  private static processFloors(floors:Surface[], move:Line, onFloor:boolean):SurfaceCollision {
+    if (!floors.length) return undefined;
+    if (floors.length > 1) floors.sort((a, b) => b.position.MinY - a.position.MinY);
     // prevent teleport down with very low fps aka 10 seconds per frame
 
-    for (let i = surfaces.length - 1; i > -1; i -= 1) {
-      const surface = surfaces[i];
-      const percentegeBefore = (posBefore.X - surface.position.MinX) / surface.position.DifX;
-      const yBefore = surface.position.DifY * percentegeBefore + surface.position.MinY;
-      if (yBefore < posBefore.Y) continue; // platform was above the characrter
-      const percentegeAfter = (posAfter.X - surface.position.MinX) / surface.position.DifX;
-      const yAfter = surface.position.DifY * percentegeAfter + surface.position.MinY;
-      if (!onFloor && yAfter > posAfter.Y) continue;
-      return { surface, point: new Point(posAfter.X, yAfter) };
+    for (let i = floors.length - 1; i > -1; i -= 1) {
+      const floor = floors[i];
+      const percentegeBefore = (move.A.X - floor.position.MinX) / floor.position.DifX;
+      const yBefore = floor.position.DifY * percentegeBefore + floor.position.MinY;
+      if (yBefore < move.A.Y) continue; // platform was above the characrter
+      const percentegeAfter = (move.B.X - floor.position.MinX) / floor.position.DifX;
+      const yAfter = floor.position.DifY * percentegeAfter + floor.position.MinY;
+      if (!onFloor && yAfter > move.B.Y) continue;
+      return { surface: floor, point: new Point(move.B.X, yAfter) };
     }
 
     return undefined;
   }
 
-  private processCollision(e:Entity, elapsedSeconds:number) {
-    const posBefore = new Point(e.Position.X, e.Position.Y);
+  private processCollision(e:Entity, elapsedSeconds:number):unknown | undefined {
+    const posBefore = new Point(e.Position.X, e.Position.Y); // to copy values and not reference
     e.frame(elapsedSeconds);
-    const collision = this.gravityCollision(posBefore, e.Position, e.OnSurface);
-    if (collision) {
-      e.Position = collision.point;
-    }
 
-    e.Surface = collision?.surface;
+    const move = new Line(posBefore, e.Position);
+    const top = Math.min(move.B.Y, move.A.Y);
+    const checkZone = new Rectangle(move.B.X, top, 0, Math.max(move.B.Y, move.A.Y) - top);
+
+    const nearFloors = Level.filterNear(this.surfaces, checkZone);
+    const floorCollision = Level.processFloors(nearFloors, move, e.OnSurface);
+
+    if (floorCollision) e.Position = floorCollision.point;
+    e.Surface = floorCollision?.surface;
+
+    return undefined;
   }
 
   public frame(elapsedSeconds:number):void {

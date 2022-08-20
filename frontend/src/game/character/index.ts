@@ -18,7 +18,7 @@ class Character extends Entity {
     default: 1500, air: 700, [SurfaceType.Ice]: 400,
   };
 
-  private jumps = 1;
+  private airJumps = 1;
   private jumpHold = false;
   private static readonly jumpPower = 110; // todo: to character stats
 
@@ -57,17 +57,18 @@ class Character extends Entity {
   }
 
   private processJump():void {
+    if (this.surface) this.airJumps = 1;
     if (!this.conrols.has(Action.jump)) {
       this.jumpHold = false;
       return;
     }
     if (this.jumpHold) return;
-    if (this.surface) this.jumps = 2;
-    if (!this.jumps) return;
-    this.surface = undefined; // because surfaces are sticky (to prevent "floating" from stairs)
+    if (!this.surface) {
+      if (!this.airJumps) return;
+      this.airJumps -= 1;
+    } else this.surface = undefined;
+    // because surfaces are sticky (to prevent "floating" from stairs)
     this.velocityPerSecond.Y = -Character.jumpPower;
-    this.position.Y -= 1; // "hack" against surface magnit with high refresh rate
-    this.jumps -= 1;
     this.jumpHold = true;
   }
 
