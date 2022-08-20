@@ -61,10 +61,11 @@ class Level {
   private static linesIntersect(line1:Line, line2:Line):number | null {
     const line1Vect:Point = line1.B.minus(line1.A);
     const line2Vect:Point = line2.B.minus(line2.A);
+
     const line2Pos = (line2Vect.X * (line1.A.Y - line2.A.Y) - line2Vect.Y * (line1.A.X - line2.A.X))
                    / (line1Vect.X * line2Vect.Y - line1Vect.Y * line2Vect.X);
     if (line2Pos < 0 || line2Pos > 1 || Number.isNaN(line2Pos)) return null;
-    // I just don't want to lose the code below
+
     const line1Pos = (line1Vect.X * (line1.A.Y - line2.A.Y) - line1Vect.Y * (line1.A.X - line2.A.X))
                    / (line1Vect.X * line2Vect.Y - line2Vect.X * line1Vect.Y);
     if (line1Pos < 0 || line1Pos > 1 || Number.isNaN(line1Pos)) return null;
