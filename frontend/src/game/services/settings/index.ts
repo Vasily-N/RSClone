@@ -1,4 +1,4 @@
-import IGameSettings from './settings.interface';
+import IGameSettings from './iGameSettings';
 
 class GameSettings implements IGameSettings {
   private drawBoxes = true;

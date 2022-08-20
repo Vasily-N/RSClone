@@ -1,6 +1,6 @@
 import ApiServices from './apiServices/apiServices';
-import IControlsSettings from '../game/controls/iControlsSettings.interface';
-import IGameSettings from '../game/settings.interface';
+import IControlsSettings from '../game/services/controls/iControlsSettings';
+import IGameSettings from '../game/services/settings/iGameSettings';
 
 type Services = {
   controlsSettings: IControlsSettings

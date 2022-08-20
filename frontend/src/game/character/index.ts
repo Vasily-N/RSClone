@@ -1,5 +1,5 @@
-import Controls from '../controls';
-import Action from '../controls/actions.enum';
+import Controls from '../services/controls';
+import Action from '../services/controls/actions.enum';
 import Entity from '../entity';
 import Direction from '../helperTypes/direction';
 import Point from '../helperTypes/point';

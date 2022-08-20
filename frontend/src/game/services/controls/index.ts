@@ -1,5 +1,5 @@
 import Action from './actions.enum';
-import IControlsSettings from './iControlsSettings.interface';
+import IControlsSettings from './iControlsSettings';
 
 class Controls {
   private readonly buttons:Set<string> = new Set();
