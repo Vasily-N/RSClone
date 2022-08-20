@@ -1,19 +1,11 @@
 /* eslint-disable no-underscore-dangle */
 import { Types } from 'mongoose';
-import User from './user';
+import User from '../registration/user';
+import { IUser } from '../registration/userService';
 
-export interface IUser {
-  _id?: string;
-  name: string,
-  password: string,
-}
-
-class UserService {
+class AuthService {
   async create(user: IUser) {
     const userLoginPassword = await User.create(user);
-    const userNameAndPass = await User.find({ name: user.name, password: user.password });
-    console.log(userLoginPassword, 'created');
-    this.startUserGame(userNameAndPass[0]._id);
     return userLoginPassword;
   }
 
@@ -48,9 +40,9 @@ class UserService {
 
   startUserGame(id: Types.ObjectId) {
     const userID = (id.toString().match(/[0-9a-z]/g) as string[]).join('');
-    console.log(userID);
+    console.log(userID, 'login');
     return userID;
   }
 }
 
-export default new UserService();
+export default new AuthService();
