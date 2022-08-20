@@ -60,10 +60,10 @@ class Level {
       const surface = surfaces[i];
       const percentegeBefore = (posBefore.X - surface.position.MinX) / surface.position.DifX;
       const yBefore = surface.position.DifY * percentegeBefore + surface.position.MinY;
-      if (yBefore < Math.floor(posBefore.Y)) continue;
+      if (yBefore < posBefore.Y) continue; // platform was above the characrter
       const percentegeAfter = (posAfter.X - surface.position.MinX) / surface.position.DifX;
-      const yAfter = Math.floor(surface.position.DifY * percentegeAfter + surface.position.MinY);
-      if (!onFloor && yAfter > Math.ceil(posAfter.Y)) continue;
+      const yAfter = surface.position.DifY * percentegeAfter + surface.position.MinY;
+      if (!onFloor && yAfter > posAfter.Y) continue;
       return { surface, point: new Point(posAfter.X, yAfter) };
     }
 

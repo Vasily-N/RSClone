@@ -10,6 +10,7 @@ import { SurfaceConfig } from '../levels/typeConfigs';
 type States = Record<number, State>;
 
 abstract class Entity {
+  protected direction:Direction = Direction.right;
   protected position:Point = Point.Zero;
   public set Position(value:Point) { this.position = value; }
   public get Position():Point { return this.position; }
@@ -17,7 +18,6 @@ abstract class Entity {
   private gravity = 100;
   private states:States = {};
   protected stateElapsedSeconds = 0;
-  protected direction:Direction = Direction.right;
 
   protected currentState = -1;
   private animation:SpriteAnimation | null = null;
@@ -26,7 +26,9 @@ abstract class Entity {
 
   protected surface?:SurfaceConfig;
   public set Surface(value:SurfaceConfig | undefined) {
-    this.surface = value; if (value) this.velocityPerSecond.Y = this.gravity / 1.8;
+    if (value) this.velocityPerSecond.Y = 0;
+    else if (this.surface) this.velocityPerSecond.Y = this.gravity / 1.8;
+    this.surface = value;
   }
 
   public get OnSurface():boolean { return !!this.surface; }
@@ -78,9 +80,13 @@ abstract class Entity {
 
   public frame(elapsedSeconds:number):void {
     this.stateElapsedSeconds += elapsedSeconds;
-    this.velocityPerSecond.Y += elapsedSeconds * this.gravity;
+
+    if (!this.surface) {
+      this.velocityPerSecond.Y += elapsedSeconds * this.gravity;
+      this.position.Y += elapsedSeconds * this.velocityPerSecond.Y;
+    }
+
     this.position.X += elapsedSeconds * this.velocityPerSecond.X;
-    this.position.Y += elapsedSeconds * this.velocityPerSecond.Y;
   }
 
   private static readonly clrs = { hit: 'red', hurt: 'blue', pos: 'green' };
