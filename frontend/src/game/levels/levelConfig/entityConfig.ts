@@ -1,4 +1,4 @@
-import { Point } from '../../../shapes';
+import { Point } from '../../shapes';
 import { EntityId } from '../../entity/types/index';
 
 type EntityConfig = {

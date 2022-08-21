@@ -1,4 +1,4 @@
-import { Point } from '../../../shapes';
+import { Point } from '../../shapes';
 
 type SpriteConfig = {
   link:string

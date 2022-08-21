@@ -1,4 +1,4 @@
-import { Point, Rectangle } from '../../shapes';
+import { Point, Rectangle } from '../shapes';
 import SpriteConfig from './spriteConfig';
 
 type SpriteFrame = {

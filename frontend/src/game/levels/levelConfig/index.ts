@@ -1,4 +1,4 @@
-import { Point } from '../../../shapes';
+import { Point } from '../../shapes';
 import EntityConfig from './entityConfig';
 import LoadingConfig from './loadingConfig';
 import { SurfaceConfig, surfaceConfigList } from './surfaceConfig';

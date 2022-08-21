@@ -1,4 +1,4 @@
-import { Line, Point } from '../../../shapes';
+import { Line, Point } from '../../shapes';
 import SurfaceType from '../../types';
 
 type SurfaceConfig = {

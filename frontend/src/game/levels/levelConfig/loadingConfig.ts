@@ -1,4 +1,4 @@
-import { Line } from '../../../shapes';
+import { Line } from '../../shapes';
 import LevelId from '../types/levelIds';
 
 type LoadingConfig = {

@@ -3,7 +3,7 @@ import {
 } from './types';
 
 import SpriteAnimation from '../sprites';
-import { Point, Rectangle } from '../../shapes';
+import { Point, Rectangle } from '../shapes';
 import Box from '../box';
 import SurfaceType from '../types';
 

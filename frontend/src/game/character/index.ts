@@ -1,6 +1,6 @@
 import { Controls, ControlsAction as Action } from '../services/controls';
 import { Entity, Direction } from '../entity';
-import { Point } from '../../shapes';
+import { Point } from '../shapes';
 import { CharacterState, states } from './states';
 import SurfaceType from '../types';
 

@@ -1,4 +1,4 @@
-import { Point } from '../../../shapes';
+import { Point } from '../../shapes';
 import IGameSettings from './iGameSettings';
 
 class GameSettings implements IGameSettings {
