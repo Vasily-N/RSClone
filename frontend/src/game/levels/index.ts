@@ -13,6 +13,7 @@ import Character from '../character';
 type Surface = { type:SurfaceType, platform:boolean, position:Line } ;
 type SurfaceCollision = { surface:Surface, point:Point } | null;
 type Position = { position:Line };
+type RenderContext = CanvasRenderingContext2D;
 
 class Level {
   private readonly surfaces:Surface[];
@@ -23,11 +24,12 @@ class Level {
   private char?:Character;
 
   private size:Point;
-  private cameraTargetPosition:Point = Point.Zero;
-  private cameraCurrentPosition:Point = Point.Zero;
+  private cameraTarget:Point = Point.Zero;
+  private cameraCurrent:Point = Point.Zero;
   private static readonly cameraSpeed = 180;
   private static readonly cameraShift = new Point(1 / 15, 6 / 11);
-  private currentZoom = -1;
+  private lastZoom = -1;
+  private lastViewSize = Point.Zero;
 
   private static newEntity<A extends Entity>(EntityConstructor:EntityClass<A>, position:Point):A {
     return new EntityConstructor(position);
@@ -52,7 +54,7 @@ class Level {
     const loadPos:Line = this.loadEnter[
       zone < this.loadEnter.length ? zone : Math.floor(Math.random() * this.loadEnter.length)
     ].position;
-    this.currentZoom = -1;
+    this.lastZoom = -1;
     this.char.Position = loadPos.B.minus(loadPos.A).multiply(positionPercentage).plus(loadPos.A);
     this.char.frame(0.0001);
     // hack to not stuck at loading screen and not to process "just loaded" every frame
@@ -154,30 +156,35 @@ class Level {
   private processCamera(char:Character, viewSize:Point, zoom:number, elapsedSeconds:number) {
     // some doublicate-code, I wasn't able to find how in TS dynamically access setters field
     // Y is centered so no code for movement
-    if (viewSize.X > this.size.X) {
-      this.cameraTargetPosition.X = (this.size.X - viewSize.X) / 2;
-      this.cameraCurrentPosition.X = this.cameraTargetPosition.X;
+    const sizeZoom = this.size.multiply(zoom);
+    if (viewSize.X > sizeZoom.X) {
+      this.cameraTarget.X = (sizeZoom.X - viewSize.X) / 2;
+      this.cameraCurrent.X = this.cameraTarget.X;
     } else {
-      const newCamera = char.Position.X - viewSize.X * (0.5
-        + (char.Direction === Direction.left ? Level.cameraShift.X : -Level.cameraShift.X));
-      this.cameraTargetPosition.X = Math.min(Math.max(newCamera, 0), this.size.X - viewSize.X);
+      const newCameraX = zoom * char.Position.X - (viewSize.X * (0.5
+        + (char.Direction === Direction.left ? Level.cameraShift.X : -Level.cameraShift.X)));
+      const maxPosX = sizeZoom.X - viewSize.X;
+      this.cameraTarget.X = Math.min(Math.max(newCameraX, 0), maxPosX);
     }
 
-    if (viewSize.Y > this.size.Y) {
-      this.cameraCurrentPosition.Y = (this.size.Y - viewSize.Y) / 2;
+    if (viewSize.Y > sizeZoom.Y) {
+      this.cameraCurrent.Y = (sizeZoom.Y - viewSize.Y) / 2;
     } else {
-      const newCamera = char.Position.Y - viewSize.Y * Level.cameraShift.Y;
-      this.cameraCurrentPosition.Y = Math.min(Math.max(newCamera, 0), this.size.Y - viewSize.Y);
+      const newCameraY = zoom * char.Position.Y - viewSize.Y * Level.cameraShift.Y;
+      const maxPosY = sizeZoom.Y - viewSize.Y;
+      this.cameraCurrent.Y = Math.min(Math.max(newCameraY, 0), maxPosY);
     }
 
-    if (this.currentZoom !== zoom) {
-      this.cameraCurrentPosition.X = this.cameraTargetPosition.X;
-      this.currentZoom = zoom;
-    } else if (this.cameraCurrentPosition.X !== this.cameraTargetPosition.X) {
-      const cameraShift = elapsedSeconds * Level.cameraSpeed;
-      this.cameraCurrentPosition.X = (this.cameraCurrentPosition.X > this.cameraTargetPosition.X)
-        ? Math.max(this.cameraCurrentPosition.X - cameraShift, this.cameraTargetPosition.X)
-        : Math.min(this.cameraCurrentPosition.X + cameraShift, this.cameraTargetPosition.X);
+    if (this.lastZoom !== zoom || this.lastViewSize !== viewSize) {
+      this.cameraCurrent.X = this.cameraTarget.X;
+      this.lastZoom = zoom;
+      this.lastViewSize = viewSize;
+    } else if (this.cameraCurrent.X !== this.cameraTarget.X) {
+      const cameraSpeed = Level.cameraSpeed * zoom;
+      const cameraShift = elapsedSeconds * cameraSpeed;
+      this.cameraCurrent.X = (this.cameraCurrent.X > this.cameraTarget.X)
+        ? Math.max(this.cameraCurrent.X - cameraShift, this.cameraTarget.X)
+        : Math.min(this.cameraCurrent.X + cameraShift, this.cameraTarget.X);
     }
   }
 
@@ -190,30 +197,32 @@ class Level {
     return undefined;
   }
 
-  private static drawLine(c:CanvasRenderingContext2D, camPos:Point, line:Line):void {
-    c.moveTo(Math.round(line.A.X - camPos.X), Math.round(line.A.Y - camPos.Y));
-    c.lineTo(Math.round(line.B.X - camPos.X), Math.round(line.B.Y - camPos.Y));
+  private static drawLine(c:RenderContext, zoom:number, camPos:Point, line:Line):void {
+    const from = line.A.multiply(zoom).minus(camPos);
+    const to = line.B.multiply(zoom).minus(camPos);
+    c.moveTo(Math.round(from.X), Math.round(from.Y));
+    c.lineTo(Math.round(to.X), Math.round(to.Y));
   }
 
-  private static drawPositions(c:CanvasRenderingContext2D, p:Point, arr:Position[], color:string) {
+  private static drawLines(c:RenderContext, zoom:number, p:Point, arr:Position[], clr:string):void {
     const cLocal = c;
     c.beginPath();
-    cLocal.strokeStyle = color;
-    arr.forEach((pos) => Level.drawLine(c, p, pos.position));
+    cLocal.strokeStyle = clr;
+    arr.forEach((pos) => Level.drawLine(c, zoom, p, pos.position));
     c.stroke();
     c.closePath();
   }
 
-  public draw(c: CanvasRenderingContext2D, drawBoxes = false, drawSurfaces = false):void {
-    const camPos = this.cameraCurrentPosition;
-    this.char?.draw(c, camPos, drawBoxes);
-    this.entities?.forEach((entity) => entity.draw(c, camPos, drawBoxes));
-    if (drawSurfaces) {
-      // because canvas weird, need for sharp lines
+  public draw(c:RenderContext, zoom:number, dBoxes = false, dSurfaces = false):void {
+    const camPos = this.cameraCurrent;
+    this.char?.draw(c, camPos, zoom, dBoxes);
+    this.entities?.forEach((entity) => entity.draw(c, camPos, zoom, dBoxes));
+    if (dSurfaces) {
+      // because canvas is weird, need for sharp lines
       c.translate(0.5, 0.5);
-      Level.drawPositions(c, camPos, this.surfaces, 'black');
-      Level.drawPositions(c, camPos, this.loadEnter, 'white');
-      Level.drawPositions(c, camPos, this.loadExit, 'yellow');
+      Level.drawLines(c, zoom, camPos, this.surfaces, 'black');
+      Level.drawLines(c, zoom, camPos, this.loadEnter, 'white');
+      Level.drawLines(c, zoom, camPos, this.loadExit, 'yellow');
       c.translate(-0.5, -0.5);
     }
   }
