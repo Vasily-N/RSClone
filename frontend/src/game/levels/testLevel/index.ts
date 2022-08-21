@@ -1,14 +1,15 @@
 import { Point, Rectangle } from '../../../shapes';
+
 import {
-  LevelEntityConfig, LevelConfig, LevelLoadingConfig, LevelSurfaceConfig,
-  LevelId, surfaceConfigList,
-} from '../types';
+  EntityConfig, LevelConfig, LoadingConfig, SurfaceConfig, surfaceConfigList,
+} from '../levelConfig';
+import { LevelId } from '../types';
 
-const entities:LevelEntityConfig[] = [];
+const entities:EntityConfig[] = [];
 
-const surfaces:LevelSurfaceConfig[] = [];
+const surfaces:SurfaceConfig[] = [];
 
-const loading:LevelLoadingConfig[] = [];
+const loading:LoadingConfig[] = [];
 
 surfaces.push(...surfaceConfigList([
   Point.Zero, new Point(0, 400), new Point(200, 400), new Point(200, 500),

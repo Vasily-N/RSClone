@@ -1,7 +1,5 @@
-import {
-  LevelConfig, LevelLoadingConfig as LoadZone, LevelEntityConfig,
-  SurfaceType, LevelLoad as Load, LevelId,
-} from './types';
+import { SurfaceType, LevelLoad as Load, LevelId } from './types';
+import { LevelConfig, LoadingConfig as LoadZone, EntityConfig } from './levelConfig';
 
 import { Point, Line, Rectangle } from '../../shapes';
 
@@ -18,7 +16,7 @@ class Level {
   private readonly surfaces:Surface[];
   private readonly loadEnter:LoadZone[];
   private readonly loadExit:LoadZone[];
-  private readonly entitiesConfig:LevelEntityConfig[];
+  private readonly entitiesConfig:EntityConfig[];
   private entities:Entity[] = [];
   private char?:Character;
 
@@ -33,7 +31,7 @@ class Level {
     return new EntityConstructor(position);
   }
 
-  private static initEntities(entitiesConfig:LevelEntityConfig[]):Entity[] {
+  private static initEntities(entitiesConfig:EntityConfig[]):Entity[] {
     return entitiesConfig.map((v) => Level.newEntity(entitiesList[v.type], v.position));
   }
 
@@ -216,4 +214,6 @@ class Level {
   }
 }
 
-export default Level;
+export {
+  Level, Load as LevelLoad, LevelId,
+};

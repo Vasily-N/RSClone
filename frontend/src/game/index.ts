@@ -2,8 +2,7 @@ import Character from './character';
 import { IControlsSettings, Controls, ControlsAction as Action } from './services/controls';
 
 import { IGameSettings } from './services/settings';
-import { LevelId, LevelLoad } from './levels/types';
-import Level from './levels';
+import { Level, LevelId, LevelLoad } from './levels';
 import levelList from './levels/list';
 
 interface IGame {

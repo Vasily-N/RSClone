@@ -11,8 +11,5 @@ type LevelConfig = {
 };
 
 export {
-  LevelConfig, surfaceConfigList,
-  SurfaceConfig as LevelSurfaceConfig,
-  EntityConfig as LevelEntityConfig,
-  LoadingConfig as LevelLoadingConfig,
+  LevelConfig, SurfaceConfig, EntityConfig, LoadingConfig, surfaceConfigList,
 };

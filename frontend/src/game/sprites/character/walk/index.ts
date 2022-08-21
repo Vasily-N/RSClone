@@ -1,5 +1,5 @@
 import sprite from './index.png';
-import SpriteConfig from '../../typeConfig';
+import SpriteConfig from '../../spriteConfig';
 import { Point } from '../../../../shapes';
 
 const sc:SpriteConfig = {
