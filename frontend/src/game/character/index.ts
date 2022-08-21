@@ -2,7 +2,7 @@ import { Controls, ControlsAction as Action } from '../services/controls';
 import { Entity, Direction } from '../entity';
 import { Point } from '../../shapes';
 import { CharacterState, states } from './states';
-import { SurfaceType } from '../levels/types';
+import SurfaceType from '../types';
 
 type ChangeVelX = Partial<{ [t in SurfaceType]: number }> & {
   default: number

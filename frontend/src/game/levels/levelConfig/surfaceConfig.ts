@@ -1,5 +1,5 @@
 import { Line, Point } from '../../../shapes';
-import SurfaceType from '../types/surfaceType';
+import SurfaceType from '../../types';
 
 type SurfaceConfig = {
   type?:SurfaceType

@@ -5,7 +5,7 @@ import {
 import SpriteAnimation from '../sprites';
 import { Point, Rectangle } from '../../shapes';
 import Box from '../box';
-import { SurfaceType } from '../levels/types';
+import SurfaceType from '../types';
 
 type State = {
   animation?:SpriteAnimation;
