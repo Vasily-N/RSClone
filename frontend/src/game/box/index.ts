@@ -1,5 +1,4 @@
-import Point from '../helperTypes/point';
-import Rectangle from '../helperTypes/rectangle';
+import { Point, Rectangle } from '../shapes';
 
 class Box {
   private rect:Rectangle;
@@ -37,9 +36,7 @@ class Box {
     console.log(rectangle, this.rect);
   }
 
-  public draw(c:CanvasRenderingContext2D, color:string, position:Point, reverse?:boolean) {
-    const cLocal = c;
-    cLocal.strokeStyle = color;
+  public draw(c:CanvasRenderingContext2D, position:Point, reverse?:boolean) {
     const rect = reverse ? this.rectReverse : this.rect;
     const x = Math.round(position.X + rect.X);
     const y = Math.round(position.Y + rect.Y);

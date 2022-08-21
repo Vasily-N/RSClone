@@ -1,24 +1,22 @@
-import Controls from '../controls';
-import Action from '../controls/actions.enum';
-import Entity from '../entity';
-import Direction from '../helperTypes/direction';
-import Point from '../helperTypes/point';
-import SurfaceType from '../levels/typeSurface';
+import { Controls, ControlsAction as Action } from '../services/controls';
+import { Entity, Direction } from '../entity';
+import { Point } from '../shapes';
 import { CharacterState, states } from './states';
+import SurfaceType from '../types';
 
-type CntrlChangeXVel = { [t in SurfaceType]: number } & {
+type ChangeVelX = Partial<{ [t in SurfaceType]: number }> & {
   default: number
   air: number
 };
 
 class Character extends Entity {
   private readonly conrols:Controls;
-  private static readonly cntrlMaxXVel:Record<number, number> = { [+false]: 100, [+true]: 180 };
-  private static readonly cntrlChangeXVel:Partial<CntrlChangeXVel> = {
+  private static readonly maxVelX = { walk: 100, run: 180 };
+  private static readonly changeVelX:ChangeVelX = {
     default: 1500, air: 700, [SurfaceType.Ice]: 400,
   };
 
-  private jumps = 1;
+  private airJumps = 1;
   private jumpHold = false;
   private static readonly jumpPower = 110; // todo: to character stats
 
@@ -27,10 +25,14 @@ class Character extends Entity {
     this.conrols = controls;
   }
 
+  private static getMaxVelX(run:boolean):number {
+    return run ? Character.maxVelX.run : Character.maxVelX.walk;
+  }
+
   private processWalk(run:boolean, left:boolean, right:boolean, xVelocityChange:number):void {
-    const maxXvel = this.surface
-      ? Character.cntrlMaxXVel[+run]
-      : Math.max(Math.abs(this.velocityPerSecond.X), Character.cntrlMaxXVel[0]);
+    const maxVelX = this.OnSurface
+      ? Character.getMaxVelX(run)
+      : Math.max(Math.abs(this.velocityPerSecond.X), Character.maxVelX.walk);
     if (left) {
       this.velocityPerSecond.X -= xVelocityChange;
       this.direction = Direction.left;
@@ -39,8 +41,8 @@ class Character extends Entity {
       this.velocityPerSecond.X += xVelocityChange;
       this.direction = Direction.right;
     }
-    if (Math.abs(this.velocityPerSecond.X) > maxXvel) {
-      this.velocityPerSecond.X = left ? -maxXvel : maxXvel;
+    if (Math.abs(this.velocityPerSecond.X) > maxVelX) {
+      this.velocityPerSecond.X = left ? -maxVelX : maxVelX;
     }
   }
 
@@ -57,17 +59,18 @@ class Character extends Entity {
   }
 
   private processJump():void {
+    if (this.OnSurface) this.airJumps = 1;
     if (!this.conrols.has(Action.jump)) {
       this.jumpHold = false;
       return;
     }
     if (this.jumpHold) return;
-    if (this.surface) this.jumps = 2;
-    if (!this.jumps) return;
-    this.surface = undefined; // because surfaces are sticky (to prevent "floating" from stairs)
+    if (!this.OnSurface) {
+      if (!this.airJumps) return;
+      this.airJumps -= 1;
+    } else this.surfaceType = null;
+    // because surfaces are sticky (to prevent "floating" from stairs)
     this.velocityPerSecond.Y = -Character.jumpPower;
-    this.position.Y -= 1; // "hack" against surface magnit with high refresh rate
-    this.jumps -= 1;
     this.jumpHold = true;
   }
 
@@ -75,10 +78,10 @@ class Character extends Entity {
     const run = this.conrols.has(Action.run);
     const left = this.conrols.has(Action.moveLeft);
     const right = this.conrols.has(Action.moveRight);
-    const xVelChangePerSec = this.surface
-      ? ((this.surface.type && Character.cntrlChangeXVel[this.surface.type])
-        || Character.cntrlChangeXVel.default)
-      : Character.cntrlChangeXVel.air;
+    const xVelChangePerSec = this.OnSurface
+      ? (Character.changeVelX[this.surfaceType as SurfaceType]
+        || Character.changeVelX.default)
+      : Character.changeVelX.air;
 
     const xVelocityChange = elapsedSeconds * (xVelChangePerSec as number);
     if (left || right) this.processWalk(run, left, right, xVelocityChange);

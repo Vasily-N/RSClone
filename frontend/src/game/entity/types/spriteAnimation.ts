@@ -1,7 +1,11 @@
-import Point from '../helperTypes/point';
-import Rectangle from '../helperTypes/rectangle';
-import SpriteConfig from './typeConfig';
-import SpriteFrame from './typeSpriteFrame';
+import { Point, Rectangle } from '../../shapes';
+import SpriteConfig from './spriteConfig';
+
+type SpriteFrame = {
+  position:Rectangle;
+  positionReverse?:Rectangle;
+  ends:number;
+};
 
 class SpriteAnimation {
   private readonly imgSource:CanvasImageSource;

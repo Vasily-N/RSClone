@@ -1,5 +1,5 @@
 import Action from './actions.enum';
-import IControlsSettings from './iControlsSettings.interface';
+import IControlsSettings from './iControlsSettings';
 
 class ControlsSettings implements IControlsSettings {
   private settings: Record<Action, Set<string>> = {
@@ -11,6 +11,8 @@ class ControlsSettings implements IControlsSettings {
     [Action.attackLight]: new Set(['KeyI']),
     [Action.attackHeavy]: new Set(['KeyO']),
     [Action.attackRange]: new Set(['KeyP']),
+    [Action.zoomUp]: new Set(['Equal', 'NumpadAdd']),
+    [Action.zoomDown]: new Set(['Minus', 'NumpadSubtract']),
   };
 
   public set(action:Action, values:string[]):void {

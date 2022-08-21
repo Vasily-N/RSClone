@@ -1,11 +1,13 @@
 import template from './index.html';
 import style from './app.scss';
+
 import { IView, View } from '..';
+
 import Canvas2D from '../canvas2D';
-import Placeholder from '../placeholder';
 import { Game } from '../../game';
-import Services from '../../services';
-import Point from '../../game/helperTypes/point';
+import Placeholder from '../placeholder';
+
+import { Services } from '../../services';
 
 enum ViewId { canvas, placaholder }
 
@@ -19,11 +21,8 @@ class AppPage extends View {
   private createView(viewId:ViewId):IView {
     switch (viewId) {
       case ViewId.canvas: {
-        const size = new Point(640, 480); // temporarily
-        const canvasView = new Canvas2D(AppPage.contentId, size);
-        const canvasHelper = { c: canvasView.Context, size };
-        const { controlsSettings, gameSettings } = this.services;
-        this.game = new Game(controlsSettings, gameSettings, canvasHelper);
+        const canvasView = new Canvas2D(AppPage.contentId, this.services.gameSettings);
+        this.game = new Game(this.services.controls.settings, this.services.gameSettings);
         return canvasView;
       }
       case ViewId.placaholder: return new Placeholder(AppPage.contentId, this.services);

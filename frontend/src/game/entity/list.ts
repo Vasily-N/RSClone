@@ -1,6 +1,4 @@
-import Entity from '.';
-import EntityClass from './typeClass';
-import EntityId from './typeEntityIds';
+import { Entity, EntityClass, EntityId } from '.';
 import Placeholder from './Placeholder';
 
 const entitiesList:Record<EntityId, EntityClass<Entity>> = {

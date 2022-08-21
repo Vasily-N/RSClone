@@ -1,5 +1,6 @@
 import Action from './actions.enum';
-import IControlsSettings from './iControlsSettings.interface';
+import IControlsSettings from './iControlsSettings';
+import ControlsSettings from './settings';
 
 class Controls {
   private readonly buttons:Set<string> = new Set();
@@ -15,7 +16,7 @@ class Controls {
     this.initListeners();
   }
 
-  private static readonly ignoreKeys = new Set(['ControlLeft', 'F5', 'AltLeft', 'AltRight', 'Tab']);
+  private static readonly ignoreKeys = new Set(['ControlLeft', 'F5', 'F12', 'AltLeft', 'AltRight', 'Tab']);
 
   private buttonPress(e:KeyboardEvent):void {
     if (e.repeat) return;
@@ -26,14 +27,17 @@ class Controls {
 
   private buttonRelease(e:KeyboardEvent):void {
     e.preventDefault();
+    if (!this.buttons.size) return;
     this.buttons.delete(e.code);
     console.log('release', this.buttons);
   }
 
-  public has(action:Action):boolean {
+  public has(action:Action, del = false):boolean {
     const buttons = [...this.settings.get(action)];
-    return buttons.some((b) => this.buttons.has(b));
+    return buttons.some((b) => (del ? this.buttons.delete(b) : this.buttons.has(b)));
   }
 }
 
-export default Controls;
+export {
+  Controls, IControlsSettings, ControlsSettings, Action as ControlsAction,
+};

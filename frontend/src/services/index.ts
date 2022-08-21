@@ -1,11 +1,17 @@
+import { ApiService, IApi, Api } from './apiServices';
 import ApiServices from './apiServices/apiServices';
-import IControlsSettings from '../game/controls/iControlsSettings.interface';
-import IGameSettings from '../game/settings.interface';
+import { ControlsSettings, IControlsSettings, ControlsAction } from '../game/services/controls';
+import { GameSettings, IGameSettings } from '../game/services/settings';
 
 type Services = {
-  controlsSettings: IControlsSettings
+  controls: { settings: IControlsSettings, action: typeof ControlsAction }
   gameSettings: IGameSettings
   api: ApiServices
 };
 
-export default Services;
+export {
+  Services,
+  ApiServices, ApiService, IApi, Api,
+  IGameSettings, GameSettings,
+  IControlsSettings, ControlsSettings, ControlsAction,
+};

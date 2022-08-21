@@ -1,37 +1,30 @@
 import Character from './character';
-import Controls from './controls';
-import CanvasHelper from './helperTypes/canvasHelper';
-import IControlsSettings from './controls/iControlsSettings.interface';
-import IGameSettings from './settings.interface';
-import LevelId from './levels/typeLevelIds';
-import Level from './levels';
+import { IControlsSettings, Controls, ControlsAction as Action } from './services/controls';
+
+import { IGameSettings } from './services/settings';
+import { Level, LevelId, LevelLoad } from './levels';
 import levelList from './levels/list';
-import LevelLoad from './levels/typeLoad';
 
 interface IGame {
   start:(context:CanvasRenderingContext2D)=>void;
 }
 
 class Game {
-  private canvasHelper:CanvasHelper;
   private readonly char:Character;
   private readonly gameSettings:IGameSettings;
   private lastFrame = 0;
-  private levels:Partial<Record<LevelId, Level>> = {};
+  private levels:Partial<Record<LevelId, Level>> = {}; // will a lot of levels cause a memory leak?
+  private levelIdCurrent?:LevelId;
   private levelCurrent:Level;
+  private controls:Controls;
 
-  private initContext() {
-    this.canvasHelper.c.font = '48px serif';
-    this.canvasHelper.c.fillStyle = 'white';
-  }
-
-  constructor(controlsSettings:IControlsSettings, gameSettings:IGameSettings, c:CanvasHelper) {
-    this.char = new Character(new Controls(controlsSettings));
+  constructor(controlsSettings:IControlsSettings, gameSettings:IGameSettings) {
+    this.controls = new Controls(controlsSettings);
+    this.char = new Character(this.controls);
     this.gameSettings = gameSettings;
-    this.canvasHelper = c;
-    this.initContext();
+    this.gameSettings.RenderZone.imageSmoothingEnabled = false;
     this.requestNextFrame();
-    this.levelCurrent = this.changeLevel({ levelId: LevelId.test }); // temporal
+    this.levelCurrent = this.changeLevel({ levelId: LevelId.test, zone: 0, position: 1 }); // temp
   }
 
   private getLevel(id:LevelId):Level {
@@ -40,28 +33,43 @@ class Game {
   }
 
   private changeLevel(load:LevelLoad):Level {
-    const level = this.getLevel(load.levelId);
-    level.load(this.char, load.zone, load.position);
-    return level;
+    const portal = this.levelIdCurrent === load.levelId;
+    if (!portal) {
+      this.levelIdCurrent = load.levelId;
+      this.levelCurrent = this.getLevel(load.levelId);
+    }
+    this.levelCurrent.load(this.char, load.zone, load.position, portal);
+    return this.levelCurrent;
   }
 
   private requestNextFrame() {
     window.requestAnimationFrame(this.frame.bind(this));
   }
 
+  private static fontSize = 24;
+  private static drawFps(c:CanvasRenderingContext2D, fontSize:number, elapsedMs:number) {
+    const cLocal = c;
+    cLocal.font = `${fontSize}px serif`;
+    cLocal.fillStyle = 'white';
+    cLocal.fillText(`FPS: ${(1000 / elapsedMs).toFixed(1)}`, 5, fontSize);
+  }
+
   private processFrame(elapsed:number):void {
-    const { c, size } = this.canvasHelper;
+    const { RenderZone: c, RenderSize: size, Zoom: zoom } = this.gameSettings;
+
+    const load = this.levelCurrent.frame(elapsed / 1000, size, zoom);
+    if (load) this.changeLevel(load);
+
     c.clearRect(0, 0, size.X, size.Y);
-    c.beginPath();
+    this.levelCurrent.draw(c, this.gameSettings.DrawBoxes, this.gameSettings.DrawSurfaces);
 
-    this.levelCurrent.frame(elapsed / 1000);
-    this.levelCurrent.draw(c, this.gameSettings.DrawBoxes);
-
-    if (this.gameSettings.FpsDisplay) c.fillText(`FPS: ${(1000 / elapsed).toFixed(1)}`, 5, 10);
+    if (this.gameSettings.FpsDisplay) Game.drawFps(c, Game.fontSize / zoom, elapsed);
   }
 
   private frame(frametime:number):void {
     const elapsed = frametime - this.lastFrame;
+    if (this.controls.has(Action.zoomUp, true)) this.gameSettings.Zoom += 1;
+    if (this.controls.has(Action.zoomDown, true)) this.gameSettings.Zoom -= 1;
     if (!Number.isFinite(this.gameSettings.FrameTimeLimit)
     || elapsed > this.gameSettings.FrameTimeLimit) {
       if (this.lastFrame) this.processFrame(elapsed);

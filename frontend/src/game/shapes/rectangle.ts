@@ -4,15 +4,23 @@ import Point from './point';
 class Rectangle {
   private x:number;
   public get X() { return this.x; }
-  private w:number;
-  public get Width() { return this.w; }
+  public get Left() { return this.x; }
+  private width:number;
+  public get Width() { return this.width; }
+  private right:number;
+  public get Right() { return this.right; }
   private y:number;
   public get Y() { return this.y; }
-  private h:number;
-  public get Height() { return this.h; }
+  public get Top() { return this.y; }
+  private height:number;
+  public get Height() { return this.height; }
+  private bottom:number;
+  public get Bottom() { return this.bottom; }
 
-  private diagonal:Line;
-  public get Diagonal():Line { return this.diagonal; }
+  private diagonalA:Line;
+  public get DiagonalA():Line { return this.diagonalA; }
+  private diagonalB:Line;
+  public get DiagonalB():Line { return this.diagonalB; }
   private leftLine:Line;
   public get LeftLine():Line { return this.leftLine; }
   private rightLine:Line;
@@ -27,16 +35,17 @@ class Rectangle {
   constructor(x:number, y:number, width:number, height:number) {
     this.x = x;
     this.y = y;
-    this.w = width;
-    this.h = height;
-    const rightX = this.x + this.w;
-    const bottomY = this.y + this.h;
+    this.width = width;
+    this.height = height;
+    this.right = this.x + this.width;
+    this.bottom = this.y + this.height;
 
     const topLeft = new Point(this.x, this.y);
-    const topRight = new Point(rightX, this.y);
-    const bottomLeft = new Point(this.x, bottomY);
-    const bottomRight = new Point(rightX, bottomY);
-    this.diagonal = new Line(topLeft, bottomRight);
+    const topRight = new Point(this.right, this.y);
+    const bottomLeft = new Point(this.x, this.bottom);
+    const bottomRight = new Point(this.right, this.bottom);
+    this.diagonalA = new Line(topLeft, bottomRight);
+    this.diagonalB = new Line(topRight, bottomLeft);
     this.leftLine = new Line(topLeft, bottomLeft);
     this.rightLine = new Line(topRight, bottomRight);
     this.topLine = new Line(topLeft, topRight);

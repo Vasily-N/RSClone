@@ -5,7 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-const buildPath = path.resolve(__dirname, './dist');
+const buildPath = path.resolve(__dirname, '../dist');
 
 const baseConfig = {
   entry: path.resolve(__dirname, './src/index.ts'),

@@ -1,6 +1,6 @@
-import { LevelConfig } from './typeConfigs';
-import LevelId from './typeLevelIds';
 import testLevel from './testLevel';
+import { LevelConfig } from './levelConfig';
+import { LevelId } from './types';
 
 const levelList:Record<LevelId, LevelConfig> = {
   [LevelId.test]: testLevel,
