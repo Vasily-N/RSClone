@@ -28,7 +28,8 @@ class Level {
   private cameraCurrent:Point = Point.Zero;
   private static readonly cameraSpeed = 180;
   private static readonly cameraShift = new Point(1 / 15, 6 / 11);
-  private currentZoom = -1;
+  private lastZoom = -1;
+  private lastViewSize = Point.Zero;
 
   private static newEntity<A extends Entity>(EntityConstructor:EntityClass<A>, position:Point):A {
     return new EntityConstructor(position);
@@ -53,7 +54,7 @@ class Level {
     const loadPos:Line = this.loadEnter[
       zone < this.loadEnter.length ? zone : Math.floor(Math.random() * this.loadEnter.length)
     ].position;
-    this.currentZoom = -1;
+    this.lastZoom = -1;
     this.char.Position = loadPos.B.minus(loadPos.A).multiply(positionPercentage).plus(loadPos.A);
     this.char.frame(0.0001);
     // hack to not stuck at loading screen and not to process "just loaded" every frame
@@ -174,9 +175,10 @@ class Level {
       this.cameraCurrent.Y = Math.min(Math.max(newCameraY, 0), maxPosY);
     }
 
-    if (this.currentZoom !== zoom) {
+    if (this.lastZoom !== zoom || this.lastViewSize !== viewSize) {
       this.cameraCurrent.X = this.cameraTarget.X;
-      this.currentZoom = zoom;
+      this.lastZoom = zoom;
+      this.lastViewSize = viewSize;
     } else if (this.cameraCurrent.X !== this.cameraTarget.X) {
       const cameraSpeed = Level.cameraSpeed * zoom;
       const cameraShift = elapsedSeconds * cameraSpeed;
