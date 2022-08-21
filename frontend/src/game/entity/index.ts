@@ -1,11 +1,18 @@
 import {
-  Direction, EntityClass, EntityId, State, StateConfig,
+  Direction, EntityClass, EntityId, StateConfig,
 } from './types';
 
 import SpriteAnimation from '../sprites';
 import { Point, Rectangle } from '../../shapes';
 import Box from '../box';
 import { SurfaceType } from '../levels/types';
+
+type State = {
+  animation?:SpriteAnimation;
+  hitboxes:Box[];
+  hurtboxes:Box[];
+  collisionboxes:Box[];
+};
 
 type States = Record<number, State>;
 
@@ -130,5 +137,5 @@ abstract class Entity {
 }
 
 export {
-  Entity, EntityClass, Direction, EntityId, State, StateConfig,
+  Entity, EntityClass, Direction, EntityId, StateConfig,
 };
