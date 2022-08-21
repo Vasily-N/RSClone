@@ -7,8 +7,11 @@ type SpriteFrame = {
   ends:number;
 };
 
+type RenderContext = CanvasRenderingContext2D;
+type Img = CanvasImageSource;
+
 class SpriteAnimation {
-  private readonly imgSource:CanvasImageSource;
+  private readonly imgSource:Img;
   private readonly sprite:SpriteConfig; // used only for lazy img load
   private frames:SpriteFrame[] = []; // not readonly because lazy load
   private readonly drawPosition:Point = new Point(0, 0);
@@ -100,31 +103,26 @@ class SpriteAnimation {
     return this.frames[this.currentFrame];
   }
 
-  private static drawSprite(
-    img:CanvasImageSource,
-    c:CanvasRenderingContext2D,
-    position:Point,
-    framePosition:Rectangle,
-  ) {
+  private static draw(img:Img, c:RenderContext, pos:Point, framePos:Rectangle, zoom:number):void {
     c.drawImage(
       img,
-      framePosition.X,
-      framePosition.Y,
-      framePosition.Width,
-      framePosition.Height,
-      Math.round(position.X - framePosition.Width / 2),
-      Math.round(position.Y - framePosition.Height),
-      framePosition.Width,
-      framePosition.Height,
+      framePos.X,
+      framePos.Y,
+      framePos.Width,
+      framePos.Height,
+      Math.round(pos.X - (framePos.Width * zoom) / 2),
+      Math.round(pos.Y - (framePos.Height * zoom)),
+      Math.round(framePos.Width * zoom),
+      Math.round(framePos.Height * zoom),
     );
   }
 
-  public drawFrame(c:CanvasRenderingContext2D, position:Point, elapsed:number, reverse?:boolean) {
+  public drawFrame(c:RenderContext, position:Point, zoom:number, elapsed:number, reverse = false) {
     const frame = this.getFrame(elapsed);
     if (!frame) return;
     const drawPosition = position.plus(reverse ? this.drawReversePosition : this.drawPosition);
     const framePos = reverse && frame.positionReverse ? frame.positionReverse : frame.position;
-    SpriteAnimation.drawSprite(this.imgSource, c, drawPosition, framePos);
+    SpriteAnimation.draw(this.imgSource, c, drawPosition, framePos, zoom);
   }
 }
 

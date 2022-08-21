@@ -18,13 +18,14 @@ class Game {
   private levelCurrent:Level;
   private controls:Controls;
 
+  private static RenderError = new Error("the game can't process without canvas");
+
   constructor(controlsSettings:IControlsSettings, gameSettings:IGameSettings) {
     this.controls = new Controls(controlsSettings);
     this.char = new Character(this.controls);
     this.gameSettings = gameSettings;
-    this.gameSettings.RenderZone.imageSmoothingEnabled = false;
-    this.requestNextFrame();
     this.levelCurrent = this.changeLevel({ levelId: LevelId.test, zone: 0, position: 1 }); // temp
+    this.requestNextFrame();
   }
 
   private getLevel(id:LevelId):Level {
@@ -55,15 +56,20 @@ class Game {
   }
 
   private processFrame(elapsed:number):void {
-    const { RenderZone: c, RenderSize: size, Zoom: zoom } = this.gameSettings;
+    const c = this.gameSettings.getRenderZone();
+    if (!c) throw Game.RenderError;
+    c.imageSmoothingEnabled = false; // IDK why it resets between frames
+    const { RenderSize: size, Zoom: zoom } = this.gameSettings;
 
     const load = this.levelCurrent.frame(elapsed / 1000, size, zoom);
-    if (load) this.changeLevel(load);
 
     c.clearRect(0, 0, size.X, size.Y);
-    this.levelCurrent.draw(c, this.gameSettings.DrawBoxes, this.gameSettings.DrawSurfaces);
 
-    if (this.gameSettings.FpsDisplay) Game.drawFps(c, Game.fontSize / zoom, elapsed);
+    this.levelCurrent.draw(c, zoom, this.gameSettings.DrawBoxes, this.gameSettings.DrawSurfaces);
+
+    if (this.gameSettings.FpsDisplay) Game.drawFps(c, Game.fontSize, elapsed);
+
+    if (load) this.changeLevel(load);
   }
 
   private frame(frametime:number):void {

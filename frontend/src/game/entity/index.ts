@@ -111,29 +111,29 @@ abstract class Entity {
     cLocal.fillRect(Math.round(drawPos.X), Math.round(drawPos.Y), 1, 1);
   }
 
-  private drawBoxes(c:CanvasRenderingContext2D, drawPos:Point):void {
+  private drawBoxes(c:CanvasRenderingContext2D, zoom:number, drawPos:Point):void {
     if (this.currentState < 0) return;
     const state = this.states[this.currentState];
     const reverse = !!this.direction;
     const cLocal = c;
     c.translate(0.5, 0.5);
     cLocal.strokeStyle = Entity.colors.collision;
-    state.hurtboxes.forEach((v) => v.draw(c, drawPos, reverse));
+    state.hurtboxes.forEach((v) => v.draw(c, drawPos, zoom, reverse));
     cLocal.strokeStyle = Entity.colors.hurt;
-    state.hurtboxes.forEach((v) => v.draw(c, drawPos, reverse));
+    state.hurtboxes.forEach((v) => v.draw(c, drawPos, zoom, reverse));
     cLocal.strokeStyle = Entity.colors.hit;
-    state.hitboxes.forEach((v) => v.draw(c, drawPos, reverse));
+    state.hitboxes.forEach((v) => v.draw(c, drawPos, zoom, reverse));
     Entity.drawPosition(c, drawPos);
     c.translate(-0.5, -0.5);
   }
 
-  public draw(c:CanvasRenderingContext2D, camPos:Point, drawBoxes = false) {
-    const drawPos = this.position.minus(camPos);
+  public draw(c:CanvasRenderingContext2D, camPos:Point, zoom:number, drawBoxes = false) {
+    const drawPos = this.position.multiply(zoom).minus(camPos);
     if (this.animation) {
       const elapsed = this.stateElapsedSeconds;
-      this.animation.drawFrame(c, drawPos, elapsed, !!this.direction);
+      this.animation.drawFrame(c, drawPos, zoom, elapsed, !!this.direction);
     }
-    if (drawBoxes) this.drawBoxes(c, drawPos);
+    if (drawBoxes) this.drawBoxes(c, zoom, drawPos);
   }
 }
 

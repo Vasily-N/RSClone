@@ -2,7 +2,7 @@ import { Point } from '../../shapes';
 import IGameSettings from './iGameSettings';
 
 class GameSettings implements IGameSettings {
-  private drawBoxes = false;
+  private drawBoxes = true;
   public get DrawBoxes():boolean { return this.drawBoxes; }
   public set DrawBoxes(value:boolean) { this.drawBoxes = value; }
 
@@ -35,16 +35,18 @@ class GameSettings implements IGameSettings {
   private renderSize:Point = Point.Zero;
   public get RenderSize():Point { return this.renderSize; }
   public set RenderSize(value:Point) { this.renderSize = value; }
+
   public RenderSizeSet(value:{ width:number, height:number }):void {
     this.renderSize = new Point(value.width, value.height);
   }
 
-  private renderZone:CanvasRenderingContext2D | null = null;
-  public set RenderZone(value:CanvasRenderingContext2D) { this.renderZone = value; }
-  public get RenderZone():CanvasRenderingContext2D {
-    if (!this.renderZone) throw new Error("Render Zone doesn't exist");
-    return this.renderZone;
+  public RenderSizeGet():{ width:number, height:number } {
+    return { width: this.renderSize.X, height: this.renderSize.Y };
   }
+
+  private renderZone:CanvasRenderingContext2D | null = null;
+  public setRenderZone(value:CanvasRenderingContext2D | null) { this.renderZone = value; }
+  public getRenderZone():CanvasRenderingContext2D | null { return this.renderZone; }
 
   private zoom = 2;
   private static readonly zoomMax = 3;
