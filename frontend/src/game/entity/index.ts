@@ -1,8 +1,7 @@
 import {
-  Direction, EntityClass, EntityId, StateConfig,
+  Direction, EntityClass, EntityId, StateConfig, SpriteAnimation, SpriteConfig,
 } from './types';
 
-import SpriteAnimation from '../sprites';
 import { Point, Rectangle } from '../shapes';
 import Box from '../box';
 import SurfaceType from '../types';
@@ -137,5 +136,5 @@ abstract class Entity {
 }
 
 export {
-  Entity, EntityClass, Direction, EntityId, StateConfig,
+  Entity, EntityClass, Direction, EntityId, StateConfig, SpriteConfig,
 };
