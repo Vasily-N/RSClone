@@ -191,8 +191,8 @@ class Level {
   }
 
   private static drawLine(c:CanvasRenderingContext2D, camPos:Point, line:Line):void {
-    c.moveTo(line.A.X - camPos.X, line.A.Y - camPos.Y);
-    c.lineTo(line.B.X - camPos.X, line.B.Y - camPos.Y);
+    c.moveTo(Math.round(line.A.X - camPos.X), Math.round(line.A.Y - camPos.Y));
+    c.lineTo(Math.round(line.B.X - camPos.X), Math.round(line.B.Y - camPos.Y));
   }
 
   private static drawPositions(c:CanvasRenderingContext2D, p:Point, arr:Position[], color:string) {
@@ -209,9 +209,12 @@ class Level {
     this.char?.draw(c, camPos, drawBoxes);
     this.entities?.forEach((entity) => entity.draw(c, camPos, drawBoxes));
     if (drawSurfaces) {
+      // because canvas weird, need for sharp lines
+      c.translate(0.5, 0.5);
       Level.drawPositions(c, camPos, this.surfaces, 'black');
       Level.drawPositions(c, camPos, this.loadEnter, 'white');
       Level.drawPositions(c, camPos, this.loadExit, 'yellow');
+      c.translate(-0.5, -0.5);
     }
   }
 }

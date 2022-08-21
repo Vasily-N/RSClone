@@ -116,6 +116,7 @@ abstract class Entity {
     const state = this.states[this.currentState];
     const reverse = !!this.direction;
     const cLocal = c;
+    c.translate(0.5, 0.5);
     cLocal.strokeStyle = Entity.colors.collision;
     state.hurtboxes.forEach((v) => v.draw(c, drawPos, reverse));
     cLocal.strokeStyle = Entity.colors.hurt;
@@ -123,6 +124,7 @@ abstract class Entity {
     cLocal.strokeStyle = Entity.colors.hit;
     state.hitboxes.forEach((v) => v.draw(c, drawPos, reverse));
     Entity.drawPosition(c, drawPos);
+    c.translate(-0.5, -0.5);
   }
 
   public draw(c:CanvasRenderingContext2D, camPos:Point, drawBoxes = false) {
