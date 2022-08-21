@@ -11,6 +11,17 @@ export interface ITimesId {
   time: string,
 }
 
+export interface IWins{
+  name: string,
+  win: string,
+}
+
+export interface IWinsId {
+  _id?: string;
+  name: string,
+  win: string,
+}
+
 const Times = new mongoose.Schema(
   {
     name: { type: String, required: true },
@@ -18,4 +29,15 @@ const Times = new mongoose.Schema(
   },
 );
 
-export default mongoose.model('Times', Times);
+const Wins = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    win: { type: String, required: true },
+  },
+);
+
+export const TimesScheme = mongoose.model('Times', Times);
+export const WinsScheme = mongoose.model('Wins', Wins);
+// export default { TimesScheme, WinsScheme };
+
+// export default mongoose.model('Wins', Wins);

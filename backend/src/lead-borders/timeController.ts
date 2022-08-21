@@ -1,12 +1,11 @@
-/* eslint-disable no-underscore-dangle */
-import BorderService from './borderService';
+import TimeService from './timeService';
 import { TypedRequestBody, ResponseType } from '../../index';
 import { ITimes } from './borders';
 
-class BorderController {
+class TimeController {
   async create(request: TypedRequestBody<ITimes>, response: ResponseType) {
     try {
-      const userNameTime = await BorderService.create(request.body);
+      const userNameTime = await TimeService.create(request.body);
       return response.json(userNameTime);
     } catch (error) {
       response.status(500).json(error);
@@ -15,7 +14,7 @@ class BorderController {
 
   async getAll(request: TypedRequestBody<ITimes>, response: ResponseType) {
     try {
-      const times = await BorderService.getAll();
+      const times = await TimeService.getAll();
       return response.json(times);
     } catch (error) {
       response.status(500).json(error);
@@ -24,7 +23,7 @@ class BorderController {
 
   async getOne(request: TypedRequestBody<ITimes>, response: ResponseType) {
     try {
-      const time = await BorderService.getOne(request.params.id);
+      const time = await TimeService.getOne(request.params.id);
       return response.json(time);
     } catch (error) {
       response.status(500).json(error);
@@ -33,7 +32,7 @@ class BorderController {
 
   async update(request: TypedRequestBody<ITimes>, response: ResponseType) {
     try {
-      const updateTime = await BorderService.update(request.body);
+      const updateTime = await TimeService.update(request.body);
       return response.json(updateTime);
     } catch (err) {
       response.status(500).json(err);
@@ -42,7 +41,7 @@ class BorderController {
 
   async delete(request: TypedRequestBody<ITimes>, response: ResponseType) {
     try {
-      const time = await BorderService.delete(request.params.id);
+      const time = await TimeService.delete(request.params.id);
       return response.json(time);
     } catch (error) {
       response.status(500).json(error);
@@ -50,4 +49,4 @@ class BorderController {
   }
 }
 
-export default new BorderController();
+export default new TimeController();
