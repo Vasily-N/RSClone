@@ -2,17 +2,21 @@ const path = require('path');
 const nodeExternals = require('webpack-node-externals');
 
 module.exports = {
-  mode: 'development', // "production" | "development" | "none"
+  mode: 'development',
   entry: {
     app: [
       './index.ts',
-      './src/registration/router.ts',
+      './src/router.ts',
       './src/registration/user.ts',
       './src/registration/userController.ts',
       './src/registration/userService.ts',
-      './src/authentication/routerAuth.ts',
       './src/authentication/authController.ts',
       './src/authentication/authService.ts',
+      './src/lead-borders/borders.ts',
+      './src/lead-borders/timeController.ts',
+      './src/lead-borders/timeService.ts',
+      './src/lead-borders/winController.ts',
+      './src/lead-borders/winService.ts',
     ],
   },
   target: 'node',

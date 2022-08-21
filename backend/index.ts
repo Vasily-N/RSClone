@@ -1,7 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
-import router from './src/registration/router';
+import router from './src/router';
 
 const port = 5000;
 const LOGIN_PASSWORD = 'admin:admin';
