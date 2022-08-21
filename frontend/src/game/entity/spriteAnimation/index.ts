@@ -1,5 +1,5 @@
 import { Point, Rectangle } from '../../shapes';
-import SpriteConfig from './spriteConfig';
+import { SpriteConfig } from '../types';
 
 type SpriteFrame = {
   position:Rectangle;
