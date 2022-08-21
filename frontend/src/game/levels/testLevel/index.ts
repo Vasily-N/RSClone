@@ -1,7 +1,7 @@
-import LevelId from '../types/levelIds';
 import { Point, Rectangle } from '../../../shapes';
 import {
-  LevelEntityConfig, LevelConfig, LevelLoadingConfig, LevelSurfaceConfig, surfaceConfigList,
+  LevelEntityConfig, LevelConfig, LevelLoadingConfig, LevelSurfaceConfig,
+  LevelId, surfaceConfigList,
 } from '../types';
 
 const entities:LevelEntityConfig[] = [];
@@ -28,7 +28,7 @@ loading[3] = { position: new Rectangle(400, 300, 100, 0).DiagonalA, levelId, zon
 loading[4] = { position: new Rectangle(60, 300, 50, 50).DiagonalB, levelId, zone: 5 };
 loading[5] = { position: new Rectangle(500, 300, 50, 50).DiagonalB, levelId, zone: 4 };
 
-const size = new Point(2000, 2000);
+const size = new Point(800, 500); // todo: calculate dynamically
 const cfg:LevelConfig = {
   size, surfaces, entities, loading,
 };

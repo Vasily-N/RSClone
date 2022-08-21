@@ -32,7 +32,7 @@ class Canvas2D extends View {
     // to process it after canvas was rendered
     setTimeout(setCanvasSize);
     // hack to fight the developer console not firing the resize event
-    setInterval(setCanvasSize, 1000);
+    setInterval(setCanvasSize, 500);
   }
 
   private showCoords(event:MouseEvent) {

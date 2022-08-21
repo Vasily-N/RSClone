@@ -14,7 +14,7 @@ class Game {
   private readonly char:Character;
   private readonly gameSettings:IGameSettings;
   private lastFrame = 0;
-  private levels:Partial<Record<LevelId, Level>> = {};
+  private levels:Partial<Record<LevelId, Level>> = {}; // will a lot of levels cause a memory leak?
   private levelIdCurrent?:LevelId;
   private levelCurrent:Level;
   private controls:Controls;
@@ -47,7 +47,7 @@ class Game {
     window.requestAnimationFrame(this.frame.bind(this));
   }
 
-  private static fontSize = 48;
+  private static fontSize = 24;
   private static drawFps(c:CanvasRenderingContext2D, fontSize:number, elapsedMs:number) {
     const cLocal = c;
     cLocal.font = `${fontSize}px serif`;
@@ -58,7 +58,7 @@ class Game {
   private processFrame(elapsed:number):void {
     const { RenderZone: c, RenderSize: size, Zoom: zoom } = this.gameSettings;
 
-    const load = this.levelCurrent.frame(elapsed / 1000);
+    const load = this.levelCurrent.frame(elapsed / 1000, size, zoom);
     if (load) this.changeLevel(load);
 
     c.clearRect(0, 0, size.X, size.Y);

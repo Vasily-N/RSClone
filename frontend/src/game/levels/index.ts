@@ -5,7 +5,7 @@ import {
 
 import { Point, Line, Rectangle } from '../../shapes';
 
-import { Entity, EntityClass } from '../entity';
+import { Entity, EntityClass, Direction } from '../entity';
 import entitiesList from '../entity/list';
 
 import Character from '../character';
@@ -22,9 +22,12 @@ class Level {
   private entities:Entity[] = [];
   private char?:Character;
 
+  private size:Point;
   private cameraTargetPosition:Point = Point.Zero;
-  private cameraCurrentPosition:Point = new Point(0, 0);
-  private static readonly cameraSpeed = 100;
+  private cameraCurrentPosition:Point = Point.Zero;
+  private static readonly cameraSpeed = 180;
+  private static readonly cameraShift = new Point(1 / 15, 6 / 11);
+  private currentZoom = -1;
 
   private static newEntity<A extends Entity>(EntityConstructor:EntityClass<A>, position:Point):A {
     return new EntityConstructor(position);
@@ -35,6 +38,7 @@ class Level {
   }
 
   constructor(config:LevelConfig) {
+    this.size = config.size;
     this.surfaces = config.surfaces
       .map((s) => ({ ...s, type: SurfaceType.Normal, platform: false }));
     this.entitiesConfig = config.entities;
@@ -48,6 +52,7 @@ class Level {
     const loadPos:Line = this.loadEnter[
       zone < this.loadEnter.length ? zone : Math.floor(Math.random() * this.loadEnter.length)
     ].position;
+    this.currentZoom = -1;
     this.char.Position = loadPos.B.minus(loadPos.A).multiply(positionPercentage).plus(loadPos.A);
     this.char.frame(0.0001);
     // hack to not stuck at loading screen and not to process "just loaded" every frame
@@ -97,17 +102,19 @@ class Level {
 
   private static processFloors(floors:Surface[], move:Line, onFloor:boolean):SurfaceCollision {
     if (!floors.length) return null;
-    if (floors.length > 1) floors.sort((a, b) => b.position.MinY - a.position.MinY);
+    if (floors.length > 1) floors.sort((a, b) => b.position.MaxY - a.position.MaxY);
     // prevent teleport down with very low fps aka 10 seconds per frame
 
     for (let i = floors.length - 1; i > -1; i -= 1) {
       const floorPos = floors[i].position;
-      const percentBefore = Level.pointPercentOnLine(move.A.X, floorPos.A.X, floorPos.DifXabs);
-      const yBefore = floorPos.DifYabs * percentBefore + floorPos.MinY;
-      if (yBefore < move.A.Y) continue; // platform was above the characrter
+      if (!onFloor) {
+        const percentBefore = Level.pointPercentOnLine(move.A.X, floorPos.A.X, floorPos.DifXabs);
+        const yBefore = floorPos.DifYabs * percentBefore + floorPos.MinY;
+        if (yBefore < move.A.Y) continue; // platform was above the characrter
+      }
       const percentegeAfter = Level.pointPercentOnLine(move.B.X, floorPos.A.X, floorPos.DifXabs);
       const yAfter = floorPos.DifYabs * percentegeAfter + floorPos.MinY;
-      if (!onFloor && yAfter >= move.B.Y) continue;
+      if (!onFloor && yAfter > move.B.Y) continue;
       return { surface: floors[i], point: new Point(move.B.X, yAfter) };
     }
 
@@ -115,10 +122,10 @@ class Level {
   }
 
   private static getCheckZone(move:Line):Rectangle {
-    const top = Math.min(move.B.Y, move.A.Y);
-    const height = Math.max(move.B.Y, move.A.Y) - top;
-    const left = Math.min(move.B.X, move.A.X);
-    const width = Math.max(move.B.X, move.A.X) - left;
+    const top = Math.floor(Math.min(move.B.Y, move.A.Y));
+    const height = Math.ceil(Math.max(move.B.Y, move.A.Y) - top);
+    const left = Math.floor(Math.min(move.B.X, move.A.X));
+    const width = Math.ceil(Math.max(move.B.X, move.A.X) - left);
     return new Rectangle(left, top, width, height);
   }
 
@@ -144,11 +151,42 @@ class Level {
     return null;
   }
 
-  public frame(elapsedSeconds:number):Load | undefined {
+  private processCamera(char:Character, viewSize:Point, zoom:number, elapsedSeconds:number) {
+    // some doublicate-code, I wasn't able to find how in TS dynamically access setters field
+    // Y is centered so no code for movement
+    if (viewSize.X > this.size.X) {
+      this.cameraTargetPosition.X = (this.size.X - viewSize.X) / 2;
+      this.cameraCurrentPosition.X = this.cameraTargetPosition.X;
+    } else {
+      const newCamera = char.Position.X - viewSize.X * (0.5
+        + (char.Direction === Direction.left ? Level.cameraShift.X : -Level.cameraShift.X));
+      this.cameraTargetPosition.X = Math.min(Math.max(newCamera, 0), this.size.X - viewSize.X);
+    }
+
+    if (viewSize.Y > this.size.Y) {
+      this.cameraCurrentPosition.Y = (this.size.Y - viewSize.Y) / 2;
+    } else {
+      const newCamera = char.Position.Y - viewSize.Y * Level.cameraShift.Y;
+      this.cameraCurrentPosition.Y = Math.min(Math.max(newCamera, 0), this.size.Y - viewSize.Y);
+    }
+
+    if (this.currentZoom !== zoom) {
+      this.cameraCurrentPosition.X = this.cameraTargetPosition.X;
+      this.currentZoom = zoom;
+    } else if (this.cameraCurrentPosition.X !== this.cameraTargetPosition.X) {
+      const cameraShift = elapsedSeconds * Level.cameraSpeed;
+      this.cameraCurrentPosition.X = (this.cameraCurrentPosition.X > this.cameraTargetPosition.X)
+        ? Math.max(this.cameraCurrentPosition.X - cameraShift, this.cameraTargetPosition.X)
+        : Math.min(this.cameraCurrentPosition.X + cameraShift, this.cameraTargetPosition.X);
+    }
+  }
+
+  public frame(elapsedSeconds:number, viewSize:Point, zoom:number):Load | undefined {
     const char = this.char as Character;
     const exit = this.processCollision(char, elapsedSeconds, true);
     if (exit) return exit;
     this.entities?.forEach((entity) => this.processCollision(entity, elapsedSeconds));
+    this.processCamera(char, viewSize, zoom, elapsedSeconds);
     return undefined;
   }
 

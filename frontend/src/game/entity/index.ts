@@ -11,6 +11,7 @@ type States = Record<number, State>;
 
 abstract class Entity {
   protected direction:Direction = Direction.right;
+  public get Direction():Direction { return this.direction; }
   protected position:Point = Point.Zero;
   public set Position(value:Point) { this.position = value; }
   public get Position():Point { return this.position; }

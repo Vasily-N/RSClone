@@ -2,7 +2,7 @@ import { Point } from '../../../shapes';
 import IGameSettings from './iGameSettings';
 
 class GameSettings implements IGameSettings {
-  private drawBoxes = true;
+  private drawBoxes = false;
   public get DrawBoxes():boolean { return this.drawBoxes; }
   public set DrawBoxes(value:boolean) { this.drawBoxes = value; }
 
