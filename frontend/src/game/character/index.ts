@@ -4,15 +4,15 @@ import { Point } from '../../shapes';
 import { CharacterState, states } from './states';
 import { SurfaceType } from '../levels/types';
 
-type CntrlChangeXVel = { [t in SurfaceType]: number } & {
+type ChangeVelX = Partial<{ [t in SurfaceType]: number }> & {
   default: number
   air: number
 };
 
 class Character extends Entity {
   private readonly conrols:Controls;
-  private static readonly cntrlMaxXVel:Record<number, number> = { [+false]: 100, [+true]: 180 };
-  private static readonly cntrlChangeXVel:Partial<CntrlChangeXVel> = {
+  private static readonly maxVelX = { walk: 100, run: 180 };
+  private static readonly changeVelX:ChangeVelX = {
     default: 1500, air: 700, [SurfaceType.Ice]: 400,
   };
 
@@ -25,10 +25,14 @@ class Character extends Entity {
     this.conrols = controls;
   }
 
+  private static getMaxVelX(run:boolean):number {
+    return run ? Character.maxVelX.run : Character.maxVelX.walk;
+  }
+
   private processWalk(run:boolean, left:boolean, right:boolean, xVelocityChange:number):void {
-    const maxXvel = this.OnSurface
-      ? Character.cntrlMaxXVel[+run]
-      : Math.max(Math.abs(this.velocityPerSecond.X), Character.cntrlMaxXVel[0]);
+    const maxVelX = this.OnSurface
+      ? Character.getMaxVelX(run)
+      : Math.max(Math.abs(this.velocityPerSecond.X), Character.maxVelX.walk);
     if (left) {
       this.velocityPerSecond.X -= xVelocityChange;
       this.direction = Direction.left;
@@ -37,8 +41,8 @@ class Character extends Entity {
       this.velocityPerSecond.X += xVelocityChange;
       this.direction = Direction.right;
     }
-    if (Math.abs(this.velocityPerSecond.X) > maxXvel) {
-      this.velocityPerSecond.X = left ? -maxXvel : maxXvel;
+    if (Math.abs(this.velocityPerSecond.X) > maxVelX) {
+      this.velocityPerSecond.X = left ? -maxVelX : maxVelX;
     }
   }
 
@@ -75,9 +79,9 @@ class Character extends Entity {
     const left = this.conrols.has(Action.moveLeft);
     const right = this.conrols.has(Action.moveRight);
     const xVelChangePerSec = this.OnSurface
-      ? (Character.cntrlChangeXVel[this.surfaceType as SurfaceType]
-        || Character.cntrlChangeXVel.default)
-      : Character.cntrlChangeXVel.air;
+      ? (Character.changeVelX[this.surfaceType as SurfaceType]
+        || Character.changeVelX.default)
+      : Character.changeVelX.air;
 
     const xVelocityChange = elapsedSeconds * (xVelChangePerSec as number);
     if (left || right) this.processWalk(run, left, right, xVelocityChange);

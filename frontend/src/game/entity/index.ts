@@ -16,6 +16,8 @@ abstract class Entity {
   public set Position(value:Point) { this.position = value; }
   public get Position():Point { return this.position; }
   protected velocityPerSecond:Point = Point.Zero;
+  private static readonly maxVelY = 500;
+
   private gravity = 100;
   private states:States = {};
   protected stateElapsedSeconds = 0;
@@ -83,7 +85,10 @@ abstract class Entity {
     this.stateElapsedSeconds += elapsedSeconds;
 
     if (!this.OnSurface) {
-      this.velocityPerSecond.Y += elapsedSeconds * this.gravity;
+      if (this.velocityPerSecond.Y < Entity.maxVelY) {
+        this.velocityPerSecond.Y += elapsedSeconds * this.gravity;
+        this.velocityPerSecond.Y = Math.min(this.velocityPerSecond.Y, Entity.maxVelY);
+      }
       this.position.Y += elapsedSeconds * this.velocityPerSecond.Y;
     }
 
