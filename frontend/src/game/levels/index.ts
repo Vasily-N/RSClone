@@ -200,24 +200,27 @@ class Level {
 
   private processCamera(char:Character, viewSize:Point, zoom:number, elapsedSeconds:number) {
     // some doublicate-code, I wasn't able to find how in TS dynamically access setters field
-    // Y is centered so no code for movement
+    // I specially used Size[key] instead of Width/Height to easily see the doublicate-code
+
+    // Y is always centered so no code for Y-camera-movement
     const areaZoom = this.area.multiply(zoom);
-    if (viewSize.X > areaZoom.Width) {
-      this.cameraTarget.X = (areaZoom.Width - viewSize.X) / 2;
+    if (viewSize.X > areaZoom.Size.X) {
+      this.cameraTarget.X = (areaZoom.Size.X - viewSize.X) / 2;
       this.cameraCurrent.X = this.cameraTarget.X;
     } else {
-      const newCameraX = zoom * char.Position.X - (viewSize.X * (0.5
-        + (char.Direction === Direction.left ? Level.cameraShift.X : -Level.cameraShift.X)));
-      const maxPosX = areaZoom.Width - viewSize.X;
-      this.cameraTarget.X = Math.min(Math.max(newCameraX, areaZoom.Left), maxPosX);
+      const shiftX = 0.5 + (char.Direction ? Level.cameraShift.X : -Level.cameraShift.X);
+      const newCameraX = zoom * char.Position.X - viewSize.X * shiftX;
+      const maxPosX = areaZoom.Size.X - viewSize.X;
+      this.cameraTarget.X = Math.min(Math.max(newCameraX, areaZoom.X), maxPosX);
     }
 
-    if (viewSize.Y > areaZoom.Height) {
-      this.cameraCurrent.Y = (areaZoom.Height - viewSize.Y) / 2;
+    if (viewSize.Y > areaZoom.Size.Y) {
+      this.cameraCurrent.Y = (areaZoom.Size.Y - viewSize.Y) / 2;
     } else {
-      const newCameraY = zoom * char.Position.Y - viewSize.Y * Level.cameraShift.Y;
-      const maxPosY = areaZoom.Height - viewSize.Y;
-      this.cameraCurrent.Y = Math.min(Math.max(newCameraY, areaZoom.Top), maxPosY);
+      const shiftY = Level.cameraShift.Y;
+      const newCameraY = zoom * char.Position.Y - viewSize.Y * shiftY;
+      const maxPosY = areaZoom.Size.Y - viewSize.Y;
+      this.cameraCurrent.Y = Math.min(Math.max(newCameraY, areaZoom.Y), maxPosY);
     }
 
     if (this.lastZoom !== zoom || this.lastViewSize !== viewSize) {
