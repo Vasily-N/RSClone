@@ -8,8 +8,9 @@ import { Game } from '../../game';
 import Placeholder from '../placeholder';
 
 import { Services } from '../../services';
+import settingIsGame from '../settingIsGame';
 
-enum ViewId { canvas, placaholder }
+enum ViewId { canvas, placaholder, settingGame}
 
 class AppPage extends View {
   private static contentId = style.content;
@@ -26,6 +27,8 @@ class AppPage extends View {
         return canvasView;
       }
       case ViewId.placaholder: return new Placeholder(AppPage.contentId, this.services);
+	  case ViewId.settingGame: return new settingIsGame(AppPage.contentId, this.services.gameSettings);
+
       default: throw new Error(`${viewId} doesn't exit`);
     }
   }
@@ -43,6 +46,7 @@ class AppPage extends View {
   private initListeners() {
     this.getElementById('toCanvas')?.addEventListener('click', this.changeTo.bind(this, ViewId.canvas));
     this.getElementById('toPlaceholder')?.addEventListener('click', this.changeTo.bind(this, ViewId.placaholder));
+	this.getElementById('toSettingGame')?.addEventListener('click', this.changeTo.bind(this, ViewId.settingGame));
   }
 
   public append():void {
