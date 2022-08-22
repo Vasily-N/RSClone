@@ -1,7 +1,8 @@
 import { Point, Rectangle } from '../../shapes';
+import SurfaceType from '../../types';
 
 import {
-  EntityConfig, LevelConfig, LoadingConfig, SurfaceConfig, surfaceConfigList,
+  EntityConfig, LevelConfig, LoadingConfig, SurfaceConfig, surfaceLinesFromPoints,
 } from '../levelConfig';
 import { LevelId } from '../types';
 
@@ -11,15 +12,26 @@ const surfaces:SurfaceConfig[] = [];
 
 const loading:LoadingConfig[] = [];
 
-surfaces.push(...surfaceConfigList([
+surfaces.push(...surfaceLinesFromPoints([
   Point.Zero, new Point(0, 400), new Point(200, 400), new Point(200, 500),
   new Point(400, 500), new Point(400, 400), new Point(800, 400), new Point(800, 0),
   Point.Zero,
 ]));
 
 surfaces.push({ position: new Rectangle(200, 300, 200, 0).DiagonalA, platform: true });
-surfaces.push(...[{ position: new Rectangle(100, 0, 200, 200).DiagonalA, platform: true },
-  { position: new Rectangle(300, 200, 200, 0).DiagonalA, platform: true }]);
+surfaces.push(...[
+  { position: new Rectangle(100, 0, 200, 200).DiagonalA, platform: true },
+  { position: new Rectangle(300, 200, 200, 0).DiagonalA, platform: true },
+  ...surfaceLinesFromPoints([
+    new Point(780, 250), new Point(750, 250), new Point(650, 300), new Point(600, 340),
+    new Point(560, 350),
+  ], true),
+  ...surfaceLinesFromPoints([
+    new Point(550, 250), new Point(560, 240), new Point(570, 220),
+  ], true),
+]);
+
+surfaces[5].type = SurfaceType.Ice;
 
 const levelId = LevelId.test;
 loading[0] = { position: new Rectangle(100, 100, 0, 100).DiagonalA };

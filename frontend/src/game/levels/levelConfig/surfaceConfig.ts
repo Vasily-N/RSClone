@@ -7,9 +7,10 @@ type SurfaceConfig = {
   position:Line
 };
 
-const surfaceConfigList = (points:Point[]):SurfaceConfig[] => points
+const surfaceLinesFromPoints = (points:Point[], platform?:boolean, type?:SurfaceType)
+:SurfaceConfig[] => points
   .reduce((res:Line[], p:Point) => res.concat(new Line(res.at(-1)?.B || Point.Zero, p)), [])
   .slice(1)
-  .map((position:Line) => ({ position }));
+  .map((position:Line) => ({ position, ...type && { type }, ...platform && { platform } }));
 
-export { SurfaceConfig, surfaceConfigList };
+export { SurfaceConfig, surfaceLinesFromPoints };

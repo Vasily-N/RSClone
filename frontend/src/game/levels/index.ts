@@ -1,5 +1,7 @@
 import { LevelLoad as Load, LevelId } from './types';
-import { LevelConfig, LoadingConfig as LoadZone, EntityConfig } from './levelConfig';
+import {
+  LevelConfig, LoadingConfig as LoadZone, EntityConfig, SurfaceConfig,
+} from './levelConfig';
 
 import { Point, Line, Rectangle } from '../shapes';
 
@@ -10,13 +12,16 @@ import SurfaceType from '../types';
 
 import Character from '../character';
 
-type Surface = { type:SurfaceType, platform:boolean, position:Line } ;
+type Surface = { type:SurfaceType, platform:boolean, position:Line, angle:number } ;
+enum SurfaceGroup { All, Walls, Floors, Ceils, Platforms } // Floors = Ceils + Platforms
+type Surfaces = Record<SurfaceGroup, Surface[]>;
+
 type SurfaceCollision = { surface:Surface, point:Point } | null;
 type Position = { position:Line };
 type RenderContext = CanvasRenderingContext2D;
 
 class Level {
-  private readonly surfaces:Surface[];
+  private readonly surfaces:Surfaces;
   private readonly loadEnter:LoadZone[];
   private readonly loadExit:LoadZone[];
   private readonly entitiesConfig:EntityConfig[];
@@ -39,10 +44,39 @@ class Level {
     return entitiesConfig.map((v) => Level.newEntity(entitiesList[v.type], v.position));
   }
 
+  private static getAngle(line: Line):number {
+    const vector = line.A.minus(line.B);
+    return Math.atan2(vector.Y, vector.X);
+  }
+
+  private static readonly wallAngle = (30 * Math.PI) / 180;
+  private static initSurfaces(surfaces:SurfaceConfig[]):Record<SurfaceGroup, Surface[]> {
+    const allBeforeNormalizaion = surfaces.map((s) => ({
+      platform: false, type: SurfaceType.Normal, ...s, angle: Level.getAngle(s.position),
+    }));
+    const halfPI = Math.PI / 2;
+    const all = allBeforeNormalizaion.map((s) => (s.angle > 0
+      ? { ...s, position: new Line(s.position.B, s.position.A), angle: Math.abs(s.angle - halfPI) }
+      : { ...s, angle: Math.abs(s.angle + halfPI) }));
+
+    const walls = all.filter((s) => s.angle < Level.wallAngle);
+    const floors = all.filter((s) => s.angle >= Level.wallAngle);
+    const ceils = floors.filter((s) => !s.platform);
+    const platforms = floors.filter((s) => s.platform);
+
+    return {
+      [SurfaceGroup.All]: all,
+      [SurfaceGroup.Walls]: walls,
+      [SurfaceGroup.Floors]: floors,
+      [SurfaceGroup.Ceils]: ceils,
+      [SurfaceGroup.Platforms]: platforms,
+    };
+  }
+
   constructor(config:LevelConfig) {
     this.size = config.size;
-    this.surfaces = config.surfaces
-      .map((s) => ({ ...s, type: SurfaceType.Normal, platform: false }));
+    this.surfaces = Level.initSurfaces(config.surfaces);
+
     this.entitiesConfig = config.entities;
     this.loadEnter = config.loading;
     this.loadExit = config.loading.filter((v) => v.zone !== undefined);
@@ -142,7 +176,8 @@ class Level {
       if (exit) return exit;
     }
     const floorsCheckZone = new Rectangle(move.B.X, checkZone.Top, 0, checkZone.Height);
-    const nearFloors = Level.filterNear<Surface>(this.surfaces, floorsCheckZone);
+    const nearFloors = Level
+      .filterNear<Surface>(this.surfaces[SurfaceGroup.Floors], floorsCheckZone);
     const floorCollision = Level.processFloors(nearFloors, move, e.OnSurface);
 
     if (floorCollision) {
@@ -205,6 +240,7 @@ class Level {
   }
 
   private static drawLines(c:RenderContext, zoom:number, p:Point, arr:Position[], clr:string):void {
+    if (!arr.length) return;
     const cLocal = c;
     c.beginPath();
     cLocal.strokeStyle = clr;
@@ -213,18 +249,52 @@ class Level {
     c.closePath();
   }
 
+  private static readonly colors:Record<SurfaceType, string> = {
+    [SurfaceType.Normal]: 'black',
+    [SurfaceType.Ice]: 'aqua',
+  };
+
+  private readonly surfaceFilterCache = new Map();
+  private static readonly surfaceTypesKeys = Object.keys(SurfaceType)
+    .filter((v) => Number.isNaN(+v))
+    .map((k) => SurfaceType[k as keyof typeof SurfaceType]);
+
+  private surfaceFilter(group:SurfaceGroup, type:SurfaceType) {
+    const key = JSON.stringify([group, type]);
+    return (this.surfaceFilterCache.has(key)
+      ? this.surfaceFilterCache
+      : this.surfaceFilterCache.set(
+        key,
+        this.surfaces[group].filter((s) => s.type === type),
+      )
+    ).get(key);
+  }
+
+  private drawSurfaces(c:RenderContext, zoom:number, camPos:Point) {
+    Level.surfaceTypesKeys.forEach((type) => {
+      const color = Level.colors[type];
+      c.setLineDash([10, 2]);
+      Level.drawLines(c, zoom, camPos, this.surfaceFilter(SurfaceGroup.Platforms, type), color);
+      c.setLineDash([]);
+      Level.drawLines(c, zoom, camPos, this.surfaceFilter(SurfaceGroup.Walls, type), color);
+      Level.drawLines(c, zoom, camPos, this.surfaceFilter(SurfaceGroup.Ceils, type), color);
+    });
+  }
+
   public draw(c:RenderContext, zoom:number, dBoxes = false, dSurfaces = false):void {
     const camPos = this.cameraCurrent;
-    this.char?.draw(c, camPos, zoom, dBoxes);
-    this.entities?.forEach((entity) => entity.draw(c, camPos, zoom, dBoxes));
+
     if (dSurfaces) {
       // because canvas is weird, need for sharp lines
       c.translate(0.5, 0.5);
-      Level.drawLines(c, zoom, camPos, this.surfaces, 'black');
+      this.drawSurfaces(c, zoom, camPos);
       Level.drawLines(c, zoom, camPos, this.loadEnter, 'white');
       Level.drawLines(c, zoom, camPos, this.loadExit, 'yellow');
       c.translate(-0.5, -0.5);
     }
+
+    this.char?.draw(c, camPos, zoom, dBoxes);
+    this.entities?.forEach((entity) => entity.draw(c, camPos, zoom, dBoxes));
   }
 }
 

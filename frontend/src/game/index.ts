@@ -61,7 +61,7 @@ class Game {
     c.imageSmoothingEnabled = false; // IDK why it resets between frames
     const { RenderSize: size, Zoom: zoom } = this.gameSettings;
 
-    const load = this.levelCurrent.frame(elapsed / 1000, size, zoom);
+    const load = this.levelCurrent.frame(Math.min(elapsed / 1000, 1), size, zoom);
 
     c.clearRect(0, 0, size.X, size.Y);
 

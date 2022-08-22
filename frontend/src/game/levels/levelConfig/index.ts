@@ -1,7 +1,7 @@
 import { Point } from '../../shapes';
 import EntityConfig from './entityConfig';
 import LoadingConfig from './loadingConfig';
-import { SurfaceConfig, surfaceConfigList } from './surfaceConfig';
+import { SurfaceConfig, surfaceLinesFromPoints } from './surfaceConfig';
 
 type LevelConfig = {
   size:Point
@@ -11,5 +11,5 @@ type LevelConfig = {
 };
 
 export {
-  LevelConfig, SurfaceConfig, EntityConfig, LoadingConfig, surfaceConfigList,
+  LevelConfig, SurfaceConfig, EntityConfig, LoadingConfig, surfaceLinesFromPoints,
 };
