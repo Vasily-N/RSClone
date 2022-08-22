@@ -29,9 +29,14 @@ surfaces.push(...[
   ...surfaceLinesFromPoints([
     new Point(550, 250), new Point(560, 240), new Point(570, 220),
   ], true),
+  ...surfaceLinesFromPoints([new Point(200, 400), new Point(210, 400), new Point(210, 500)]),
+  ...surfaceLinesFromPoints([new Point(750, 200), new Point(700, 160), new Point(610, 130)], true),
+  ...surfaceLinesFromPoints([new Point(250, 450), new Point(350, 420)], false),
 ]);
 
+surfaces[1].type = SurfaceType.Ice;
 surfaces[5].type = SurfaceType.Ice;
+surfaces[17].platform = true;
 
 const levelId = LevelId.test;
 loading[0] = { position: new Rectangle(100, 100, 0, 100).DiagonalA };

@@ -35,6 +35,10 @@ class Rectangle {
 
   public static get Zero():Rectangle { return new Rectangle(0, 0, 0, 0); }
 
+  public static fromLine(line:Line):Rectangle {
+    return new Rectangle(line.MinX, line.MinY, line.MaxX - line.MinX, line.MaxY - line.MinY);
+  }
+
   constructor(x:number, y:number, width:number, height:number) {
     this.x = x;
     this.y = y;
@@ -59,6 +63,14 @@ class Rectangle {
 
   public multiply(n:number):Rectangle {
     return new Rectangle(this.Left * n, this.Top * n, this.width * n, this.height * n);
+  }
+
+  public plus(p:Point):Rectangle {
+    return new Rectangle(this.Left + p.X, this.Top + p.Y, this.width, this.height);
+  }
+
+  public minus(p:Point):Rectangle {
+    return new Rectangle(this.Left - p.X, this.Top - p.Y, this.width, this.height);
   }
 }
 

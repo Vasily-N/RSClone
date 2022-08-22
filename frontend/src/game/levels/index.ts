@@ -16,7 +16,7 @@ type Surface = { type:SurfaceType, platform:boolean, position:Line, angle:number
 enum SurfaceGroup { All, Walls, Floors, Ceils, Platforms } // Floors = Ceils + Platforms
 type Surfaces = Record<SurfaceGroup, Surface[]>;
 
-type SurfaceCollision = { surface:Surface, point:Point } | null;
+type FloorCollision = { surface:Surface, point:Point } | null;
 type Position = { position:Line };
 type RenderContext = CanvasRenderingContext2D;
 
@@ -131,7 +131,16 @@ class Level {
     return Math.abs(p - s) / l;
   }
 
-  private static processExitZones(exits:LoadZone[], move:Line):Load | null {
+  private static getCheckZone(move:Line):Rectangle {
+    const top = Math.floor(move.MinY);
+    const height = Math.ceil(move.MaxY - top);
+    const left = Math.floor(move.MinX);
+    const width = Math.ceil(move.MaxX - left);
+    return new Rectangle(left, top, width, height);
+  }
+
+  private static processExitZones(loadExit:LoadZone[], move:Line):Load | null {
+    const exits = Level.filterNear<LoadZone>(loadExit, Level.getCheckZone(move));
     if (!exits.length) return null;
     // should add sort check for 2 zones nearly and direction but I don't care
     for (let i = exits.length - 1; i > -1; i -= 1) {
@@ -146,7 +155,7 @@ class Level {
     return null;
   }
 
-  private static processFloors(floors:Surface[], move:Line, onFloor:boolean):SurfaceCollision {
+  private static processFloorsDot(floors:Surface[], move:Line, onFloor:boolean):FloorCollision {
     if (!floors.length) return null;
     if (floors.length > 1) floors.sort((a, b) => b.position.MaxY - a.position.MaxY);
     // prevent teleport down with very low fps aka 10 seconds per frame
@@ -167,33 +176,90 @@ class Level {
     return null;
   }
 
-  private static getCheckZone(move:Line):Rectangle {
-    const top = Math.floor(Math.min(move.B.Y, move.A.Y));
-    const height = Math.ceil(Math.max(move.B.Y, move.A.Y) - top);
-    const left = Math.floor(Math.min(move.B.X, move.A.X));
-    const width = Math.ceil(Math.max(move.B.X, move.A.X) - left);
-    return new Rectangle(left, top, width, height);
+  private static processFloorSub(surfaces:Surface[], zone:Rectangle, move:Line, onFloor:boolean) {
+    const nearFloors = Level.filterNear<Surface>(surfaces, zone);
+    return Level.processFloorsDot(nearFloors, move, onFloor);
   }
 
-  private processCollision(e:Entity, elapsedSeconds:number, char = false):Load | null {
+  private static processFloor(e:Entity, surfaces:Surface[], move:Line):FloorCollision {
+    const checkTop = Math.floor(move.MinY);
+    const checkHeight = Math.ceil(move.MaxY - checkTop);
+    const floorsDotZone = new Rectangle(move.B.X, checkTop, 0, checkHeight);
+
+    const floorCollisionDotPos = Level.processFloorSub(surfaces, floorsDotZone, move, e.OnSurface);
+    if (floorCollisionDotPos) return floorCollisionDotPos;
+
+    const floorsColZone = new Rectangle(e.Collision.Left, checkTop, e.Collision.Width, checkHeight);
+    return Level.processFloorSub(surfaces, floorsColZone, move, e.OnSurface);
+  }
+
+  private static processCeilDot(floors:Surface[], move:Line):FloorCollision {
+    if (!floors.length) return null;
+    if (floors.length > 1) floors.sort((a, b) => -(b.position.MaxY - a.position.MaxY));
+    // prevent teleport down with very low fps aka 10 seconds per frame
+
+    for (let i = floors.length - 1; i > -1; i -= 1) {
+      const floorPos = floors[i].position;
+      const percentBefore = Level.pointPercentOnLine(move.A.X, floorPos.A.X, floorPos.DifXabs);
+      const yBefore = floorPos.DifYabs * percentBefore + floorPos.MinY;
+      if (yBefore > move.A.Y) continue; // platform was below the characrter
+      const percentegeAfter = Level.pointPercentOnLine(move.B.X, floorPos.A.X, floorPos.DifXabs);
+      const yAfter = floorPos.DifYabs * percentegeAfter + floorPos.MinY;
+      if (yAfter < move.B.Y) continue;
+      return { surface: floors[i], point: new Point(move.B.X, yAfter) };
+    }
+
+    return null;
+  }
+
+  private static processCeil(e:Entity, surfaces:Surface[], move:Line):FloorCollision {
+    const move2 = new Line(
+      new Point(move.A.X, move.A.Y - e.Collision.Height),
+      new Point(move.B.X, move.B.Y - e.Collision.Height),
+    );
+    const checkTop = Math.floor(move2.MinY);
+    const checkHeight = Math.ceil(move2.MaxY - checkTop);
+    const floorsColZone = new Rectangle(e.Collision.Left, checkTop, e.Collision.Width, checkHeight);
+    const nearFloors = Level.filterNear<Surface>(surfaces, floorsColZone);
+    return Level.processCeilDot(nearFloors, move2);
+  }
+
+  private static processWalls(e:Entity, move:Line) {
+
+  }
+
+  private processCollisions(e:Entity, elapsedSeconds:number, char = false):Load | null {
     const posBefore = new Point(e.Position.X, e.Position.Y); // to copy values and not reference
     e.frame(elapsedSeconds);
-    const move = new Line(posBefore, e.Position);
-    const checkZone = Level.getCheckZone(move);
+    let move = new Line(posBefore, e.Position);
     if (char) {
-      const nearExits = Level.filterNear<LoadZone>(this.loadExit, checkZone);
-      const exit = Level.processExitZones(nearExits, move);
+      const exit = Level.processExitZones(this.loadExit, move);
       if (exit) return exit;
     }
-    const floorsCheckZone = new Rectangle(move.B.X, checkZone.Top, 0, checkZone.Height);
-    const nearFloors = Level
-      .filterNear<Surface>(this.surfaces[SurfaceGroup.Floors], floorsCheckZone);
-    const floorCollision = Level.processFloors(nearFloors, move, e.OnSurface);
 
+    const floorCollision = Level.processFloor(e, this.surfaces[SurfaceGroup.Floors], move);
     if (floorCollision) {
-      e.Position = floorCollision.point;
+      e.Position.Y = floorCollision.point.Y;
       e.SurfaceType = floorCollision.surface.type;
     } else e.SurfaceType = null;
+
+    const ceilCollision = Level.processCeil(e, this.surfaces[SurfaceGroup.Ceils], move);
+    if (ceilCollision) {
+      e.Position.Y = ceilCollision.point.Y + e.Collision.Height;
+      e.resetVelocityY(elapsedSeconds);
+    }
+
+    const col = e.Collision;
+    const moveVector = move.B.minus(move.A);
+    const colPrev = col.minus(moveVector);
+
+    const collisionZoneCheck = Rectangle.fromLine(new Line(
+      new Point(Math.min(col.Left, colPrev.Left), Math.max(col.Right, colPrev.Right)),
+      new Point(Math.min(col.Top, colPrev.Top), Math.max(col.Bottom, colPrev.Bottom)),
+    ));
+    Level.processWalls(e, move);
+
+    move = new Line(posBefore, e.Position);
 
     return null;
   }
@@ -238,9 +304,9 @@ class Level {
 
   public frame(elapsedSeconds:number, viewSize:Point, zoom:number):Load | undefined {
     const char = this.char as Character;
-    const exit = this.processCollision(char, elapsedSeconds, true);
+    const exit = this.processCollisions(char, elapsedSeconds, true);
     if (exit) return exit;
-    this.entities?.forEach((entity) => this.processCollision(entity, elapsedSeconds));
+    this.entities?.forEach((entity) => this.processCollisions(entity, elapsedSeconds));
     this.processCamera(char, viewSize, zoom, elapsedSeconds);
     return undefined;
   }
@@ -286,7 +352,7 @@ class Level {
   private drawSurfaces(c:RenderContext, zoom:number, camPos:Point) {
     Level.surfaceTypesKeys.forEach((type) => {
       const color = Level.colors[type];
-      c.setLineDash([10, 2]);
+      c.setLineDash([9, 3]);
       Level.drawLines(c, zoom, camPos, this.surfaceFilter(SurfaceGroup.Platforms, type), color);
       c.setLineDash([]);
       Level.drawLines(c, zoom, camPos, this.surfaceFilter(SurfaceGroup.Walls, type), color);
