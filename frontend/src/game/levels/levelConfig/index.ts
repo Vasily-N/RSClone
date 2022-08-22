@@ -4,7 +4,7 @@ import LoadingConfig from './loadingConfig';
 import { SurfaceConfig, surfaceLinesFromPoints } from './surfaceConfig';
 
 type LevelConfig = {
-  size:Point
+  minSize:Point
   surfaces:SurfaceConfig[]
   entities:EntityConfig[]
   loading:LoadingConfig[]

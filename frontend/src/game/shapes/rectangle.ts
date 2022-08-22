@@ -30,6 +30,9 @@ class Rectangle {
   private bottomLine:Line;
   public get BottomLine():Line { return this.bottomLine; }
 
+  private size:Point;
+  public get Size():Point { return this.size; }
+
   public static get Zero():Rectangle { return new Rectangle(0, 0, 0, 0); }
 
   constructor(x:number, y:number, width:number, height:number) {
@@ -39,6 +42,8 @@ class Rectangle {
     this.height = height;
     this.right = this.x + this.width;
     this.bottom = this.y + this.height;
+
+    this.size = new Point(width, height);
 
     const topLeft = new Point(this.x, this.y);
     const topRight = new Point(this.right, this.y);
@@ -50,6 +55,10 @@ class Rectangle {
     this.rightLine = new Line(topRight, bottomRight);
     this.topLine = new Line(topLeft, topRight);
     this.bottomLine = new Line(bottomLeft, bottomRight);
+  }
+
+  public multiply(n:number):Rectangle {
+    return new Rectangle(this.Left * n, this.Top * n, this.width * n, this.height * n);
   }
 }
 

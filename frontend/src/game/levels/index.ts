@@ -28,7 +28,7 @@ class Level {
   private entities:Entity[] = [];
   private char?:Character;
 
-  private size:Point;
+  private area:Rectangle;
   private cameraTarget:Point = Point.Zero;
   private cameraCurrent:Point = Point.Zero;
   private static readonly cameraSpeed = 180;
@@ -73,9 +73,19 @@ class Level {
     };
   }
 
+  private static initArea(surface:Surface[], minSize:Point):Rectangle {
+    const left = surface.reduce((p, c) => Math.min(p, c.position.MinX), Number.MAX_SAFE_INTEGER);
+    const right = surface.reduce((p, c) => Math.max(p, c.position.MaxX), 0);
+    const width = Math.max(right - left + 1, minSize.X);
+    const top = surface.reduce((p, c) => Math.min(p, c.position.MinY), Number.MAX_SAFE_INTEGER);
+    const bottom = surface.reduce((p, c) => Math.max(p, c.position.MaxY), 0);
+    const height = Math.max(bottom - top + 1, minSize.Y);
+    return new Rectangle(left, top, width, height);
+  }
+
   constructor(config:LevelConfig) {
-    this.size = config.size;
     this.surfaces = Level.initSurfaces(config.surfaces);
+    this.area = Level.initArea(this.surfaces[SurfaceGroup.All], config.minSize);
 
     this.entitiesConfig = config.entities;
     this.loadEnter = config.loading;
@@ -191,23 +201,23 @@ class Level {
   private processCamera(char:Character, viewSize:Point, zoom:number, elapsedSeconds:number) {
     // some doublicate-code, I wasn't able to find how in TS dynamically access setters field
     // Y is centered so no code for movement
-    const sizeZoom = this.size.multiply(zoom);
-    if (viewSize.X > sizeZoom.X) {
-      this.cameraTarget.X = (sizeZoom.X - viewSize.X) / 2;
+    const areaZoom = this.area.multiply(zoom);
+    if (viewSize.X > areaZoom.Width) {
+      this.cameraTarget.X = (areaZoom.Width - viewSize.X) / 2;
       this.cameraCurrent.X = this.cameraTarget.X;
     } else {
       const newCameraX = zoom * char.Position.X - (viewSize.X * (0.5
         + (char.Direction === Direction.left ? Level.cameraShift.X : -Level.cameraShift.X)));
-      const maxPosX = sizeZoom.X - viewSize.X;
-      this.cameraTarget.X = Math.min(Math.max(newCameraX, 0), maxPosX);
+      const maxPosX = areaZoom.Width - viewSize.X;
+      this.cameraTarget.X = Math.min(Math.max(newCameraX, areaZoom.Left), maxPosX);
     }
 
-    if (viewSize.Y > sizeZoom.Y) {
-      this.cameraCurrent.Y = (sizeZoom.Y - viewSize.Y) / 2;
+    if (viewSize.Y > areaZoom.Height) {
+      this.cameraCurrent.Y = (areaZoom.Height - viewSize.Y) / 2;
     } else {
       const newCameraY = zoom * char.Position.Y - viewSize.Y * Level.cameraShift.Y;
-      const maxPosY = sizeZoom.Y - viewSize.Y;
-      this.cameraCurrent.Y = Math.min(Math.max(newCameraY, 0), maxPosY);
+      const maxPosY = areaZoom.Height - viewSize.Y;
+      this.cameraCurrent.Y = Math.min(Math.max(newCameraY, areaZoom.Top), maxPosY);
     }
 
     if (this.lastZoom !== zoom || this.lastViewSize !== viewSize) {

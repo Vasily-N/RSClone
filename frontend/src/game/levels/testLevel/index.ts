@@ -43,7 +43,7 @@ loading[5] = { position: new Rectangle(500, 300, 50, 50).DiagonalB, levelId, zon
 
 const size = new Point(800, 500); // todo: calculate dynamically
 const cfg:LevelConfig = {
-  size, surfaces, entities, loading,
+  minSize: size, surfaces, entities, loading,
 };
 
 export default cfg;
