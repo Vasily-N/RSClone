@@ -2,8 +2,8 @@ import Character from './character';
 import { IControlsSettings, Controls, ControlsAction as Action } from './services/controls';
 
 import { IGameSettings } from './services/settings';
-import { Level, LevelId, LevelLoad } from './levels';
-import levelList from './levels/list';
+import { Level, LevelLoad } from './levels';
+import { LevelId, levelList } from './levels/levelsList';
 
 interface IGame {
   start:(context:CanvasRenderingContext2D)=>void;

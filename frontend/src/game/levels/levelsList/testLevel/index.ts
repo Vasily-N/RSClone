@@ -1,10 +1,10 @@
-import { Point, Rectangle } from '../../shapes';
-import SurfaceType from '../../types';
+import { Point, Rectangle } from '../../../shapes';
+import SurfaceType from '../../../types';
 
 import {
   EntityConfig, LevelConfig, LoadingConfig, SurfaceConfig, surfaceLinesFromPoints,
-} from '../levelConfig';
-import { LevelId } from '../types';
+} from '../../levelConfig';
+import LevelId from '../levelIds';
 
 const entities:EntityConfig[] = [];
 

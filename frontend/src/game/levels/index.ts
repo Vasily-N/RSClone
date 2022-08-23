@@ -1,8 +1,6 @@
 import { Point, Line, Rectangle } from '../shapes';
 
-import {
-  LevelLoad as Load, LevelId, Surface, Position,
-} from './types';
+import { LevelLoad as Load, Surface, Position } from './types';
 import {
   LevelConfig, LoadingConfig as LoadZone, EntityConfig, SurfaceConfig,
 } from './levelConfig';
@@ -213,6 +211,4 @@ class Level {
   }
 }
 
-export {
-  Level, Load as LevelLoad, LevelId,
-};
+export { Level, Load as LevelLoad };
