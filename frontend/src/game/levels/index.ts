@@ -5,7 +5,7 @@ import {
 
 import { Point, Line, Rectangle } from '../shapes';
 
-import { Entity, EntityClass, Direction } from '../entity';
+import { Entity, EntityClass } from '../entity';
 import entitiesList from '../entity/list';
 
 import SurfaceType from '../types';
@@ -16,7 +16,7 @@ type Surface = { type:SurfaceType, platform:boolean, position:Line, angle:number
 enum SurfaceGroup { All, Walls, Floors, Ceils, Platforms } // Floors = Ceils + Platforms
 type Surfaces = Record<SurfaceGroup, Surface[]>;
 
-type FloorCollision = { surface:Surface, point:Point } | null;
+type FloorCollision = { surface?:Surface, point:Point } | null;
 type Position = { position:Line };
 type RenderContext = CanvasRenderingContext2D;
 
@@ -44,12 +44,12 @@ class Level {
     return entitiesConfig.map((v) => Level.newEntity(entitiesList[v.type], v.position));
   }
 
-  private static getAngle(line: Line):number {
+  private static getAngle(line:Line):number {
     const vector = line.A.minus(line.B);
     return Math.atan2(vector.Y, vector.X);
   }
 
-  private static readonly wallAngle = (30 * Math.PI) / 180;
+  private static readonly wallAngle = (0 * Math.PI) / 180; // no not straight walls physics
   private static initSurfaces(surfaces:SurfaceConfig[]):Record<SurfaceGroup, Surface[]> {
     const allBeforeNormalizaion = surfaces.map((s) => ({
       platform: false, type: SurfaceType.Normal, ...s, angle: Level.getAngle(s.position),
@@ -59,8 +59,8 @@ class Level {
       ? { ...s, position: new Line(s.position.B, s.position.A), angle: Math.abs(s.angle - halfPI) }
       : { ...s, angle: Math.abs(s.angle + halfPI) }));
 
-    const walls = all.filter((s) => s.angle < Level.wallAngle);
-    const floors = all.filter((s) => s.angle >= Level.wallAngle);
+    const walls = all.filter((s) => s.angle <= Level.wallAngle);
+    const floors = all.filter((s) => s.angle > Level.wallAngle);
     const ceils = floors.filter((s) => !s.platform);
     const platforms = floors.filter((s) => s.platform);
 
@@ -80,7 +80,7 @@ class Level {
     const top = surface.reduce((p, c) => Math.min(p, c.position.MinY), Number.MAX_SAFE_INTEGER);
     const bottom = surface.reduce((p, c) => Math.max(p, c.position.MaxY), 0);
     const height = Math.max(bottom - top + 1, minSize.Y);
-    return new Rectangle(left, top, width, height);
+    return new Rectangle(left - 1, top - 1, width + 1, height + 1);
   }
 
   constructor(config:LevelConfig) {
@@ -99,7 +99,10 @@ class Level {
       zone < this.loadEnter.length ? zone : Math.floor(Math.random() * this.loadEnter.length)
     ].position;
     this.lastZoom = -1;
-    this.char.Position = loadPos.B.minus(loadPos.A).multiply(positionPercentage).plus(loadPos.A);
+    this.char.SurfaceType = null;
+    const pos = loadPos.B.minus(loadPos.A).multiply(positionPercentage).plus(loadPos.A);
+    this.char.Position.X = pos.X;
+    this.char.Position.Y = pos.Y;
     this.char.frame(0.0001);
     // hack to not stuck at loading screen and not to process "just loaded" every frame
   }
@@ -155,18 +158,22 @@ class Level {
     return null;
   }
 
-  private static processFloorsDot(floors:Surface[], move:Line, onFloor:boolean):FloorCollision {
+  private static processFloorsDot(
+    e:Entity,
+    floors:Surface[],
+    move:Line,
+    onFloor:boolean,
+  ):FloorCollision {
     if (!floors.length) return null;
     if (floors.length > 1) floors.sort((a, b) => b.position.MaxY - a.position.MaxY);
     // prevent teleport down with very low fps aka 10 seconds per frame
 
     for (let i = floors.length - 1; i > -1; i -= 1) {
       const floorPos = floors[i].position;
-      if (!onFloor) {
-        const percentBefore = Level.pointPercentOnLine(move.A.X, floorPos.A.X, floorPos.DifXabs);
-        const yBefore = floorPos.DifYabs * percentBefore + floorPos.MinY;
-        if (yBefore < move.A.Y) continue; // platform was above the characrter
-      }
+      const percentBefore = Level.pointPercentOnLine(move.A.X, floorPos.A.X, floorPos.DifXabs);
+      const yBefore = floorPos.DifYabs * percentBefore + floorPos.MinY;
+      if (yBefore < move.A.Y - (onFloor ? e.Collision.Height : 0)) continue;
+      // platform was above the characrter
       const percentegeAfter = Level.pointPercentOnLine(move.B.X, floorPos.A.X, floorPos.DifXabs);
       const yAfter = floorPos.DifYabs * percentegeAfter + floorPos.MinY;
       if (!onFloor && yAfter > move.B.Y) continue;
@@ -176,21 +183,28 @@ class Level {
     return null;
   }
 
-  private static processFloorSub(surfaces:Surface[], zone:Rectangle, move:Line, onFloor:boolean) {
+  private static processFloorSub(
+    e:Entity,
+    surfaces:Surface[],
+    zone:Rectangle,
+    move:Line,
+    onFloor:boolean,
+  ):FloorCollision {
     const nearFloors = Level.filterNear<Surface>(surfaces, zone);
-    return Level.processFloorsDot(nearFloors, move, onFloor);
+    return Level.processFloorsDot(e, nearFloors, move, onFloor);
   }
 
   private static processFloor(e:Entity, surfaces:Surface[], move:Line):FloorCollision {
-    const checkTop = Math.floor(move.MinY);
-    const checkHeight = Math.ceil(move.MaxY - checkTop);
-    const floorsDotZone = new Rectangle(move.B.X, checkTop, 0, checkHeight);
+    const checkTop = Math.floor(move.MinY - e.Collision.Height);
+    const checkHeight = Math.ceil(move.MaxY - checkTop + e.Collision.Height);
+    const dotZone = new Rectangle(move.B.X, checkTop, 0, checkHeight);
 
-    const floorCollisionDotPos = Level.processFloorSub(surfaces, floorsDotZone, move, e.OnSurface);
+    const floorCollisionDotPos = Level.processFloorSub(e, surfaces, dotZone, move, e.OnSurface);
     if (floorCollisionDotPos) return floorCollisionDotPos;
-
-    const floorsColZone = new Rectangle(e.Collision.Left, checkTop, e.Collision.Width, checkHeight);
-    return Level.processFloorSub(surfaces, floorsColZone, move, e.OnSurface);
+    return null;
+    const col = e.Collision.plusPoint(e.Position);
+    const colZone = new Rectangle(col.Left, checkTop, col.Width, checkHeight);
+    return Level.processFloorSub(e, surfaces, colZone, move, e.OnSurface);
   }
 
   private static processCeilDot(floors:Surface[], move:Line):FloorCollision {
@@ -212,54 +226,144 @@ class Level {
     return null;
   }
 
-  private static processCeil(e:Entity, surfaces:Surface[], move:Line):FloorCollision {
+  private static processCeil(surfaces:Surface[], e:Entity, move:Line):FloorCollision {
+    const col = e.Collision.plusPoint(e.Position);
     const move2 = new Line(
-      new Point(move.A.X, move.A.Y - e.Collision.Height),
-      new Point(move.B.X, move.B.Y - e.Collision.Height),
+      new Point(move.A.X, move.A.Y - col.Height),
+      new Point(move.B.X, move.B.Y - col.Height),
     );
-    const checkTop = Math.floor(move2.MinY);
-    const checkHeight = Math.ceil(move2.MaxY - checkTop);
-    const floorsColZone = new Rectangle(e.Collision.Left, checkTop, e.Collision.Width, checkHeight);
-    const nearFloors = Level.filterNear<Surface>(surfaces, floorsColZone);
+    const top = Math.floor(move2.MinY);
+    const hght = Math.ceil(move2.MaxY - top);
+    const ceilsZone = new Rectangle(Math.ceil(col.Left + 1), top, Math.floor(col.Width - 2), hght);
+    const nearFloors = Level.filterNear<Surface>(surfaces, ceilsZone);
     return Level.processCeilDot(nearFloors, move2);
   }
 
-  private static processWalls(e:Entity, move:Line) {
+  private static RayVsRect(ray:Line, target:Rectangle):Line | null {
+    const rayPos = ray.A; const direction = ray.Direction;
+    const invdir:Point = new Point(1.0 / direction.X, 1.0 / direction.Y);
+    const tNear:Point = target.Position.minus(rayPos).multiplyPoint(invdir);
+    const tFar:Point = target.BottomRight.minus(rayPos).multiplyPoint(invdir);
 
+    if (Number.isNaN(tFar.Y) || Number.isNaN(tFar.X)) return null;
+    if (Number.isNaN(tNear.Y) || Number.isNaN(tNear.X)) return null;
+
+    if (tNear.X > tFar.X) [tNear.X, tFar.X] = [tFar.X, tNear.X];
+    if (tNear.Y > tFar.Y) [tNear.Y, tFar.Y] = [tFar.Y, tNear.Y];
+    if (tNear.X > tFar.Y || tNear.Y > tFar.X) return null;
+    const tHitNear:number = Math.max(tNear.X, tNear.Y);
+    const tHitFar:number = Math.min(tFar.X, tFar.Y);
+
+    if (tHitFar < 0) return null;
+
+    const contact1 = rayPos.plus(direction.multiply(tHitNear));
+    const contact2 = rayPos.plus(direction.multiply(tHitFar));
+
+    return new Line(contact1, contact2);
+  }
+
+  private static processWalls(surfaces:Surface[], e:Entity, move:Line):FloorCollision {
+    const colVal = e.Collision;
+    const colPos = colVal.plusPoint(e.Position);
+    const colPrev = colPos.minusPoint(move.Direction);
+    const zoneCheck = Rectangle.fromLine(new Line(
+      new Point(Math.min(colPos.Left, colPrev.Left), Math.min(colPos.Top, colPrev.Top)),
+      new Point(Math.max(colPos.Right, colPrev.Right), Math.max(colPos.Bottom, colPrev.Bottom)),
+    ));
+
+    const nearWalls = Level.filterNear<Surface>(surfaces, zoneCheck);
+    for (let i = nearWalls.length - 1; i > -1; i -= 1) {
+      const walPos = nearWalls[i].position;
+      const res = this.RayVsRect(walPos, colPos);
+      if (res) {
+        if (colPrev.Bottom <= walPos.MinY) {
+          return { surface: nearWalls[i], point: new Point(move.B.X, walPos.MinY) };
+        }
+        if (colPrev.Top >= walPos.MaxY) {
+          return { point: new Point(move.B.X, walPos.MaxY + colVal.Top) };
+        }
+        if (res?.A.X === res?.B.X) {
+          return {
+            point: new Point(
+              colPrev.X < colPos.X ? walPos.MinX - colVal.Right : walPos.MaxX - colVal.Left,
+              move.B.Y,
+            ),
+          };
+        }
+        throw new Error('why do you have not straigh walls?!');
+      }
+    }
+    return null;
+  }
+
+  private static processCeil2(surfaces:Surface[], e:Entity, move:Line):FloorCollision | null {
+    const colVal = e.Collision;
+    const colPos = colVal.plusPoint(e.Position);
+    const colPrev = colPos.minusPoint(move.Direction);
+    const nearCeils = Level.filterNear<Surface>(surfaces, colPos);
+    for (let i = nearCeils.length - 1; i > -1; i -= 1) {
+      const ceilPos = nearCeils[i].position;
+      const res = Level.RayVsRect(ceilPos, colPos);
+      if (!res) continue;
+      if (Math.abs(ceilPos.MinX - res.A.X) < Math.abs(res.B.X - ceilPos.MaxX)) {
+        if (ceilPos.MinX < colPos.Left) continue;
+        const y = ceilPos.MinX === ceilPos.B.X ? ceilPos.B.Y : ceilPos.A.Y;
+        const b = (ceilPos.MinY !== ceilPos.MaxY) && (y === ceilPos.MinY) ? 0.48 : 0;
+        if (colPrev.Bottom <= (y + b)) {
+          if (colPos.Bottom < y - b) continue;
+          return { surface: nearCeils[i], point: new Point(move.B.X, y - colVal.Bottom - b) };
+        }
+        if (ceilPos.MinX + 4 < colPrev.Right) continue;
+        return { point: new Point(ceilPos.MinX - colVal.Right, move.B.Y) };
+      }
+
+      if (ceilPos.MaxX > colPos.Right) continue;
+      const y = ceilPos.MaxX === ceilPos.A.X ? ceilPos.A.Y : ceilPos.B.Y;
+      const b = (ceilPos.MinY !== ceilPos.MaxY) && (y === ceilPos.MinY) ? 0.48 : 0;
+      if (colPrev.Bottom <= (y + b)) {
+        if (colPos.Bottom < y - b) continue;
+        return { surface: nearCeils[i], point: new Point(move.B.X, y - colVal.Bottom - b) };
+      }
+      if (ceilPos.MaxX - 4 > colPrev.Left) continue;
+      return { point: new Point(ceilPos.MaxX - colVal.Left, move.B.Y) };
+    }
+    return null;
   }
 
   private processCollisions(e:Entity, elapsedSeconds:number, char = false):Load | null {
-    const posBefore = new Point(e.Position.X, e.Position.Y); // to copy values and not reference
+    const posBefore = new Point(e.Position.X, e.Position.Y); // to copy values and not the reference
     e.frame(elapsedSeconds);
-    let move = new Line(posBefore, e.Position);
+    const move = new Line(posBefore, e.Position);
     if (char) {
       const exit = Level.processExitZones(this.loadExit, move);
       if (exit) return exit;
     }
 
+    const ceilCollision = Level.processCeil(this.surfaces[SurfaceGroup.Ceils], e, move);
+    if (ceilCollision) {
+      e.Position.Y = ceilCollision.point.Y + e.Collision.Height;
+      e.resetVelocityY(true);
+    }
+
     const floorCollision = Level.processFloor(e, this.surfaces[SurfaceGroup.Floors], move);
     if (floorCollision) {
       e.Position.Y = floorCollision.point.Y;
-      e.SurfaceType = floorCollision.surface.type;
+      if (floorCollision.surface) e.SurfaceType = floorCollision.surface.type;
     } else e.SurfaceType = null;
 
-    const ceilCollision = Level.processCeil(e, this.surfaces[SurfaceGroup.Ceils], move);
-    if (ceilCollision) {
-      e.Position.Y = ceilCollision.point.Y + e.Collision.Height;
-      e.resetVelocityY(elapsedSeconds);
+    const wallsCollision = Level.processWalls(this.surfaces[SurfaceGroup.Walls], e, move)
+      || (!floorCollision && !ceilCollision
+        && Level.processCeil2(this.surfaces[SurfaceGroup.Ceils], e, move));
+    if (wallsCollision) {
+      if (wallsCollision.surface) {
+        e.resetVelocityY();
+        e.SurfaceType = wallsCollision.surface.type;
+      } else if (!floorCollision) e.SurfaceType = null;
+
+      if (e.Position.X !== wallsCollision.point.X) e.resetVelocityX();
+      e.Position.X = wallsCollision.point.X;
+      e.Position.Y = wallsCollision.point.Y;
     }
-
-    const col = e.Collision;
-    const moveVector = move.B.minus(move.A);
-    const colPrev = col.minus(moveVector);
-
-    const collisionZoneCheck = Rectangle.fromLine(new Line(
-      new Point(Math.min(col.Left, colPrev.Left), Math.max(col.Right, colPrev.Right)),
-      new Point(Math.min(col.Top, colPrev.Top), Math.max(col.Bottom, colPrev.Bottom)),
-    ));
-    Level.processWalls(e, move);
-
-    move = new Line(posBefore, e.Position);
 
     return null;
   }

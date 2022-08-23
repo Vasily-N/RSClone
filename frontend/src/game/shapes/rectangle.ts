@@ -3,19 +3,19 @@ import Point from './point';
 
 class Rectangle {
   private x:number;
-  public get X() { return this.x; }
-  public get Left() { return this.x; }
+  public get X():number { return this.x; }
+  public get Left():number { return this.x; }
   private width:number;
-  public get Width() { return this.width; }
+  public get Width():number { return this.width; }
   private right:number;
-  public get Right() { return this.right; }
+  public get Right():number { return this.right; }
   private y:number;
-  public get Y() { return this.y; }
-  public get Top() { return this.y; }
+  public get Y():number { return this.y; }
+  public get Top():number { return this.y; }
   private height:number;
-  public get Height() { return this.height; }
+  public get Height():number { return this.height; }
   private bottom:number;
-  public get Bottom() { return this.bottom; }
+  public get Bottom():number { return this.bottom; }
 
   private diagonalA:Line;
   public get DiagonalA():Line { return this.diagonalA; }
@@ -30,6 +30,16 @@ class Rectangle {
   private bottomLine:Line;
   public get BottomLine():Line { return this.bottomLine; }
 
+  public topLeft:Point;
+  public get TopLeft():Point { return this.topLeft; }
+  public topRight:Point;
+  public get TopRight():Point { return this.topRight; }
+  public bottomLeft:Point;
+  public get BottomLeft():Point { return this.bottomLeft; }
+  public bottomRight:Point;
+  public get BottomRight():Point { return this.bottomRight; }
+
+  public get Position():Point { return this.topLeft; }
   private size:Point;
   public get Size():Point { return this.size; }
 
@@ -49,27 +59,27 @@ class Rectangle {
 
     this.size = new Point(width, height);
 
-    const topLeft = new Point(this.x, this.y);
-    const topRight = new Point(this.right, this.y);
-    const bottomLeft = new Point(this.x, this.bottom);
-    const bottomRight = new Point(this.right, this.bottom);
-    this.diagonalA = new Line(topLeft, bottomRight);
-    this.diagonalB = new Line(topRight, bottomLeft);
-    this.leftLine = new Line(topLeft, bottomLeft);
-    this.rightLine = new Line(topRight, bottomRight);
-    this.topLine = new Line(topLeft, topRight);
-    this.bottomLine = new Line(bottomLeft, bottomRight);
+    this.topLeft = new Point(this.x, this.y);
+    this.topRight = new Point(this.right, this.y);
+    this.bottomLeft = new Point(this.x, this.bottom);
+    this.bottomRight = new Point(this.right, this.bottom);
+    this.diagonalA = new Line(this.topLeft, this.bottomRight);
+    this.diagonalB = new Line(this.topRight, this.bottomLeft);
+    this.leftLine = new Line(this.topLeft, this.bottomLeft);
+    this.rightLine = new Line(this.topRight, this.bottomRight);
+    this.topLine = new Line(this.topLeft, this.topRight);
+    this.bottomLine = new Line(this.bottomLeft, this.bottomRight);
   }
 
   public multiply(n:number):Rectangle {
     return new Rectangle(this.Left * n, this.Top * n, this.width * n, this.height * n);
   }
 
-  public plus(p:Point):Rectangle {
+  public plusPoint(p:Point):Rectangle {
     return new Rectangle(this.Left + p.X, this.Top + p.Y, this.width, this.height);
   }
 
-  public minus(p:Point):Rectangle {
+  public minusPoint(p:Point):Rectangle {
     return new Rectangle(this.Left - p.X, this.Top - p.Y, this.width, this.height);
   }
 }

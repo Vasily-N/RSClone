@@ -18,6 +18,7 @@ class Character extends Entity {
 
   private airJumps = 1;
   private jumpHold = false;
+  private static readonly maxAirJumps = 1;
   private static readonly jumpPower = 110; // todo: to character stats
 
   constructor(controls:Controls) {
@@ -60,7 +61,7 @@ class Character extends Entity {
   }
 
   private processJump():void {
-    if (this.OnSurface) this.airJumps = 1;
+    if (this.OnSurface) this.airJumps = Character.maxAirJumps;
     if (!this.conrols.has(Action.jump)) {
       this.jumpHold = false;
       return;

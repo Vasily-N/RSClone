@@ -61,10 +61,8 @@ class Game {
     c.imageSmoothingEnabled = false; // IDK why it resets between frames
     const { RenderSize: size, Zoom: zoom } = this.gameSettings;
 
-    const load = this.levelCurrent.frame(Math.min(elapsed / 1000, 1), size, zoom);
-
     c.clearRect(0, 0, size.X, size.Y);
-
+    const load = this.levelCurrent.frame(Math.min(elapsed / 1000, 0.666), size, zoom);
     this.levelCurrent.draw(c, zoom, this.gameSettings.DrawBoxes, this.gameSettings.DrawSurfaces);
 
     if (this.gameSettings.FpsDisplay) Game.drawFps(c, Game.fontSize, elapsed);

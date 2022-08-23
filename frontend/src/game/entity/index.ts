@@ -21,10 +21,9 @@ abstract class Entity {
   protected direction:Direction = Direction.right;
   public get Direction():Direction { return this.direction; }
   protected position:Point = Point.Zero;
-  public set Position(value:Point) { this.position = value; }
   public get Position():Point { return this.position; }
   protected velocityPerSecond:Point = Point.Zero;
-  private static readonly maxVelY = 500;
+  private static readonly maxVelY = 400;
 
   private gravity = 100;
   private states:States = {};
@@ -34,12 +33,12 @@ abstract class Entity {
   private animation:SpriteAnimation | null = null;
   private collisionBox:Box | null = null;
   public get Collision():Rectangle {
-    return (this.collisionBox?.getRect(!!this.direction) || Rectangle.Zero).plus(this.position);
+    return (this.collisionBox?.getRect(!!this.direction) || Rectangle.Zero);
   }
 
   protected surfaceType:SurfaceType | null = null;
   public set SurfaceType(value:SurfaceType | null) {
-    if (value) this.velocityPerSecond.Y = 0;
+    if (value !== null) this.resetVelocityY();
     else if (this.OnSurface) this.velocityPerSecond.Y = this.gravity / 1.8;
     this.surfaceType = value;
   }
@@ -109,12 +108,18 @@ abstract class Entity {
     }
 
     this.position.X += elapsedSeconds * this.velocityPerSecond.X;
-
-    console.log(this.velocityPerSecond);
   }
 
-  public resetVelocityY(elapsedSeconds:number) {
-    if (this.velocityPerSecond.Y < 0) this.velocityPerSecond.Y = elapsedSeconds * this.gravity;
+  public resetVelocityX() {
+    this.velocityPerSecond.X = 0;
+  }
+
+  public resetVelocityY(negativeOnly = false, positiveOnly = false) {
+    if ((!negativeOnly && !positiveOnly)
+      || (negativeOnly && this.velocityPerSecond.Y < 0)
+      || (positiveOnly && this.velocityPerSecond.Y > 0)) {
+      this.velocityPerSecond.Y = 0;
+    }
   }
 
   private static readonly colors = {

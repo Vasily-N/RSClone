@@ -29,7 +29,6 @@ class Box {
       rectangle.Width,
       rectangle.Height,
     );
-    console.log(this);
   }
 
   public hit(rectangle:Rectangle):boolean {
