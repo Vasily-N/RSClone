@@ -1,0 +1,42 @@
+.input-auth {
+  &:focus {
+    outline: 1px solid pink;
+  }
+}
+
+.reg,
+.auth {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  width: 230px;
+  top: 50%;
+  left: 50%;
+  margin-left: -100px;
+  margin-top: -50px;
+  gap: 10px;
+  align-items: center
+}
+
+.message,
+.skip {
+  color: rgb(225, 252, 249);
+  cursor: pointer;
+  &:hover {
+    color: palevioletred;
+    cursor: pointer;
+  }
+}
+
+.reg-btn,
+.auth-btn {
+  width: 100px;
+  border: none;
+  outline: 2px solid pink;
+  padding: .5em;
+  background-color: aqua;
+  font-weight: 600;
+  &:hover {
+    outline-color: rgb(247, 39, 247);
+  }
+}

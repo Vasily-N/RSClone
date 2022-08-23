@@ -1,3 +1,3 @@
-import App from './app';
+import AuthWindow from './auth/index';
 
-new App().start();
+new AuthWindow().start();
