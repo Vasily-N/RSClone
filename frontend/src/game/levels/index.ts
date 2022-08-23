@@ -13,7 +13,7 @@ import entitiesList from '../entity/list';
 import SurfaceType from '../types';
 
 import Character from '../character';
-import Collision from './helpers/collision';
+import { Camera, Collision } from './helpers';
 
 enum SurfaceGroup { All, Walls, Floors, Ceils, Platforms } // Floors = Ceils + Platforms
 type Surfaces = Record<SurfaceGroup, Surface[]>;
@@ -27,14 +27,7 @@ class Level {
   private readonly entitiesConfig:EntityConfig[];
   private entities:Entity[] = [];
   private char?:Character;
-
-  private area:Rectangle;
-  private cameraTarget:Point = Point.Zero;
-  private cameraCurrent:Point = Point.Zero;
-  private static readonly cameraSpeed = 180;
-  private static readonly cameraShift = new Point(1 / 15, 6 / 11);
-  private lastZoom = -1;
-  private lastViewSize = Point.Zero;
+  private camera:Camera;
 
   private static newEntity<A extends Entity>(EntityConstructor:EntityClass<A>, position:Point):A {
     return new EntityConstructor(position);
@@ -85,7 +78,7 @@ class Level {
 
   constructor(config:LevelConfig) {
     this.surfaces = Level.initSurfaces(config.surfaces);
-    this.area = Level.initArea(this.surfaces[SurfaceGroup.All], config.minSize);
+    this.camera = new Camera(Level.initArea(this.surfaces[SurfaceGroup.All], config.minSize));
 
     this.entitiesConfig = config.entities;
     this.loadEnter = config.loading;
@@ -98,7 +91,7 @@ class Level {
     const loadPos:Line = this.loadEnter[
       zone < this.loadEnter.length ? zone : Math.floor(Math.random() * this.loadEnter.length)
     ].position;
-    this.lastZoom = -1;
+    this.camera.resetPosition();
     this.char.SurfaceType = null;
     const pos = loadPos.B.minus(loadPos.A).multiply(positionPercentage).plus(loadPos.A);
     this.char.Position.X = pos.X;
@@ -145,50 +138,12 @@ class Level {
     return null;
   }
 
-  private processCamera(char:Character, viewSize:Point, zoom:number, elapsedSeconds:number):void {
-    // some doublicate-code, I wasn't able to find how in TS dynamically access setters field
-    // I specially used Size[key] instead of Width/Height to easily see the doublicate-code
-
-    const areaZoom = this.area.multiply(zoom);
-    if (viewSize.X > areaZoom.Size.X) {
-      this.cameraTarget.X = (areaZoom.Size.X - viewSize.X) / 2;
-      this.cameraCurrent.X = this.cameraTarget.X;
-    } else {
-      const shiftX = 0.5 + (char.Direction ? Level.cameraShift.X : -Level.cameraShift.X);
-      const newCameraX = zoom * char.Position.X - viewSize.X * shiftX;
-      const maxPosX = areaZoom.Size.X - viewSize.X;
-      this.cameraTarget.X = Math.min(Math.max(newCameraX, areaZoom.X), maxPosX);
-    }
-
-    // Y is always centered so no code for Y-camera-movement
-    if (viewSize.Y > areaZoom.Size.Y) {
-      this.cameraCurrent.Y = (areaZoom.Size.Y - viewSize.Y) / 2;
-    } else {
-      const shiftY = Level.cameraShift.Y;
-      const newCameraY = zoom * char.Position.Y - viewSize.Y * shiftY;
-      const maxPosY = areaZoom.Size.Y - viewSize.Y;
-      this.cameraCurrent.Y = Math.min(Math.max(newCameraY, areaZoom.Y), maxPosY);
-    }
-
-    if (this.lastZoom !== zoom || this.lastViewSize !== viewSize) {
-      this.cameraCurrent.X = this.cameraTarget.X;
-      this.lastZoom = zoom;
-      this.lastViewSize = viewSize;
-    } else if (this.cameraCurrent.X !== this.cameraTarget.X) {
-      const cameraSpeed = Level.cameraSpeed * zoom;
-      const cameraShift = elapsedSeconds * cameraSpeed;
-      this.cameraCurrent.X = (this.cameraCurrent.X > this.cameraTarget.X)
-        ? Math.max(this.cameraCurrent.X - cameraShift, this.cameraTarget.X)
-        : Math.min(this.cameraCurrent.X + cameraShift, this.cameraTarget.X);
-    }
-  }
-
   public frame(elapsedSeconds:number, viewSize:Point, zoom:number):Load | undefined {
     const char = this.char as Character;
     const exit = this.processCollisions(char, elapsedSeconds, true);
     if (exit) return exit;
     this.entities?.forEach((entity) => this.processCollisions(entity, elapsedSeconds));
-    this.processCamera(char, viewSize, zoom, elapsedSeconds);
+    this.camera.process(char, viewSize, zoom, elapsedSeconds);
     return undefined;
   }
 
@@ -242,7 +197,7 @@ class Level {
   }
 
   public draw(c:RenderContext, zoom:number, dBoxes = false, dSurfaces = false):void {
-    const camPos = this.cameraCurrent;
+    const camPos = this.camera.Current;
 
     if (dSurfaces) {
       // because canvas is weird, need for sharp lines
