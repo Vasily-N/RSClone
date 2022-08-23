@@ -13,11 +13,12 @@ class Character extends Entity {
   private readonly conrols:Controls;
   private static readonly maxVelX = { walk: 100, run: 180 };
   private static readonly changeVelX:ChangeVelX = {
-    default: 1500, air: 700, [SurfaceType.Ice]: 400,
+    default: 1500, air: 180, [SurfaceType.Ice]: 100,
   };
 
   private airJumps = 1;
   private jumpHold = false;
+  private static readonly maxAirJumps = 1;
   private static readonly jumpPower = 110; // todo: to character stats
 
   constructor(controls:Controls) {
@@ -30,9 +31,10 @@ class Character extends Entity {
   }
 
   private processWalk(run:boolean, left:boolean, right:boolean, xVelocityChange:number):void {
-    const maxVelX = this.OnSurface
-      ? Character.getMaxVelX(run)
-      : Math.max(Math.abs(this.velocityPerSecond.X), Character.maxVelX.walk);
+    const maxVelX = Math.max(
+      Math.abs(this.velocityPerSecond.X),
+      Character.getMaxVelX(run),
+    );
     if (left) {
       this.velocityPerSecond.X -= xVelocityChange;
       this.direction = Direction.left;
@@ -59,7 +61,7 @@ class Character extends Entity {
   }
 
   private processJump():void {
-    if (this.OnSurface) this.airJumps = 1;
+    if (this.OnSurface) this.airJumps = Character.maxAirJumps;
     if (!this.conrols.has(Action.jump)) {
       this.jumpHold = false;
       return;
@@ -86,7 +88,6 @@ class Character extends Entity {
     const xVelocityChange = elapsedSeconds * (xVelChangePerSec as number);
     if (left || right) this.processWalk(run, left, right, xVelocityChange);
     else this.processSlowDown(xVelocityChange);
-
     this.processJump();
   }
 

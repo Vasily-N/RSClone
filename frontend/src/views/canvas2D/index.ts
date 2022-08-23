@@ -13,7 +13,7 @@ class Canvas2D extends View {
     canvas.addEventListener('mousemove', this.showCoords.bind(this));
     canvas.addEventListener('mouseout', this.removeCoords.bind(this));
     canvas.addEventListener('mouseout', this.removeCoords.bind(this));
-    canvas.addEventListener('wheel', this.changeZoom.bind(this));
+    canvas.addEventListener('wheel', this.changeZoom.bind(this), { passive: true });
     return canvas;
   }
 

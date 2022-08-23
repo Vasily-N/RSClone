@@ -21,10 +21,9 @@ abstract class Entity {
   protected direction:Direction = Direction.right;
   public get Direction():Direction { return this.direction; }
   protected position:Point = Point.Zero;
-  public set Position(value:Point) { this.position = value; }
   public get Position():Point { return this.position; }
   protected velocityPerSecond:Point = Point.Zero;
-  private static readonly maxVelY = 500;
+  private static readonly maxVelY = 400;
 
   private gravity = 100;
   private states:States = {};
@@ -32,12 +31,14 @@ abstract class Entity {
 
   protected currentState = -1;
   private animation:SpriteAnimation | null = null;
-  private collision:Rectangle = Rectangle.Zero;
-  public get Collision():Rectangle { return this.collision; }
+  private collisionBox:Box | null = null;
+  public get Collision():Rectangle {
+    return (this.collisionBox?.getRect(!!this.direction) || Rectangle.Zero);
+  }
 
   protected surfaceType:SurfaceType | null = null;
   public set SurfaceType(value:SurfaceType | null) {
-    if (value) this.velocityPerSecond.Y = 0;
+    if (value !== null) this.resetVelocityY();
     else if (this.OnSurface) this.velocityPerSecond.Y = this.gravity / 1.8;
     this.surfaceType = value;
   }
@@ -46,19 +47,21 @@ abstract class Entity {
 
   // because I'm too dumb to code it correctly with very limited time
   private static getCollisionSimplified(boxes:Box[]):Rectangle {
-    return boxes.map((b) => b.RectCombined).reduce((p, c) => Box.initCombined(p, c));
+    return boxes
+      .map((b) => b.getRect())
+      .reduce((p, c) => Box.initCombined(p, c), new Rectangle(0, 0, 0, 0));
   }
 
   public set State(value:number) {
     if (!this.states[value]) {
       this.currentState = -1;
       this.animation = null;
-      this.collision = Rectangle.Zero;
+      this.collisionBox = null;
       return;
     }
 
     this.currentState = value;
-    this.collision = Entity.getCollisionSimplified(this.states[this.currentState].collisionboxes);
+    [this.collisionBox] = this.states[this.currentState].collisionboxes;
     this.animation = this.states[this.currentState].animation || null;
   }
 
@@ -73,7 +76,11 @@ abstract class Entity {
       const hurtboxesTmp = Entity.concatBoxes(stateCf.hurtbox, stateCf.hurtboxes);
       const hurtboxes = hurtboxesTmp.length ? hurtboxesTmp : hitboxes;
       const collisionboxesTmp = Entity.concatBoxes(stateCf.collisionbox, stateCf.collisionboxes);
-      const collisionboxes = collisionboxesTmp.length ? collisionboxesTmp : hurtboxesTmp;
+      const collisionboxes = [
+        new Box(Entity.getCollisionSimplified(
+          collisionboxesTmp.length ? collisionboxesTmp : hurtboxesTmp,
+        ), true), // temp shit
+      ];
       const state:State = { hitboxes, hurtboxes, collisionboxes };
 
       if (stateCf.sprite) Object.assign(state, { animation: new SpriteAnimation(stateCf.sprite) });
@@ -103,8 +110,20 @@ abstract class Entity {
     this.position.X += elapsedSeconds * this.velocityPerSecond.X;
   }
 
+  public resetVelocityX() {
+    this.velocityPerSecond.X = 0;
+  }
+
+  public resetVelocityY(negativeOnly = false, positiveOnly = false) {
+    if ((!negativeOnly && !positiveOnly)
+      || (negativeOnly && this.velocityPerSecond.Y < 0)
+      || (positiveOnly && this.velocityPerSecond.Y > 0)) {
+      this.velocityPerSecond.Y = 0;
+    }
+  }
+
   private static readonly colors = {
-    hit: 'red', hurt: 'blue', collision: 'pink', position: 'green',
+    hit: 'red', hurt: 'blue', collision: 'fuchsia', position: 'green',
   };
 
   private static drawPosition(c:CanvasRenderingContext2D, drawPos:Point):void {
@@ -120,7 +139,7 @@ abstract class Entity {
     const cLocal = c;
     c.translate(0.5, 0.5);
     cLocal.strokeStyle = Entity.colors.collision;
-    state.hurtboxes.forEach((v) => v.draw(c, drawPos, zoom, reverse));
+    state.collisionboxes.forEach((v) => v.draw(c, drawPos, zoom, reverse));
     cLocal.strokeStyle = Entity.colors.hurt;
     state.hurtboxes.forEach((v) => v.draw(c, drawPos, zoom, reverse));
     cLocal.strokeStyle = Entity.colors.hit;

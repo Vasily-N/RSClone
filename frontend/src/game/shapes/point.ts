@@ -26,6 +26,10 @@ class Point {
     return new Point(this.x * n, this.y * n);
   }
 
+  public multiplyPoint(p:Point):Point {
+    return new Point(this.x * p.X, this.y * p.Y);
+  }
+
   public divide(n:number):Point {
     return new Point(this.x / n, this.y / n);
   }
