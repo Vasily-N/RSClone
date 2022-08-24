@@ -39,6 +39,7 @@ class SettingIsGame extends View {
   constructor(parentId: string, gameSettings: IGameSettings) {
     super(parentId, template, style);
     this.gameSettings = gameSettings;
+    this.initSetting();
   }
 }
 
