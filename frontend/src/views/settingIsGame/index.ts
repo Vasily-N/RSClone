@@ -8,17 +8,17 @@ class SettingIsGame extends View {
 
   initSetting() {
     const boxesDrow = this.getElementById('boxes__drow') as HTMLInputElement;
-    if (this.gameSettings.DrawBoxes) boxesDrow.checked = true;
+    this.gameSettings.DrawBoxes = boxesDrow.checked;
     boxesDrow?.addEventListener('click', () => {
       this.gameSettings.DrawBoxes = !this.gameSettings.DrawBoxes;
     });
     const FpsDisplay = this.getElementById('fps__display') as HTMLInputElement;
-    if (this.gameSettings.FpsDisplay) FpsDisplay.checked = true;
+    this.gameSettings.FpsDisplay = FpsDisplay.checked;
     FpsDisplay?.addEventListener('click', () => {
       this.gameSettings.FpsDisplay = !this.gameSettings.FpsDisplay;
     });
     const drawSurfaces = this.getElementById('draw__surfaces') as HTMLInputElement;
-    if (this.gameSettings.DrawSurfaces) drawSurfaces.checked = true;
+    this.gameSettings.DrawSurfaces = drawSurfaces.checked;
     drawSurfaces?.addEventListener('click', () => {
       this.gameSettings.DrawSurfaces = !this.gameSettings.DrawSurfaces;
     });
