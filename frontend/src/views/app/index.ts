@@ -8,17 +8,18 @@ import { Game } from '../../game';
 import Placeholder from '../placeholder';
 
 import { Services } from '../../services';
+import SettingIsGame from '../settingIsGame';
 
-enum ViewId { canvas, placaholder }
+enum ViewId { canvas, placaholder, settingGame }
 
 class AppPage extends View {
   private static contentId = style.content;
-  private services:Services; // TODO:
-  private currentViewId?:ViewId;
-  private views:Record<string, IView> = {};
-  private game?:Game;
+  private services: Services; // TODO:
+  private currentViewId?: ViewId;
+  private views: Record<string, IView> = {};
+  private game?: Game;
 
-  private createView(viewId:ViewId):IView {
+  private createView(viewId: ViewId): IView {
     switch (viewId) {
       case ViewId.canvas: {
         const canvasView = new Canvas2D(AppPage.contentId, this.services.gameSettings);
@@ -26,16 +27,20 @@ class AppPage extends View {
         return canvasView;
       }
       case ViewId.placaholder: return new Placeholder(AppPage.contentId, this.services);
+      case ViewId.settingGame: {
+        return new SettingIsGame(AppPage.contentId, this.services.gameSettings);
+      }
+
       default: throw new Error(`${viewId} doesn't exit`);
     }
   }
 
-  private getView(viewId:ViewId):IView {
+  private getView(viewId: ViewId): IView {
     if (!this.views[viewId]) this.views[viewId] = this.createView(viewId);
     return this.views[viewId];
   }
 
-  constructor(parentId:string, services:Services) {
+  constructor(parentId: string, services: Services) {
     super(parentId, template, style);
     this.services = services;
   }
@@ -43,15 +48,16 @@ class AppPage extends View {
   private initListeners() {
     this.getElementById('toCanvas')?.addEventListener('click', this.changeTo.bind(this, ViewId.canvas));
     this.getElementById('toPlaceholder')?.addEventListener('click', this.changeTo.bind(this, ViewId.placaholder));
+    this.getElementById('toSettingGame')?.addEventListener('click', this.changeTo.bind(this, ViewId.settingGame));
   }
 
-  public append():void {
+  public append(): void {
     super.append();
     this.initListeners();
     this.changeTo(ViewId.canvas);
   }
 
-  private changeTo(viewId:ViewId):boolean {
+  private changeTo(viewId: ViewId): boolean {
     if (this.currentViewId === viewId) return false;
     this.currentViewId = viewId;
     const view = this.getView(viewId);
