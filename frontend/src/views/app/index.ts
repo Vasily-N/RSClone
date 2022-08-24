@@ -27,8 +27,11 @@ class AppPage extends View {
         return canvasView;
       }
       case ViewId.placaholder: return new Placeholder(AppPage.contentId, this.services);
-      case ViewId.settingGame:
-        return new SettingIsGame(AppPage.contentId, this.services.gameSettings);
+      case ViewId.settingGame: {
+        const settingGame = new SettingIsGame(AppPage.contentId, this.services.gameSettings);
+        settingGame.initSetting();
+        return settingGame;
+      }
 
       default: throw new Error(`${viewId} doesn't exit`);
     }
