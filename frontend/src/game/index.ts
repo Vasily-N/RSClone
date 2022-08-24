@@ -1,7 +1,6 @@
 import Character from './character';
 import { IControlsSettings, Controls, ControlsAction as Action } from './services/controls';
 
-
 import { Level, LevelId, LevelLoad } from './levels';
 import levelList from './levels/list';
 import IGameSettings from './services/settings/iGameSettings';

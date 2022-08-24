@@ -3,53 +3,56 @@ import style from './settingIsGame.scss';
 import { View } from '..';
 import { IGameSettings } from '../../services';
 
-class settingIsGame extends View {
-	gameSettings: IGameSettings;
-	ui: { fpsLimitNumeric: number ; BoxesDrow: boolean; drawSurfaces: boolean; fpsDisplay: boolean; zoomGame:number };
-	fpsLimitNumeric: void;
+class SettingIsGame extends View {
+  gameSettings: IGameSettings;
 
-	initSetting() {
-		this.checkBox("boxes__drow", this.ui.BoxesDrow)
-		this.checkBox("draw__surfaces", this.ui.drawSurfaces)
-		this.checkBox("fps__display", this.ui.fpsDisplay)
-		const elementNumeric = this.getElementById('fps__Limit') as HTMLInputElement
-		elementNumeric.value = String(this.ui.fpsLimitNumeric)
-		elementNumeric.addEventListener('change', (e  )=> {
-			let value = +(e.target as HTMLInputElement).value
-			this.ui.fpsLimitNumeric =  value
-		})
-		const zoomGame = this.getElementById('zoom__game') as HTMLInputElement
-		zoomGame.value = String(this.ui.zoomGame)
-		zoomGame.addEventListener('change', (e  )=> {
-			let value  = (e.target as HTMLInputElement).value
-			this.ui.zoomGame = +value
-		})
-		
-             
-	}
+  init: void;
+  initSetting() {
+    const boxesDrow = this.getElementById('boxes__drow') as HTMLInputElement;
+    if (this.gameSettings.DrawBoxes) boxesDrow.checked = true;
+    boxesDrow?.addEventListener('click', () => {
+      this.gameSettings.DrawBoxes = !this.gameSettings.DrawBoxes;
+    });
+    const FpsDisplay = this.getElementById('fps__display') as HTMLInputElement;
+    if (this.gameSettings.FpsDisplay) FpsDisplay.checked = true;
+    FpsDisplay?.addEventListener('click', () => {
+      this.gameSettings.FpsDisplay = !this.gameSettings.FpsDisplay;
+    });
+    const drawSurfaces = this.getElementById('draw__surfaces') as HTMLInputElement;
+    if (this.gameSettings.DrawSurfaces) drawSurfaces.checked = true;
+    drawSurfaces?.addEventListener('click', () => {
+      this.gameSettings.DrawSurfaces = !this.gameSettings.DrawSurfaces;
+    });
+    this.checkBox('boxes__drow', this.gameSettings.DrawBoxes);
+    this.checkBox('draw__surfaces', this.gameSettings.DrawSurfaces);
+    this.checkBox('fps__display', this.gameSettings.FpsDisplay);
+    const fpsLimit = this.getElementById('fps__Limit') as HTMLInputElement;
+    fpsLimit.value = String(this.gameSettings.FpsLimit);
+    fpsLimit.addEventListener('change', (e) => {
+      const value = +(e.target as HTMLInputElement).value;
+      this.gameSettings.FpsLimit = value;
+    });
+    const zoomGame = this.getElementById('zoom__game') as HTMLInputElement;
+    zoomGame.value = String(this.gameSettings.Zoom);
+    zoomGame.addEventListener('change', (e) => {
+      const value = +(e.target as HTMLInputElement).value;
+      this.gameSettings.Zoom = value;
+    });
+  }
 
-	checkBox(elementStr: string, uiValue: boolean) {
-		const element = this.getElementById(elementStr) as HTMLInputElement
-		if (uiValue) element.checked = true;
-		element?.addEventListener("click", (e) => {
-			if (uiValue) {
-				uiValue = false
-			} else {
-				uiValue = true
-			}
-		})
-	}
-	constructor(parentId: string, gameSettings: IGameSettings) {
-		super(parentId, template, style);
-		this.gameSettings = gameSettings;
-		this.ui = {
-			fpsLimitNumeric: 60, BoxesDrow: gameSettings.DrawBoxes,
-			drawSurfaces: gameSettings.DrawSurfaces, fpsDisplay: gameSettings.FpsDisplay, 
-			zoomGame: gameSettings.Zoom
-		}
-		this.fpsLimitNumeric = this.initSetting()
+  private checkBox(elem: string, uiValue: boolean): void {
+    const element = this.getElementById(elem) as HTMLInputElement;
+    if (uiValue) element.checked = true;
+    element?.addEventListener('click', () => {
+      uiValue = !uiValue;
+    });
+  }
 
-	}
+  constructor(parentId: string, gameSettings: IGameSettings) {
+    super(parentId, template, style);
+    this.gameSettings = gameSettings;
+    this.init = this.initSetting();
+  }
 }
 
-export default settingIsGame;
+export default SettingIsGame;
