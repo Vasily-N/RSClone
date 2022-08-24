@@ -10,7 +10,7 @@ class SettingIsGame extends View {
     const boxesDrow = this.getElementById('boxes__drow') as HTMLInputElement;
     boxesDrow.checked = this.gameSettings.DrawBoxes;
     boxesDrow?.addEventListener('click', () => {
-      this.gameSettings.DrawBoxes = !this.gameSettings.DrawBoxes;
+      this.gameSettings.DrawBoxes = boxesDrow.checked;
     });
     const FpsDisplay = this.getElementById('fps__display') as HTMLInputElement;
     FpsDisplay.checked = this.gameSettings.FpsDisplay;
