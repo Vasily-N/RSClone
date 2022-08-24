@@ -8,19 +8,19 @@ class SettingIsGame extends View {
 
   initSetting() {
     const boxesDrow = this.getElementById('boxes__drow') as HTMLInputElement;
-    this.gameSettings.DrawBoxes = boxesDrow.checked;
+    boxesDrow.checked = this.gameSettings.DrawBoxes;
     boxesDrow?.addEventListener('click', () => {
       this.gameSettings.DrawBoxes = !this.gameSettings.DrawBoxes;
     });
     const FpsDisplay = this.getElementById('fps__display') as HTMLInputElement;
-    this.gameSettings.FpsDisplay = FpsDisplay.checked;
+    FpsDisplay.checked = this.gameSettings.FpsDisplay;
     FpsDisplay?.addEventListener('click', () => {
-      this.gameSettings.FpsDisplay = !this.gameSettings.FpsDisplay;
+      this.gameSettings.FpsDisplay = FpsDisplay.checked;
     });
     const drawSurfaces = this.getElementById('draw__surfaces') as HTMLInputElement;
-    this.gameSettings.DrawSurfaces = drawSurfaces.checked;
+    drawSurfaces.checked = this.gameSettings.DrawSurfaces;
     drawSurfaces?.addEventListener('click', () => {
-      this.gameSettings.DrawSurfaces = !this.gameSettings.DrawSurfaces;
+      drawSurfaces.checked = this.gameSettings.DrawSurfaces;
     });
     const fpsLimit = this.getElementById('fps__Limit') as HTMLInputElement;
     fpsLimit.value = String(this.gameSettings.FpsLimit);
