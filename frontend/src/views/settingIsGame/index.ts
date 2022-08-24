@@ -20,7 +20,7 @@ class SettingIsGame extends View {
     const drawSurfaces = this.getElementById('draw__surfaces') as HTMLInputElement;
     drawSurfaces.checked = this.gameSettings.DrawSurfaces;
     drawSurfaces?.addEventListener('click', () => {
-      drawSurfaces.checked = this.gameSettings.DrawSurfaces;
+      this.gameSettings.DrawSurfaces = drawSurfaces.checked;
     });
     const fpsLimit = this.getElementById('fps__Limit') as HTMLInputElement;
     fpsLimit.value = String(this.gameSettings.FpsLimit);
