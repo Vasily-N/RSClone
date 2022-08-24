@@ -1,3 +1,5 @@
+@use '../common.scss' as common;
+
 .input-auth {
   &:focus {
     outline: 1px solid pink;
