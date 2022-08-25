@@ -1,6 +1,6 @@
 import { IApi, Data as Query, Api } from './api';
 
-type ListResponse<T> = { // to types?
+export type ListResponse<T> = { // to types?
   totalCount: number,
   values?: T[],
 };
