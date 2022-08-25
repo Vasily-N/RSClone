@@ -11,12 +11,16 @@ class RegWindow extends View {
     const regWin = this.getElementById('reg') as HTMLDivElement;
     const loginWin = this.getElementById('auth') as HTMLDivElement;
     RegWindow.hiddenElem(loginWin);
-    const btn = this.getElementById('reg-btn') as HTMLButtonElement;
+    const btnReg = this.getElementById('reg-user') as HTMLButtonElement;
+    const btnAuth = this.getElementById('auth-user') as HTMLButtonElement;
     const isAccaunt = this.getElementById('reg-message') as HTMLParagraphElement;
-    const skip = this.getElementById('reg-skip') as HTMLParagraphElement;
-    btn.addEventListener('click', () => this.services.createUser(this.makeUserData('reg')));
+    const skipReg = this.getElementById('reg-skip') as HTMLParagraphElement;
+    const skipAuth = this.getElementById('auth-skip') as HTMLParagraphElement;
+    btnReg.addEventListener('click', () => this.services.createUser(this.makeUserData('reg')));
+    btnAuth.addEventListener('click', () => this.services.createUser(this.makeUserData('auth')));
     isAccaunt.addEventListener('click', () => this.hiddenAndShow(regWin, loginWin));
-    skip.addEventListener('click', () => RegWindow.hiddenElem(this.mainWin));
+    skipReg.addEventListener('click', () => RegWindow.hiddenElem(this.mainWin));
+    skipAuth.addEventListener('click', () => RegWindow.hiddenElem(this.mainWin));
   }
 
   makeUserData(suffix: string):UserData {
