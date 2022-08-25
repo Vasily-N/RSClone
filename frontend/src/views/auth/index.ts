@@ -1,38 +1,51 @@
 import template from './registerWindow.html';
 import style from './auth.scss';
 import { View } from '..';
-import { ApiServices } from '../../services';
-
-export interface UserData {
-  name: string,
-  password: string,
-}
+import { IUserSrvice, UserData } from '../../services/apiServices/userServices';
 
 class RegWindow extends View {
-  private readonly regWin: HTMLDivElement;
-  private readonly regBtn: HTMLButtonElement;
-  services: ApiServices;
+  mainWin: HTMLDivElement;
+  services: IUserSrvice;
 
-  private initRegWindow():HTMLDivElement {
-    const reg = this.getElementById('reg') as HTMLDivElement;
-    // this.regBtn.addEventListener('click', apiServices??);
-    return reg;
+  initRegWindow():void {
+    const regWin = this.getElementById('reg') as HTMLDivElement;
+    const loginWin = this.getElementById('auth') as HTMLDivElement;
+    RegWindow.hiddenElem(loginWin);
+    const btn = this.getElementById('reg-btn') as HTMLButtonElement;
+    const isAccaunt = this.getElementById('reg-message') as HTMLParagraphElement;
+    const skip = this.getElementById('reg-skip') as HTMLParagraphElement;
+    btn.addEventListener('click', () => this.services.createUser(this.makeUserData('reg')));
+    isAccaunt.addEventListener('click', () => this.hiddenAndShow(regWin, loginWin));
+    skip.addEventListener('click', () => RegWindow.hiddenElem(this.mainWin));
   }
 
-  private getUserData():UserData {
-    const nameEl = this.getElementById('name-reg') as HTMLInputElement;
-    const passEl = this.getElementById('pass-reg') as HTMLInputElement;
+  makeUserData(suffix: string):UserData {
+    const nameEl = this.getElementById(`name-${suffix}`) as HTMLInputElement;
+    const passEl = this.getElementById(`pass-${suffix}`) as HTMLInputElement;
     return {
       name: nameEl.value,
       password: passEl.value,
     };
   }
 
-  constructor(parentId:string, services: ApiServices) {
+  static hiddenElem(elem: HTMLDivElement) {
+    elem.remove();
+  }
+
+  showElem(elem: HTMLDivElement) {
+    this.mainWin.append(elem);
+  }
+
+  hiddenAndShow(hidden: HTMLDivElement, show: HTMLDivElement) {
+    RegWindow.hiddenElem(hidden);
+    this.showElem(show);
+  }
+
+  constructor(parentId:string, services: IUserSrvice) {
     super(parentId, template, style);
+    this.mainWin = this.getElementById('auth-window') as HTMLDivElement;
     this.services = services;
-    this.regWin = this.initRegWindow();
-    this.regBtn = this.getElementById('reg-user') as HTMLButtonElement;
+    this.initRegWindow();
   }
 }
 
