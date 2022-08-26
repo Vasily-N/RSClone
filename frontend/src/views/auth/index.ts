@@ -8,8 +8,8 @@ class RegWindow extends View {
   services: IUserSrvice;
 
   initRegWindow():void {
-    const regWin = this.getElementById('reg') as HTMLDivElement;
-    const loginWin = this.getElementById('auth') as HTMLDivElement;
+    const regWin = this.getElementById('reg') as HTMLInputElement;
+    const loginWin = this.getElementById('auth') as HTMLInputElement;
     RegWindow.hiddenElem(loginWin);
     const btnReg = this.getElementById('reg-user') as HTMLButtonElement;
     const btnAuth = this.getElementById('auth-user') as HTMLButtonElement;
