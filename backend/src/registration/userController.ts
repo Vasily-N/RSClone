@@ -1,6 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import UserService from './userService';
 import { TypedRequestBody, ResponseType } from '../../index';
+import User from './user';
 
 export interface IUserBodyReq {
   name: string,
@@ -10,8 +11,15 @@ export interface IUserBodyReq {
 class UserController {
   async create(request: TypedRequestBody<IUserBodyReq>, response: ResponseType) {
     try {
-      const userLoginPassword = await UserService.create(request.body);
-      return response.json(userLoginPassword);
+      User.findOne({ name: request.body.name }, async (err: Error, example: any) => {
+        if (err) console.log(err);
+        if (example) {
+          response.status(500).json({ result: 'this name is already taken' });
+        } else {
+          const userLoginPassword = await UserService.create(request.body);
+          return response.json(userLoginPassword);
+        }
+      });
     } catch (error) {
       response.status(500).json(error);
     }

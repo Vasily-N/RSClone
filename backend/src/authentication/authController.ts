@@ -2,6 +2,7 @@
 import AuthService from './authService';
 import { TypedRequestBody, ResponseType } from '../../index';
 import { IUserBodyReq } from '../registration/userController';
+import User from '../registration/user';
 
 class AuthController {
   async create(request: TypedRequestBody<IUserBodyReq>, response: ResponseType) {
@@ -33,8 +34,14 @@ class AuthController {
 
   async update(request: TypedRequestBody<IUserBodyReq>, response: ResponseType) {
     try {
-      const updatedUser = await AuthService.update(request.body);
-      return response.json(updatedUser);
+      User.find({ name: request.body.name, password: request.body.password }, async (err: Error, example: any) => {
+        if (err) console.log(err);
+        if (example) {
+          const userLoginPassword = await AuthService.update(example[0]._id);
+          return response.json(userLoginPassword);
+        }
+        return response.status(500).json({ result: 'this name is not exist' });
+      });
     } catch (err) {
       response.status(500).json(err);
     }
