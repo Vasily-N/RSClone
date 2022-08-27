@@ -11,9 +11,6 @@ export interface IUser {
 class UserService {
   async create(user: IUser) {
     const userLoginPassword = await User.create(user);
-    const userNameAndPass = await User.find({ name: user.name, password: user.password });
-    console.log(userLoginPassword, 'created');
-    this.startUserGame(userNameAndPass[0]._id);
     return userLoginPassword;
   }
 
