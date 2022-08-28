@@ -1,22 +1,22 @@
 import template from './index.html';
 import style from '../settingControl.scss';
 import { View } from '../..';
-import ControlsSettings from '../../../game/services/controls/settings';
+import { IControlsSettings, ControlsAction } from '../../../services';
 
 class ActionView extends View {
-  value: string | null;
-  ControlsSettings: ControlsSettings;
+  private value: ControlsAction;
+  private controlsSettings: IControlsSettings;
   init() {
     const element = this.getElementById('setting__class') as Element;
-    element.textContent = this.value;
-    this.ControlsSettings.get(this.value);
+    element.textContent = this.value.toString();
+    this.controlsSettings.get(this.value);
   }
 
-  constructor(parentId: string, value: string) {
+  constructor(parentId: string, controlsSettings:IControlsSettings, value:ControlsAction) {
     super(parentId, template, style);
     this.value = value;
+    this.controlsSettings = controlsSettings;
     this.init();
-    this.ControlsSettings = new ControlsSettings();
   }
 }
 
