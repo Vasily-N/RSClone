@@ -40,8 +40,23 @@ class Level {
     return Math.atan2(vector.Y, vector.X);
   }
 
+  private static readonly perpLen = 20;
+  private static getPerpOfLine(l:Line):Line[] {
+    const len = Level.perpLen / Math.hypot(l.Direction.X, l.Direction.Y);
+    const perpDir = new Point(l.Direction.Y, l.Direction.X)
+      .multiply(len).minus(new Point(len / 2, len / 2));
+    return [
+      new Line(l.A.minus(perpDir), l.A.plus(perpDir)),
+      new Line(l.B.minus(perpDir), l.B.plus(perpDir)),
+    ];
+  }
+
   private static readonly wallAngle = (0 * Math.PI) / 180; // no not straight walls physics
-  private static initSurfaces(surfaces:SurfaceConfig[]):Record<SurfaceGroup, Surface[]> {
+  private static initSurfaces(surfaces:SurfaceConfig[], load:LoadZone[])
+    :Record<SurfaceGroup, Surface[]> {
+    const allLoadHack:SurfaceConfig[] = load
+      .reduce((p:Line[], c) => p.concat(Level.getPerpOfLine(c.position)), [])
+      .map((v) => ({ position: v }));
     const allBeforeNormalizaion = surfaces.map((s) => ({
       platform: false, type: SurfaceType.Normal, ...s, angle: Level.getAngle(s.position),
     }));
@@ -64,23 +79,34 @@ class Level {
     };
   }
 
-  private static initArea(surface:Surface[], minSize:Point):Rectangle {
+  private static initArea(surface:Surface[], minSize?:Point):Rectangle {
     const left = surface.reduce((p, c) => Math.min(p, c.position.MinX), Number.MAX_SAFE_INTEGER);
     const right = surface.reduce((p, c) => Math.max(p, c.position.MaxX), 0);
-    const width = Math.max(right - left + 1, minSize.X);
+    const width = Math.max(right - left + 1, minSize?.X || 0);
     const top = surface.reduce((p, c) => Math.min(p, c.position.MinY), Number.MAX_SAFE_INTEGER);
     const bottom = surface.reduce((p, c) => Math.max(p, c.position.MaxY), 0);
-    const height = Math.max(bottom - top + 1, minSize.Y);
+    const height = Math.max(bottom - top + 1, minSize?.Y || 0);
     return new Rectangle(left - 1, top - 1, width + 1, height + 1);
   }
 
+  private static splitConfig(walls:(SurfaceConfig | LoadZone)[]):[SurfaceConfig[], LoadZone[]] {
+    return walls.reduce<[SurfaceConfig[], LoadZone[]]>((p:[SurfaceConfig[], LoadZone[]], c) => {
+      let ret:[SurfaceConfig[], LoadZone[]];
+      ret = ((c as LoadZone).levelId !== undefined)
+        ? [p[0], [...p[1], c as LoadZone]]
+        : ret = [[...p[0], c as SurfaceConfig], p[1]];
+      return ret;
+    }, [[], []] as [SurfaceConfig[], LoadZone[]]);
+  }
+
   constructor(config:LevelConfig) {
-    this.surfaces = Level.initSurfaces(config.surfaces);
+    const [surfaces, loading] = Level.splitConfig(config.walls);
+    this.surfaces = Level.initSurfaces(surfaces, loading);
     this.camera = new Camera(Level.initArea(this.surfaces[SurfaceGroup.All], config.minSize));
 
     this.entitiesConfig = config.entities;
-    this.loadEnter = config.loading;
-    this.loadExit = config.loading.filter((v) => v.zone !== undefined);
+    this.loadEnter = loading;
+    this.loadExit = loading.filter((v) => v.zone !== undefined);
   }
 
   public load(char:Character, zone = 0, positionPercentage = 0, portal = false):void {
@@ -90,10 +116,10 @@ class Level {
       zone < this.loadEnter.length ? zone : Math.floor(Math.random() * this.loadEnter.length)
     ].position;
     this.camera.resetPosition();
-    this.char.SurfaceType = null;
-    const pos = loadPos.B.minus(loadPos.A).multiply(positionPercentage).plus(loadPos.A);
-    this.char.Position.X = pos.X;
-    this.char.Position.Y = pos.Y;
+    const pos = loadPos.MinX === loadPos.MaxX
+      ? new Point(loadPos.MinX, loadPos.MaxY)
+      : loadPos.B.minus(loadPos.A).multiply(positionPercentage).plus(loadPos.A);
+    this.char.levelLoad(pos.minus(new Point(0, 0.48)));
     this.char.frame(0.0001);
     // hack to not stuck at loading screen and not to process "just loaded" every frame
   }
@@ -126,7 +152,7 @@ class Level {
       if (wallsCollision.surface) {
         e.resetVelocityY();
         e.SurfaceType = wallsCollision.surface.type;
-      } else if (!floorCollision) e.SurfaceType = null;
+      }
 
       if (e.Position.X !== wallsCollision.point.X) e.resetVelocityX();
       e.Position.X = wallsCollision.point.X;

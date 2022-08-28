@@ -5,6 +5,8 @@ interface IGameSettings {
   DrawSurfaces:boolean
   FpsDisplay:boolean
   FpsLimit:number
+  FpsLimitMin:number
+  FrameTimeLimitMin:number
   FrameLimitSafer:number
   FrameTimeLimit:number
   Zoom:number

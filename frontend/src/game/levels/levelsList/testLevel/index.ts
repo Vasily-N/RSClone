@@ -1,55 +1,48 @@
-import { Point, Rectangle } from '../../../shapes';
+import { Point as P, Rectangle } from '../../../shapes';
 import SurfaceType from '../../../types';
 
 import {
-  EntityConfig, LevelConfig, LoadingConfig, SurfaceConfig, surfaceLinesFromPoints,
+  EntityConfig, LevelConfig, LoadingConfig, SurfaceConfig, positionsFromPoints,
 } from '../../levelConfig';
 import LevelId from '../levelIds';
 
 const entities:EntityConfig[] = [];
 
-const surfaces:SurfaceConfig[] = [];
-
-const loading:LoadingConfig[] = [];
-
-surfaces.push(...surfaceLinesFromPoints([
-  Point.Zero, new Point(0, 400), new Point(200, 400), new Point(200, 500),
-  new Point(400, 500), new Point(400, 400), new Point(800, 400), new Point(800, 0),
-  Point.Zero,
-]));
-
-surfaces.push({ position: new Rectangle(200, 300, 200, 0).DiagonalA, platform: true });
-surfaces.push(...[
-  { position: new Rectangle(100, 0, 200, 200).DiagonalA, platform: true },
-  { position: new Rectangle(300, 200, 200, 0).DiagonalA, platform: true },
-  ...surfaceLinesFromPoints([
-    new Point(780, 250), new Point(750, 250), new Point(650, 300), new Point(600, 340),
-    new Point(560, 350),
-  ], true),
-  ...surfaceLinesFromPoints([
-    new Point(550, 250), new Point(560, 240), new Point(570, 220),
-  ], true),
-  ...surfaceLinesFromPoints([new Point(200, 400), new Point(210, 400), new Point(210, 500)]),
-  ...surfaceLinesFromPoints([new Point(750, 200), new Point(700, 160), new Point(610, 130)], true),
-  ...surfaceLinesFromPoints([new Point(250, 450), new Point(350, 420)], false),
-  ...surfaceLinesFromPoints([new Point(200, 210), new Point(240, 240)], false),
-]);
+const surfaces:SurfaceConfig[] = [
+  ...positionsFromPoints([
+    P.Zero, new P(0, 400), new P(200, 400), new P(200, 500),
+    new P(400, 500), new P(400, 400), new P(800, 400), new P(800, 0),
+    P.Zero,
+  ]),
+  { position: new Rectangle(200, 300, 200, 0).DiagonalA, platform: true },
+  ...[
+    { position: new Rectangle(100, 0, 200, 200).DiagonalA, platform: true },
+    { position: new Rectangle(300, 200, 200, 0).DiagonalA, platform: true },
+    ...positionsFromPoints([
+      new P(780, 250), new P(750, 250), new P(650, 300), new P(600, 340),
+      new P(560, 350),
+    ]),
+    ...positionsFromPoints([
+      new P(550, 250), new P(560, 240),
+    ]),
+    ...positionsFromPoints([new P(200, 400), new P(210, 400), new P(210, 500)]),
+    ...positionsFromPoints([new P(750, 200), new P(700, 160), new P(610, 130)], true),
+    ...positionsFromPoints([new P(250, 450), new P(350, 420)], false),
+    ...positionsFromPoints([new P(200, 210), new P(240, 240)], false),
+  ],
+];
 
 surfaces[1].type = SurfaceType.Ice;
 surfaces[5].type = SurfaceType.Ice;
-surfaces[17].platform = true;
 
-const levelId = LevelId.test;
-loading[0] = { position: new Rectangle(100, 100, 0, 100).DiagonalA };
-loading[1] = { position: new Rectangle(500, 100, 0, 100).DiagonalA, levelId, zone: 0 };
-loading[2] = { position: new Rectangle(400, 100, 100, 0).DiagonalA, levelId, zone: 3 };
-loading[3] = { position: new Rectangle(400, 300, 100, 0).DiagonalA, levelId, zone: 2 };
-loading[4] = { position: new Rectangle(60, 300, 50, 50).DiagonalB, levelId, zone: 5 };
-loading[5] = { position: new Rectangle(360, 300, 50, 50).DiagonalB, levelId, zone: 4 };
+const loading:LoadingConfig[] = [
+  { position: new Rectangle(100, 100, 0, 100).DiagonalA, levelId: LevelId.test },
+  { position: new Rectangle(750, 20, 0, 100).DiagonalA, levelId: LevelId.test2, zone: 1 },
+];
 
-const size = new Point(800, 500); // todo: calculate dynamically
+const size = new P(800, 500); // todo: calculate dynamically
 const cfg:LevelConfig = {
-  minSize: size, surfaces, entities, loading,
+  minSize: size, walls: surfaces.concat(loading), entities,
 };
 
 export default cfg;

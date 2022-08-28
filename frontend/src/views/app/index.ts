@@ -4,7 +4,7 @@ import style from './app.scss';
 import { IView, View } from '..';
 
 import Canvas2D from '../canvas2D';
-import { Game } from '../../game';
+import { Game, WinTheGame } from '../../game';
 import Placeholder from '../placeholder';
 
 import { Services } from '../../services';
@@ -23,6 +23,7 @@ class AppPage extends View {
       case ViewId.canvas: {
         const canvasView = new Canvas2D(AppPage.contentId, this.services.gameSettings);
         this.game = new Game(this.services.controls.settings, this.services.gameSettings);
+        this.game.start(this.winTheGame.bind(this), this.pauseTheGame.bind(this));
         return canvasView;
       }
       case ViewId.placaholder: return new Placeholder(AppPage.contentId, this.services);
@@ -57,6 +58,16 @@ class AppPage extends View {
     const view = this.getView(viewId);
     view.replace();
     return true;
+  }
+
+  private winTheGame(win:WinTheGame):void {
+    alert(JSON.stringify(win));
+    console.log(this);
+  }
+
+  private pauseTheGame():void {
+    alert('pause!');
+    console.log(this);
   }
 }
 

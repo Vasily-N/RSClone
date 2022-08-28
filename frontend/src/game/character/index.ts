@@ -19,7 +19,7 @@ class Character extends Entity {
   private airJumps = 1;
   private jumpHold = false;
   private static readonly maxAirJumps = 1;
-  private static readonly jumpPower = 110; // todo: to character stats
+  private static readonly jumpPower = 130; // todo: to character stats
 
   constructor(controls:Controls) {
     super(Point.Zero, states);
@@ -94,6 +94,11 @@ class Character extends Entity {
   public frame(elapsedSeconds:number):void {
     this.processControls(elapsedSeconds);
     super.frame(elapsedSeconds);
+  }
+
+  public levelLoad(position:Point) {
+    this.position.X = position.X;
+    this.position.Y = position.Y;
   }
 }
 

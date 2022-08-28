@@ -3,7 +3,7 @@ import LevelId from '../levelsList/levelIds';
 
 type LoadingConfig = {
   position:Line
-  levelId?:LevelId
+  levelId:LevelId
   zone?:number
 };
 

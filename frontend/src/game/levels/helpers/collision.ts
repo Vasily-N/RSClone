@@ -9,6 +9,7 @@ import { LevelId } from '../levelsList';
 type FloorCollision = { surface?:Surface, point:Point } | null;
 
 class Collision {
+  // this should be recoded but I don't have time
   private static filterNear<T>(array:Position[], checkZone:Rectangle):T[] {
     return array
       .filter((s) => s.position.MinX <= checkZone.Right
@@ -52,7 +53,8 @@ class Collision {
       const exit = exits[i];
       const exitPos = exit.position;
       const position = Collision.linesIntersect(exitPos, move);
-      if (!position) continue;
+      if (position === null) continue;
+      if (move.A.X === exit.position.MinX && move.A.X === exit.position.MaxX) continue;
       const levelId = exit.levelId as LevelId;
       const zone = exit.zone as number;
       return { levelId, zone, position };
@@ -128,6 +130,7 @@ class Collision {
     return null;
   }
 
+  private static ceilThr = 1.5;
   public static processCeil(surfaces:Surface[], e:Entity, move:Line):FloorCollision {
     const col = e.Collision.plusPoint(e.Position);
     const move2 = new Line(
@@ -135,8 +138,10 @@ class Collision {
       new Point(move.B.X, move.B.Y - col.Height),
     );
     const top = Math.floor(move2.MinY);
-    const hght = Math.ceil(move2.MaxY - top);
-    const ceilsZone = new Rectangle(Math.ceil(col.Left + 1), top, Math.floor(col.Width - 2), hght);
+    const left = col.Left + Collision.ceilThr;
+    const height = Math.ceil(move2.MaxY - top);
+    const width = col.Width - Collision.ceilThr * 2;
+    const ceilsZone = new Rectangle(left, top, width, height);
     const nearFloors = Collision.filterNear<Surface>(surfaces, ceilsZone);
     return Collision.processCeilDot(nearFloors, move2);
   }
@@ -182,7 +187,7 @@ class Collision {
           return { surface: nearWalls[i], point: new Point(move.B.X, walPos.MinY) };
         }
         if (colPrev.Top >= walPos.MaxY) {
-          return { point: new Point(move.B.X, walPos.MaxY + colVal.Top) };
+          return { point: new Point(move.B.X, walPos.MaxY + colVal.Height + 1) };
         }
         if (res?.A.X === res?.B.X) {
           return {

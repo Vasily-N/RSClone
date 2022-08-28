@@ -25,7 +25,7 @@ abstract class Entity {
   protected velocityPerSecond:Point = Point.Zero;
   private static readonly maxVelY = 400;
 
-  private gravity = 100;
+  private gravity = 150;
   private states:States = {};
   protected stateElapsedSeconds = 0;
 
