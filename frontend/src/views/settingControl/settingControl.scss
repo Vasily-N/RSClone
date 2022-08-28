@@ -1,5 +1,9 @@
 @use '../common.scss' as common;
 
+
+.box {
+	display: flex;
+}
 div {
 	color: white
 }

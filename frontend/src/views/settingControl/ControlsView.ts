@@ -1,14 +1,20 @@
-import { getAllEnumKeys } from 'enum-for';
 import template from './index.html';
 import style from './settingControl.scss';
 import { View } from '..';
 import { Services } from '../../services';
+import Action from '../../game/services/controls/actions.enum';
 
 class ControlsView extends View {
   services: Services;
+
   init() {
     const obj = this.services.controls.action;
-    const arr = getAllEnumKeys(obj);
+    for (const action in obj) {
+      if (isNaN(Number(action))){
+        let ActionView = new ActionView('setting__control');
+        ActionView.append();
+      }
+    }
   }
 
   constructor(parentId: string, services: Services) {
