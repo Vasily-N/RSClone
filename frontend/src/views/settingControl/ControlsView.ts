@@ -14,7 +14,7 @@ class ControlsView extends View {
   private static init():Views {
     return Object.keys(Action)
       .filter((v) => Number.isNaN(Number(v)))
-      .reduce((res, v) => ({ ...res, [v]: new ActionView('setting__control') }), {});
+      .reduce((res, v) => ({ ...res, [v]: new ActionView('setting__control', v) }), {});
   }
 
   constructor(parentId: string, controls:IControlsSettings) {
