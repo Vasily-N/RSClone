@@ -7,6 +7,7 @@ import SpriteAnimation from './spriteAnimation';
 import { Point, Rectangle } from '../shapes';
 import Box from '../box';
 import SurfaceType from '../types';
+import { ISoundPlay } from '../services/sound';
 
 type State = {
   animation?:SpriteAnimation;

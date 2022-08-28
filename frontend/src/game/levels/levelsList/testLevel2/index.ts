@@ -1,5 +1,6 @@
 import { Point as P } from '../../../shapes';
 import SurfaceType from '../../../types';
+import music from "./Dracula's Castle.mp3";
 
 import {
   EntityConfig, LevelConfig, LoadingConfig, SurfaceConfig, positionsFromPoints,
@@ -38,6 +39,6 @@ const entities:EntityConfig[] = [
 
 ];
 
-const cfg:LevelConfig = { walls, entities };
+const cfg:LevelConfig = { walls, entities, music };
 
 export default cfg;

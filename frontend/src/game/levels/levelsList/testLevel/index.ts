@@ -1,5 +1,6 @@
 import { Point as P, Rectangle } from '../../../shapes';
 import SurfaceType from '../../../types';
+import music from './Beggining.mp3';
 
 import {
   EntityConfig, LevelConfig, LoadingConfig, SurfaceConfig, positionsFromPoints,
@@ -42,7 +43,7 @@ const loading:LoadingConfig[] = [
 
 const size = new P(800, 500); // todo: calculate dynamically
 const cfg:LevelConfig = {
-  minSize: size, walls: surfaces.concat(loading), entities,
+  minSize: size, walls: surfaces.concat(loading), entities, music,
 };
 
 export default cfg;

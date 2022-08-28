@@ -41,7 +41,7 @@ const baseConfig = {
         loader: 'html-loader',
       },
       {
-        test: /\.(png|jpe?g|gif)$/i,
+        test: /\.(png|jpe?g|gif|m4a|mp3|aac|ogg)$/i,
         loader: 'file-loader',
         generator: {
           filename: 'images/[hash][ext]',

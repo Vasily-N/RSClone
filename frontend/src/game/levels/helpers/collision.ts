@@ -99,8 +99,8 @@ class Collision {
   }
 
   public static processFloor(e:Entity, surfaces:Surface[], move:Line):FloorCollision {
-    const checkTop = Math.floor(move.MinY - e.Collision.Height);
-    const checkHeight = Math.ceil(move.MaxY - checkTop + e.Collision.Height);
+    const checkTop = Math.floor(move.MinY - e.Collision.Height / 4);
+    const checkHeight = Math.ceil(move.MaxY - checkTop + e.Collision.Height / 4);
     const dotZone = new Rectangle(move.B.X, checkTop, 0, checkHeight);
 
     const floorCollisionDotPos = Collision.processFloorSub(e, surfaces, dotZone, move, e.OnSurface);

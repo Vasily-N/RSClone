@@ -12,6 +12,7 @@ import SurfaceType from '../types';
 
 import Character from '../character';
 import { Camera, Collision } from './helpers';
+import GameSoundPlay from '../soundPlay';
 
 enum SurfaceGroup { All, Walls, Floors, Ceils, Platforms } // Floors = Ceils + Platforms
 type Surfaces = Record<SurfaceGroup, Surface[]>;
@@ -23,6 +24,7 @@ class Level {
   private readonly loadEnter:LoadZone[];
   private readonly loadExit:LoadZone[];
   private readonly entitiesConfig:EntityConfig[];
+  private readonly music?:string;
   private entities:Entity[] = [];
   private char?:Character;
   private camera:Camera;
@@ -107,6 +109,7 @@ class Level {
     this.entitiesConfig = config.entities;
     this.loadEnter = loading;
     this.loadExit = loading.filter((v) => v.zone !== undefined);
+    if (config.music) this.music = config.music;
   }
 
   public load(char:Character, zone = 0, positionPercentage = 0, portal = false):void {
@@ -122,6 +125,7 @@ class Level {
     this.char.levelLoad(pos.minus(new Point(0, 0.48)));
     this.char.frame(0.0001);
     // hack to not stuck at loading screen and not to process "just loaded" every frame
+    if (this.music) GameSoundPlay.music(this.music);
   }
 
   private processCollisions(e:Entity, elapsedSeconds:number, char = false):Load | null {
@@ -149,14 +153,16 @@ class Level {
       || (!floorCollision && !ceilCollision
         && Collision.processCeil2(this.surfaces[SurfaceGroup.Ceils], e, move));
     if (wallsCollision) {
-      if (wallsCollision.surface) {
-        e.resetVelocityY();
-        e.SurfaceType = wallsCollision.surface.type;
-      }
+      if (wallsCollision.surface) e.SurfaceType = wallsCollision.surface.type;
 
-      if (e.Position.X !== wallsCollision.point.X) e.resetVelocityX();
-      e.Position.X = wallsCollision.point.X;
-      e.Position.Y = wallsCollision.point.Y;
+      if (e.Position.Y !== wallsCollision.point.Y) {
+        e.resetVelocityY();
+        e.Position.Y = wallsCollision.point.Y;
+      }
+      if (e.Position.X !== wallsCollision.point.X) {
+        e.resetVelocityX();
+        e.Position.X = wallsCollision.point.X;
+      }
     }
 
     return null;

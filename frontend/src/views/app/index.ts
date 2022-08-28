@@ -6,10 +6,11 @@ import { IView, View } from '..';
 import Canvas2D from '../canvas2D';
 import { Game, WinTheGame } from '../../game';
 import Placeholder from '../placeholder';
+import SoundView from '../sound';
 
 import { Services } from '../../services';
 
-enum ViewId { canvas, placaholder }
+enum ViewId { canvas, placaholder, sounds }
 
 class AppPage extends View {
   private static contentId = style.content;
@@ -22,11 +23,16 @@ class AppPage extends View {
     switch (viewId) {
       case ViewId.canvas: {
         const canvasView = new Canvas2D(AppPage.contentId, this.services.gameSettings);
-        this.game = new Game(this.services.controls.settings, this.services.gameSettings);
+        this.game = new Game(
+          this.services.controls.settings,
+          this.services.gameSettings,
+          this.services.sounds.play,
+        );
         this.game.start(this.winTheGame.bind(this), this.pauseTheGame.bind(this));
         return canvasView;
       }
       case ViewId.placaholder: return new Placeholder(AppPage.contentId, this.services);
+      case ViewId.sounds: return new SoundView('sounds', this.services.sounds.subsribe);
       default: throw new Error(`${viewId} doesn't exit`);
     }
   }
@@ -49,6 +55,7 @@ class AppPage extends View {
   public append():void {
     super.append();
     this.initListeners();
+    this.getView(ViewId.sounds).append();
     this.changeTo(ViewId.canvas);
   }
 

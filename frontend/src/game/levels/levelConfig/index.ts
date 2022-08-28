@@ -8,6 +8,8 @@ type LevelConfig = {
   minSize?:Point
   walls:(SurfaceConfig | LoadingConfig)[]
   entities:EntityConfig[]
+  music?:string
+  backgrounds?:string[]
 };
 
 export {

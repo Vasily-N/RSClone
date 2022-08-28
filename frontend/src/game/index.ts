@@ -4,6 +4,8 @@ import { IControlsSettings, Controls, ControlsAction as Action } from './service
 import { IGameSettings } from './services/settings';
 import { Level, LevelLoad } from './levels';
 import { LevelId, levelList } from './levels/levelsList';
+import { ISoundPlay } from './services/sound';
+import GameSoundPlay from './soundPlay';
 
 type WinTheGame = {
   elapsedSeconds:number
@@ -32,7 +34,12 @@ class Game implements IGame {
 
   private static RenderError = new Error("the game can't process without canvas");
 
-  constructor(controlsSettings:IControlsSettings, gameSettings:IGameSettings) {
+  constructor(
+    controlsSettings:IControlsSettings,
+    gameSettings:IGameSettings,
+    soundPlay:ISoundPlay,
+  ) {
+    GameSoundPlay.setSoundPlay(soundPlay);
     this.controls = new Controls(controlsSettings);
     this.char = new Character(this.controls);
     this.gameSettings = gameSettings;

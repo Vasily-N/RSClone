@@ -3,6 +3,8 @@ import { Entity, Direction } from '../entity';
 import { Point } from '../shapes';
 import { CharacterState, states } from './states';
 import SurfaceType from '../types';
+import sounds from './sounds';
+import GameSoundPlay from '../soundPlay';
 
 type ChangeVelX = Partial<{ [t in SurfaceType]: number }> & {
   default: number
@@ -72,6 +74,8 @@ class Character extends Entity {
       this.airJumps -= 1;
     } else this.surfaceType = null;
     // because surfaces are sticky (to prevent "floating" from stairs)
+
+    GameSoundPlay.sound(sounds.jump);
     this.velocityPerSecond.Y = -Character.jumpPower;
     this.jumpHold = true;
   }
