@@ -1,5 +1,5 @@
 import express from 'express';
-import mongoose from 'mongoose';
+import mongoose, { ConnectOptions } from 'mongoose';
 import cors from 'cors';
 import router from './src/router';
 
@@ -20,7 +20,10 @@ export type ResponseType = express.Response;
 
 async function startClone() {
   try {
-    await mongoose.connect(URL_DB);
+    await mongoose.connect(URL_DB, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    } as ConnectOptions);
     app.listen(port, () => console.log(`server run, port ${port}`));
   } catch (error) {
     console.log(error);
