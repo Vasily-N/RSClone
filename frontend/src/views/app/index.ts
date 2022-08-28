@@ -32,7 +32,7 @@ class AppPage extends View {
         return new SettingIsGame(AppPage.contentId, this.services.gameSettings);
       }
       case ViewId.settingControl: {
-        return new ControlsView(AppPage.contentId, this.services);
+        return new ControlsView(AppPage.contentId, this.services.controls.settings);
       }
 
       default: throw new Error(`${viewId} doesn't exit`);

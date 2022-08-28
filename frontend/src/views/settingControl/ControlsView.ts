@@ -1,26 +1,31 @@
 import template from './index.html';
 import style from './settingControl.scss';
 import { View } from '..';
-import { Services } from '../../services';
+import { IControlsSettings } from '../../services';
 import Action from '../../game/services/controls/actions.enum';
+import ActionView from './actionView/ActionView';
+
+type Views = { [key:string]: ActionView };
 
 class ControlsView extends View {
-  services: Services;
+  private controls: IControlsSettings;
+  private views:Views;
 
-  init() {
-    const obj = this.services.controls.action;
-    for (const action in obj) {
-      if (isNaN(Number(action))){
-        let ActionView = new ActionView('setting__control');
-        ActionView.append();
-      }
-    }
+  private static init():Views {
+    return Object.keys(Action)
+      .filter((v) => Number.isNaN(Number(v)))
+      .reduce((res, v) => ({ ...res, [v]: new ActionView('setting__control') }), {});
   }
 
-  constructor(parentId: string, services: Services) {
+  constructor(parentId: string, controls:IControlsSettings) {
     super(parentId, template, style);
-    this.services = services;
-    this.init();
+    this.controls = controls;
+    this.views = ControlsView.init();
+  }
+
+  public append() {
+    super.append();
+    Object.values(this.views).forEach((v) => v.append());
   }
 }
 
