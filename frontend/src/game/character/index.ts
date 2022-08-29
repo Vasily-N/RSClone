@@ -3,6 +3,8 @@ import { Entity, Direction } from '../entity';
 import { Point } from '../shapes';
 import { CharacterState, states } from './states';
 import SurfaceType from '../types';
+import sounds from './sounds';
+import GameSoundPlay from '../soundPlay';
 
 type ChangeVelX = Partial<{ [t in SurfaceType]: number }> & {
   default: number
@@ -13,12 +15,13 @@ class Character extends Entity {
   private readonly conrols:Controls;
   private static readonly maxVelX = { walk: 100, run: 180 };
   private static readonly changeVelX:ChangeVelX = {
-    default: 1500, air: 700, [SurfaceType.Ice]: 400,
+    default: 1500, air: 180, [SurfaceType.Ice]: 100,
   };
 
   private airJumps = 1;
   private jumpHold = false;
-  private static readonly jumpPower = 110; // todo: to character stats
+  private static readonly maxAirJumps = 1;
+  private static readonly jumpPower = 130; // todo: to character stats
 
   constructor(controls:Controls) {
     super(Point.Zero, states);
@@ -30,9 +33,10 @@ class Character extends Entity {
   }
 
   private processWalk(run:boolean, left:boolean, right:boolean, xVelocityChange:number):void {
-    const maxVelX = this.OnSurface
-      ? Character.getMaxVelX(run)
-      : Math.max(Math.abs(this.velocityPerSecond.X), Character.maxVelX.walk);
+    const maxVelX = Math.max(
+      Math.abs(this.velocityPerSecond.X),
+      Character.getMaxVelX(run),
+    );
     if (left) {
       this.velocityPerSecond.X -= xVelocityChange;
       this.direction = Direction.left;
@@ -59,7 +63,7 @@ class Character extends Entity {
   }
 
   private processJump():void {
-    if (this.OnSurface) this.airJumps = 1;
+    if (this.OnSurface) this.airJumps = Character.maxAirJumps;
     if (!this.conrols.has(Action.jump)) {
       this.jumpHold = false;
       return;
@@ -70,6 +74,8 @@ class Character extends Entity {
       this.airJumps -= 1;
     } else this.surfaceType = null;
     // because surfaces are sticky (to prevent "floating" from stairs)
+
+    GameSoundPlay.sound(sounds.jump);
     this.velocityPerSecond.Y = -Character.jumpPower;
     this.jumpHold = true;
   }
@@ -86,13 +92,17 @@ class Character extends Entity {
     const xVelocityChange = elapsedSeconds * (xVelChangePerSec as number);
     if (left || right) this.processWalk(run, left, right, xVelocityChange);
     else this.processSlowDown(xVelocityChange);
-
     this.processJump();
   }
 
   public frame(elapsedSeconds:number):void {
     this.processControls(elapsedSeconds);
     super.frame(elapsedSeconds);
+  }
+
+  public levelLoad(position:Point) {
+    this.position.X = position.X;
+    this.position.Y = position.Y;
   }
 }
 

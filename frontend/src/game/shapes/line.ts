@@ -7,6 +7,9 @@ class Line {
   public get B():Point { return this.b; }
   public static get Zero():Line { return new Line(Point.Zero, Point.Zero); }
 
+  private direction:Point;
+  public get Direction():Point { return this.direction; }
+
   private minX:number;
   public get MinX():number { return this.minX; }
   private maxX:number;
@@ -23,6 +26,7 @@ class Line {
   constructor(a:Point, b:Point) {
     this.a = a;
     this.b = b;
+    this.direction = b.minus(a);
     this.minX = Math.min(this.a.X, this.b.X);
     this.maxX = Math.max(this.a.X, this.b.X);
     this.minY = Math.min(this.a.Y, this.b.Y);

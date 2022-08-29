@@ -22,14 +22,12 @@ class Controls {
     if (e.repeat) return;
     if (Controls.ignoreKeys.has(e.code)) return;
     this.buttons.add(e.code);
-    console.log('press', this.buttons);
   }
 
   private buttonRelease(e:KeyboardEvent):void {
     e.preventDefault();
     if (!this.buttons.size) return;
     this.buttons.delete(e.code);
-    console.log('release', this.buttons);
   }
 
   public has(action:Action, del = false):boolean {

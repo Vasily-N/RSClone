@@ -5,12 +5,16 @@ interface IGameSettings {
   DrawSurfaces:boolean
   FpsDisplay:boolean
   FpsLimit:number
+  FpsLimitMin:number
+  FrameTimeLimitMin:number
   FrameLimitSafer:number
   FrameTimeLimit:number
-  RenderZone:CanvasRenderingContext2D
-  RenderSize:Point
-  RenderSizeSet:(value:{ width:number, height:number })=>void
   Zoom:number
+  RenderSize:Point // don't implement change for it for now, in the app it's autosize in canvas
+  RenderSizeSet:(value:{ width:number, height:number })=>void
+  RenderSizeGet:()=>{ width:number, height:number }
+  setRenderZone:(value:CanvasRenderingContext2D | null)=>void
+  getRenderZone:()=>CanvasRenderingContext2D | null
   ZoomChangeSubscribe:(callback:()=>void)=>()=>void
 }
 

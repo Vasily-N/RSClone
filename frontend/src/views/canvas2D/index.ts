@@ -13,11 +13,9 @@ class Canvas2D extends View {
     canvas.addEventListener('mousemove', this.showCoords.bind(this));
     canvas.addEventListener('mouseout', this.removeCoords.bind(this));
     canvas.addEventListener('mouseout', this.removeCoords.bind(this));
-    window.addEventListener('wheel', this.changeZoom.bind(this));
+    canvas.addEventListener('wheel', this.changeZoom.bind(this), { passive: true });
     return canvas;
   }
-
-  private unsubscribeZoomChange:()=>void;
 
   constructor(parentId:string, gameSettings:IGameSettings) {
     super(parentId, template, style);
@@ -25,9 +23,8 @@ class Canvas2D extends View {
     this.gameSettings = gameSettings;
 
     this.canvas = this.initCanvas();
-    this.gameSettings.RenderZone = this.canvas.getContext('2d') as CanvasRenderingContext2D;
+    this.gameSettings.setRenderZone(this.canvas.getContext('2d'));
     const setCanvasSize = this.setCanvasSize.bind(this);
-    this.unsubscribeZoomChange = this.gameSettings.ZoomChangeSubscribe(setCanvasSize);
 
     // to process it after canvas was rendered
     setTimeout(setCanvasSize);
@@ -44,31 +41,27 @@ class Canvas2D extends View {
     this.bg.innerHTML = '\xa0';
   }
 
-  private previousWindowX = 0;
-  private previousWindowY = 0;
-  private prevZoom = 0;
+  private previousWindowWidth = 0;
+  private previousWindowHeight = 0;
   private setCanvasSize() {
-    if (this.previousWindowX === window.innerWidth
-      && this.previousWindowY === window.innerHeight
-      && this.prevZoom === this.gameSettings.Zoom) {
+    if (this.previousWindowWidth === window.innerWidth
+      && this.previousWindowHeight === window.innerHeight) {
       return;
     }
 
-    this.previousWindowX = window.innerWidth;
-    this.previousWindowY = window.innerHeight;
-    this.prevZoom = this.gameSettings.Zoom;
+    this.previousWindowWidth = window.innerWidth;
+    this.previousWindowHeight = window.innerHeight;
 
     this.canvas.style.width = '100%';
-    const { Zoom: zoom } = this.gameSettings;
     const outsidePadding = window.innerWidth - this.canvas.clientWidth;
     const canvasTop = this.canvas.getBoundingClientRect().top;
-    const width = Math.floor((window.innerWidth - outsidePadding) / zoom);
-    const height = Math.floor((window.innerHeight - canvasTop - outsidePadding) / zoom);
+    const width = Math.floor(window.innerWidth - outsidePadding);
+    const height = Math.floor(window.innerHeight - canvasTop - outsidePadding);
 
     this.gameSettings.RenderSizeSet({ width, height });
     this.canvas.width = width;
     this.canvas.height = height;
-    this.canvas.style.width = `${width * zoom}px`;
+    this.canvas.style.width = `${width}px`;
   }
 
   private changeZoom(event:WheelEvent) {

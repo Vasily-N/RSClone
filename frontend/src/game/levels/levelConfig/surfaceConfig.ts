@@ -1,4 +1,4 @@
-import { Line, Point } from '../../shapes';
+import { Line } from '../../shapes';
 import SurfaceType from '../../types';
 
 type SurfaceConfig = {
@@ -7,9 +7,4 @@ type SurfaceConfig = {
   position:Line
 };
 
-const surfaceConfigList = (points:Point[]):SurfaceConfig[] => points
-  .reduce((res:Line[], p:Point) => res.concat(new Line(res.at(-1)?.B || Point.Zero, p)), [])
-  .slice(1)
-  .map((position:Line) => ({ position }));
-
-export { SurfaceConfig, surfaceConfigList };
+export default SurfaceConfig;

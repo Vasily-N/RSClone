@@ -1,15 +1,17 @@
 import { Point } from '../../shapes';
 import EntityConfig from './entityConfig';
 import LoadingConfig from './loadingConfig';
-import { SurfaceConfig, surfaceConfigList } from './surfaceConfig';
+import SurfaceConfig from './surfaceConfig';
+import positionsFromPoints from './positionsFromPoints';
 
 type LevelConfig = {
-  size:Point
-  surfaces:SurfaceConfig[]
+  minSize?:Point
+  walls:(SurfaceConfig | LoadingConfig)[]
   entities:EntityConfig[]
-  loading:LoadingConfig[]
+  music?:string
+  backgrounds?:string[]
 };
 
 export {
-  LevelConfig, SurfaceConfig, EntityConfig, LoadingConfig, surfaceConfigList,
+  LevelConfig, SurfaceConfig, EntityConfig, LoadingConfig, positionsFromPoints,
 };
