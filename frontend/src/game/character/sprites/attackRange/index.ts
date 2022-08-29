@@ -1,5 +1,6 @@
 import sprite from './index.png';
 import { SpriteConfig } from '../../../entity';
+import { Point } from '../../../shapes';
 
 const sc:SpriteConfig = {
   link: sprite,
@@ -7,6 +8,7 @@ const sc:SpriteConfig = {
   frameSize: 44,
   vertical: true,
   hasReverse: true,
+  position: new Point(12, 0),
 };
 
 export default sc;

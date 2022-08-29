@@ -30,6 +30,8 @@ const surfaces:SurfaceConfig[] = [
     ...positionsFromPoints([new P(750, 200), new P(700, 160), new P(610, 130)], true),
     ...positionsFromPoints([new P(250, 450), new P(350, 420)], false),
     ...positionsFromPoints([new P(200, 210), new P(240, 240)], false),
+    ...positionsFromPoints([new P(750, 20), new P(800, 20)]),
+    ...positionsFromPoints([new P(750, 120), new P(800, 120)]),
   ],
 ];
 

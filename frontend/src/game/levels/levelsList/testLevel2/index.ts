@@ -8,6 +8,8 @@ import {
 import LevelId from '../levelIds';
 
 const walls:(SurfaceConfig | LoadingConfig)[] = [
+  ...positionsFromPoints([new P(150, 199), new P(150, 200)])
+    .map((v) => ({ ...v, levelId: LevelId.test2 })),
   ...positionsFromPoints([
     P.Zero, new P(0, 100), new P(0, 200),
     new P(200, 200), new P(200, 400), new P(0, 500),
@@ -17,10 +19,10 @@ const walls:(SurfaceConfig | LoadingConfig)[] = [
     new P(600, 100), new P(600, 0), new P(350, 0), new P(250, 0), P.Zero,
   ]).map((v, i) => {
     if (i === 7) return { ...v, type: SurfaceType.Ice };
-    if (i === 1) return { ...v, levelId: LevelId.test2, zone: 2 };
+    if (i === 1) return { ...v, levelId: LevelId.test2, zone: 3 };
     if (i === 5) return { ...v, levelId: LevelId.test, zone: 1 };
     if (i === 9) return { ...v, levelId: LevelId.test, zone: 0 };
-    if (i === 13) return { ...v, levelId: LevelId.test2, zone: 0 };
+    if (i === 13) return { ...v, levelId: LevelId.test2, zone: 1 };
     if (i === 16) return { ...v, levelId: LevelId.winTheGame, zone: -1 };
     return v;
   }),

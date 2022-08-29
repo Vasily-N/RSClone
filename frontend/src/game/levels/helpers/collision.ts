@@ -52,8 +52,12 @@ class Collision {
     for (let i = exits.length - 1; i > -1; i -= 1) {
       const exit = exits[i];
       const exitPos = exit.position;
-      const position = Collision.linesIntersect(exitPos, move);
-      if (position === null) continue;
+      let position = Collision.linesIntersect(exitPos, move);
+      if (position === null) {
+        const move2 = new Line(move.A, new Point(move.B.X, move.A.Y));
+        position = Collision.linesIntersect(exitPos, move2);
+        if (position === null) continue;
+      }
       if (move.A.X === exit.position.MinX && move.A.X === exit.position.MaxX) continue;
       const levelId = exit.levelId as LevelId;
       const zone = exit.zone as number;
@@ -81,7 +85,7 @@ class Collision {
       const percentegeAfter = Collision.percentOnLine(move.B.X, floorPos.A.X, floorPos.DifXabs);
       const yAfter = floorPos.DifYabs * percentegeAfter + floorPos.MinY;
       if (!onFloor && yAfter > move.B.Y) continue;
-      return { surface: floors[i], point: new Point(move.B.X, yAfter) };
+      return { surface: floors[i], point: new Point(move.B.X, yAfter - 0.16) };
     }
 
     return null;

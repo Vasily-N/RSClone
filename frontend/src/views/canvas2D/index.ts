@@ -12,8 +12,8 @@ class Canvas2D extends View {
     const canvas = this.getElementById('canvas') as HTMLCanvasElement;
     canvas.addEventListener('mousemove', this.showCoords.bind(this));
     canvas.addEventListener('mouseout', this.removeCoords.bind(this));
-    canvas.addEventListener('mouseout', this.removeCoords.bind(this));
     canvas.addEventListener('wheel', this.changeZoom.bind(this), { passive: true });
+    window.addEventListener('resize', this.setCanvasSize.bind(this));
     return canvas;
   }
 

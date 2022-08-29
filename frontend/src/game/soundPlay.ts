@@ -1,6 +1,7 @@
 import ISoundPlay from './services/sound/iSoundPlay';
 
 class GameSoundPlay {
+  // temporal
   protected static soundPlay:ISoundPlay;
   private static currentMusic:string;
 
