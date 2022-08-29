@@ -15,7 +15,7 @@ type WinCallback = (win:WinTheGame)=>void;
 type PauseCallback = ()=>void;
 
 interface IGame {
-  start:(winCallback?:WinCallback)=>void;
+  start:(winCallback?:WinCallback, pauseCallback?:PauseCallback)=>void;
   pauseToggle:()=>void;
 }
 
@@ -25,7 +25,7 @@ class Game implements IGame {
   private lastFrame = 0;
   private levels:Partial<Record<LevelId, Level>> = {}; // will a lot of levels cause a memory leak?
   private levelIdCurrent?:LevelId;
-  private levelCurrent:Level;
+  private levelCurrent?:Level;
   private controls:Controls;
   private pause = false;
   private winCallback?:WinCallback;
@@ -43,10 +43,10 @@ class Game implements IGame {
     this.controls = new Controls(controlsSettings);
     this.char = new Character(this.controls);
     this.gameSettings = gameSettings;
-    this.levelCurrent = this.changeLevel({ levelId: LevelId.test2, zone: 0, position: 0 }); // temp
   }
 
   public start(winCallback?:WinCallback, pauseCallback?:PauseCallback):void {
+    this.levelCurrent = this.changeLevel({ levelId: LevelId.test, zone: 0, position: 0 }); // temp
     this.requestNextFrame();
     this.totalElapsed = 0;
     this.winCallback = winCallback;
@@ -60,12 +60,10 @@ class Game implements IGame {
 
   private changeLevel(load:LevelLoad):Level {
     const portal = this.levelIdCurrent === load.levelId;
-    if (!portal) {
-      this.levelIdCurrent = load.levelId;
-      this.levelCurrent = this.getLevel(load.levelId);
-    }
-    this.levelCurrent.load(this.char, load.zone, load.position, portal);
-    return this.levelCurrent;
+    const levelCurrent = portal ? this.levelCurrent as Level : this.getLevel(load.levelId);
+    if (!portal) this.levelIdCurrent = load.levelId;
+    levelCurrent.load(this.char, load.zone, load.position, portal);
+    return levelCurrent;
   }
 
   private requestNextFrame() {
@@ -80,9 +78,29 @@ class Game implements IGame {
     cLocal.fillText(`FPS: ${(1000 / elapsedMs).toFixed(1)}`, 5, fontSize);
   }
 
-  private processFrame(elapsed:number):boolean { // sholw be "EventType"
+  private static timePad(value:number, padAmount = 2) {
+    return `${value}`.padStart(padAmount, '0');
+  }
+
+  private static timeSpanToString(timeSpan:Date) {
+    const h = Game.timePad(timeSpan.getUTCHours());
+    const m = Game.timePad(timeSpan.getMinutes());
+    const s = Game.timePad(timeSpan.getUTCSeconds());
+    const ms = Game.timePad(timeSpan.getUTCMilliseconds(), 3);
+    return `${h}:${m}:${s}.${ms}`;
+  }
+
+  private static drawTime(c:CanvasRenderingContext2D, fontSize:number, elapsedSeconds:number) {
+    const cLocal = c;
+    cLocal.font = `${fontSize}px serif`;
+    cLocal.fillStyle = 'white';
+    cLocal.fillText(Game.timeSpanToString(new Date(elapsedSeconds * 1000)), 5, fontSize * 2);
+  }
+
+  private processFrame(elapsed:number):boolean { // should be "EventType"
     const c = this.gameSettings.getRenderZone();
     if (!c) throw Game.RenderError;
+    if (!this.levelCurrent) return false;
     c.lineWidth = 3;
     c.imageSmoothingEnabled = false; // IDK why it resets between frames
     const { RenderSize: size, Zoom: zoom } = this.gameSettings;
@@ -95,8 +113,9 @@ class Game implements IGame {
     this.levelCurrent.draw(c, zoom, this.gameSettings.DrawBoxes, this.gameSettings.DrawSurfaces);
 
     if (this.gameSettings.FpsDisplay) Game.drawFps(c, Game.fontSize, elapsed);
+    if (this.gameSettings.TimeDisplay) Game.drawTime(c, Game.fontSize, this.totalElapsed);
 
-    if (load) this.changeLevel(load);
+    if (load) this.levelCurrent = this.changeLevel(load);
     return false;
   }
 
@@ -107,12 +126,10 @@ class Game implements IGame {
     if (this.controls.has(Action.zoomDown, true)) this.gameSettings.Zoom -= 1;
     if (!Number.isFinite(this.gameSettings.FrameTimeLimit)
     || elapsed >= this.gameSettings.FrameTimeLimit) {
-      if (this.lastFrame && !this.pause) {
-        if (this.processFrame(elapsed)) {
-          const elapsedSeconds = this.totalElapsed;
-          if (this.winCallback) this.winCallback({ elapsedSeconds });
-          return;
-        }
+      if (this.lastFrame && !this.pause && this.processFrame(elapsed)) {
+        const elapsedSeconds = this.totalElapsed;
+        if (this.winCallback) this.winCallback({ elapsedSeconds });
+        return;
       }
       this.lastFrame = frametime;
     }
