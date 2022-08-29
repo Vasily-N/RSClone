@@ -1,6 +1,7 @@
 import {
   Api, Services, GameSettings, ControlsSettings, ControlsAction, SoundPlay,
 } from '../services';
+import { UserServices } from '../services/apiServices/userServices';
 import { IView } from '../views';
 import AppPage from '../views/app';
 
@@ -17,7 +18,11 @@ class App {
       controls: { settings: new ControlsSettings(), action: ControlsAction },
       gameSettings: new GameSettings(),
       sounds: { subsribe: soundPlay, settings: soundPlay, play: soundPlay },
-      api: { placeholder1: null, placeholder2: null },
+      api: {
+        placeholder1: null,
+        placeholder2: null,
+        users: new UserServices(new Api('http://127.0.0.1:5000/api/'), 'users', {}),
+      },
     };
     this.page = new AppPage('body', services);
   }
