@@ -16,7 +16,7 @@ const surfaces:SurfaceConfig[] = [
     P.Zero,
   ]),
   { position: new Rectangle(200, 300, 200, 0).DiagonalA, platform: true },
-  { position: new Rectangle(140, 40, 160, 160).DiagonalA, platform: true },
+  { position: new Rectangle(150, 50, 150, 150).DiagonalA, platform: true },
   { position: new Rectangle(300, 200, 200, 0).DiagonalA, platform: true },
   ...positionsFromPoints([
     new P(780, 250), new P(750, 250), new P(650, 300), new P(600, 340),
