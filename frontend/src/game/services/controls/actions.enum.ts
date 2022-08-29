@@ -9,6 +9,7 @@ enum Action {
   attackRange,
   zoomUp,
   zoomDown,
+  pause,
 }
 
 export default Action;

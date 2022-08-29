@@ -13,6 +13,7 @@ class ControlsSettings implements IControlsSettings {
     [Action.attackRange]: new Set(['KeyP']),
     [Action.zoomUp]: new Set(['Equal', 'NumpadAdd']),
     [Action.zoomDown]: new Set(['Minus', 'NumpadSubtract']),
+    [Action.pause]: new Set(['Escape']),
   };
 
   public set(action:Action, values:string[]):void {
