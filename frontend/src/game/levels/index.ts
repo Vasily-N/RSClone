@@ -122,7 +122,7 @@ class Level {
     const pos = loadPos.MinX === loadPos.MaxX
       ? new Point(loadPos.MinX, loadPos.MaxY)
       : loadPos.B.minus(loadPos.A).multiply(positionPercentage).plus(loadPos.A);
-    this.char.levelLoad(pos.minus(new Point(0, 0.48)));
+    this.char.levelLoad(pos.minus(new Point(0, 0.1)));
     this.char.frame(0.0001);
     // hack to not stuck at loading screen and not to process "just loaded" every frame
     if (this.music) GameSoundPlay.music(this.music);
@@ -139,31 +139,29 @@ class Level {
 
     const ceilCollision = Collision.processCeil(this.surfaces[SurfaceGroup.Ceils], e, move);
     if (ceilCollision) {
-      e.Position.Y = ceilCollision.point.Y + e.Collision.Height;
-      e.resetVelocityY(true);
+      e.Position.Y = ceilCollision.point.Y + e.Collision.Height; e.resetVelocityY(true);
     }
 
     const floorCollision = Collision.processFloor(e, this.surfaces[SurfaceGroup.Floors], move);
     if (floorCollision) {
       e.Position.Y = floorCollision.point.Y;
       if (floorCollision.surface) e.SurfaceType = floorCollision.surface.type;
-    } else e.SurfaceType = null;
+    }
 
     const wallsCollision = Collision.processWalls(this.surfaces[SurfaceGroup.Walls], e, move)
       || (!floorCollision && !ceilCollision
         && Collision.processCeil2(this.surfaces[SurfaceGroup.Ceils], e, move));
     if (wallsCollision) {
       if (wallsCollision.surface) e.SurfaceType = wallsCollision.surface.type;
+      else e.SurfaceType = null;
 
       if (e.Position.Y !== wallsCollision.point.Y) {
-        e.resetVelocityY();
-        e.Position.Y = wallsCollision.point.Y;
+        e.Position.Y = wallsCollision.point.Y; e.resetVelocityY();
       }
       if (e.Position.X !== wallsCollision.point.X) {
-        e.resetVelocityX();
-        e.Position.X = wallsCollision.point.X;
+        e.Position.X = wallsCollision.point.X; e.resetVelocityX();
       }
-    }
+    } else if (!floorCollision) e.SurfaceType = null;
 
     return null;
   }

@@ -8,7 +8,7 @@ const sc:SpriteConfig = {
   frameSize: 43,
   vertical: true,
   hasReverse: true,
-  position: new Point(-12, 0),
+  position: new Point(-4, 0),
 };
 
 export default sc;

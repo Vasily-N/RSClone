@@ -4,6 +4,7 @@ interface IGameSettings {
   DrawBoxes:boolean
   DrawSurfaces:boolean
   FpsDisplay:boolean
+  TimeDisplay:boolean
   FpsLimit:number
   FpsLimitMin:number
   FrameTimeLimitMin:number

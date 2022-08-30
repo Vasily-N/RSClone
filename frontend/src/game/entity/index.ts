@@ -7,7 +7,6 @@ import SpriteAnimation from './spriteAnimation';
 import { Point, Rectangle } from '../shapes';
 import Box from '../box';
 import SurfaceType from '../types';
-import { ISoundPlay } from '../services/sound';
 
 type State = {
   animation?:SpriteAnimation;
@@ -26,12 +25,12 @@ abstract class Entity {
   protected velocityPerSecond:Point = Point.Zero;
   private static readonly maxVelY = 400;
 
-  private gravity = 150;
+  private gravity = 230;
   private states:States = {};
   protected stateElapsedSeconds = 0;
 
-  protected currentState = -1;
-  private animation:SpriteAnimation | null = null;
+  protected stateCurrent = -1;
+  protected animation:SpriteAnimation | null = null;
   private collisionBox:Box | null = null;
   public get Collision():Rectangle {
     return (this.collisionBox?.getRect(!!this.direction) || Rectangle.Zero);
@@ -39,8 +38,6 @@ abstract class Entity {
 
   protected surfaceType:SurfaceType | null = null;
   public set SurfaceType(value:SurfaceType | null) {
-    if (value !== null) this.resetVelocityY();
-    else if (this.OnSurface) this.velocityPerSecond.Y = this.gravity / 1.8;
     this.surfaceType = value;
   }
 
@@ -55,15 +52,16 @@ abstract class Entity {
 
   public set State(value:number) {
     if (!this.states[value]) {
-      this.currentState = -1;
+      this.stateCurrent = -1;
       this.animation = null;
       this.collisionBox = null;
       return;
     }
-
-    this.currentState = value;
-    [this.collisionBox] = this.states[this.currentState].collisionboxes;
-    this.animation = this.states[this.currentState].animation || null;
+    if (value === this.stateCurrent) return;
+    this.stateElapsedSeconds = 0;
+    this.stateCurrent = value;
+    [this.collisionBox] = this.states[this.stateCurrent].collisionboxes;
+    this.animation = this.states[this.stateCurrent].animation || null;
   }
 
   private static concatBoxes<T>(box?:T, boxes?:T[]):T[] {
@@ -100,14 +98,12 @@ abstract class Entity {
   public frame(elapsedSeconds:number):void {
     this.stateElapsedSeconds += elapsedSeconds;
 
-    if (!this.OnSurface) {
-      if (this.velocityPerSecond.Y < Entity.maxVelY) {
-        this.velocityPerSecond.Y += elapsedSeconds * this.gravity;
-        this.velocityPerSecond.Y = Math.min(this.velocityPerSecond.Y, Entity.maxVelY);
-      }
-      this.position.Y += elapsedSeconds * this.velocityPerSecond.Y;
+    if (!this.OnSurface && this.velocityPerSecond.Y < Entity.maxVelY) {
+      this.velocityPerSecond.Y += elapsedSeconds * this.gravity;
+      this.velocityPerSecond.Y = Math.min(this.velocityPerSecond.Y, Entity.maxVelY);
     }
 
+    this.position.Y += elapsedSeconds * this.velocityPerSecond.Y;
     this.position.X += elapsedSeconds * this.velocityPerSecond.X;
   }
 
@@ -119,7 +115,7 @@ abstract class Entity {
     if ((!negativeOnly && !positiveOnly)
       || (negativeOnly && this.velocityPerSecond.Y < 0)
       || (positiveOnly && this.velocityPerSecond.Y > 0)) {
-      this.velocityPerSecond.Y = 0;
+      this.velocityPerSecond.Y = this.gravity / 24;
     }
   }
 
@@ -134,8 +130,8 @@ abstract class Entity {
   }
 
   private drawBoxes(c:CanvasRenderingContext2D, zoom:number, drawPos:Point):void {
-    if (this.currentState < 0) return;
-    const state = this.states[this.currentState];
+    if (this.stateCurrent < 0) return;
+    const state = this.states[this.stateCurrent];
     const reverse = !!this.direction;
     const cLocal = c;
     c.translate(0.5, 0.5);

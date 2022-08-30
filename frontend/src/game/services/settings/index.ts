@@ -14,6 +14,10 @@ class GameSettings implements IGameSettings {
   public get FpsDisplay():boolean { return this.fpsDisplay; }
   public set FpsDisplay(value:boolean) { this.fpsDisplay = value; }
 
+  private timeDisplay = true;
+  public get TimeDisplay():boolean { return this.timeDisplay; }
+  public set TimeDisplay(value:boolean) { this.timeDisplay = value; }
+
   // because some 60 Hz screens are ackshually 60.5 Hz
   private static readonly fpsLimitAdd = 1;
   private static readonly fpsLimitMult = 1.1;
@@ -30,10 +34,11 @@ class GameSettings implements IGameSettings {
   public get FpsLimitMin():number { return this.fpsLimitMin; }
   public get FpsLimit():number { return this.fpsLimitSet; }
   public set FpsLimit(value:number) {
-    const v = Math.max(value, this.fpsLimitMin);
-    this.fpsLimitSet = value && v;
-    this.fpsLimitSafer = value
-                  && Math.min(v + GameSettings.fpsLimitAdd, v * GameSettings.fpsLimitMult);
+    this.fpsLimitSet = value;
+    this.fpsLimitSafer = value && Math.max(
+      Math.min(value + GameSettings.fpsLimitAdd, value * GameSettings.fpsLimitMult),
+      this.fpsLimitMin,
+    );
     this.frameTimeLimit = GameSettings.FpsToTimeLimit(this.fpsLimitSafer);
   }
 
