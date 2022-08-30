@@ -1,11 +1,11 @@
 import template from './registerWindow.html';
 import style from './auth.scss';
 import { View } from '..';
-import { IUserSrvice, UserData } from '../../services/apiServices/userServices';
+import { IUserService, UserData } from '../../services/apiServices/userServices';
 
 class RegWindow extends View {
   mainWin: HTMLDivElement;
-  services: IUserSrvice;
+  services: IUserService;
 
   initRegWindow():void {
     const regWin = this.getElementById('reg') as HTMLInputElement;
@@ -45,7 +45,7 @@ class RegWindow extends View {
     this.showElem(show);
   }
 
-  constructor(parentId:string, services: IUserSrvice) {
+  constructor(parentId:string, services: IUserService) {
     super(parentId, template, style);
     this.mainWin = this.getElementById('auth-window') as HTMLDivElement;
     this.services = services;
