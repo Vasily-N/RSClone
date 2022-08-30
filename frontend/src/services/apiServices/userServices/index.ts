@@ -13,7 +13,7 @@ export type UserData = {
   password: string,
 };
 
-interface IUserSrvice {
+interface IUserService {
   createUser:(data: UserData) => Promise<UserData>;
   getUsers:() => Promise<ListResponse<User>>;
   getUser:(id: number) => Promise<User | undefined>;
@@ -21,7 +21,7 @@ interface IUserSrvice {
   updateUser:(id: number, data: UserData) => Promise<User | undefined>;
 }
 
-class UserServices extends ApiService implements IUserSrvice {
+class UserServices extends ApiService implements IUserService {
   public async createUser(data: UserData):Promise<UserData> {
     return (await super.create<UserData>(data)) as UserData;
   }
@@ -44,4 +44,4 @@ class UserServices extends ApiService implements IUserSrvice {
   }
 }
 
-export { IUserSrvice, UserServices };
+export { IUserService, UserServices };

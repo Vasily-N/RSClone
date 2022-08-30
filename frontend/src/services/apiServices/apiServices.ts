@@ -1,9 +1,10 @@
-import { IUserSrvice } from './userServices';
+import { ITimeService } from './boarderServices';
+import { IUserService } from './userServices';
 
 type ApiServices = {
   placeholder1:null,
-  placeholder2:null,
-  users: IUserSrvice,
+  times: ITimeService,
+  users: IUserService,
 };
 
 export default ApiServices;

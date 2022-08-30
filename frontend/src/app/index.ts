@@ -1,6 +1,7 @@
 import {
   Api, Services, GameSettings, ControlsSettings, ControlsAction, SoundPlay,
 } from '../services';
+import { TimeServices } from '../services/apiServices/boarderServices';
 import { UserServices } from '../services/apiServices/userServices';
 import { IView } from '../views';
 import AppPage from '../views/app';
@@ -20,7 +21,7 @@ class App {
       sounds: { subsribe: soundPlay, settings: soundPlay, play: soundPlay },
       api: {
         placeholder1: null,
-        placeholder2: null,
+        times: new TimeServices(new Api('http://127.0.0.1:5000/api/'), 'times', {}),
         users: new UserServices(new Api('http://127.0.0.1:5000/api/'), 'users', {}),
       },
     };
