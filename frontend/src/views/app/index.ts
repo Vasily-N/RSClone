@@ -5,7 +5,7 @@ import { IView, View } from '..';
 
 import Canvas2D from '../canvas2D';
 import { Game, WinTheGame } from '../../game';
-import Placeholder from '../placeholder';
+import BoardersView from '../boarders';
 import SoundView from '../sound';
 
 import { Services } from '../../services';
@@ -32,7 +32,7 @@ class AppPage extends View {
         this.game.start(this.winTheGame.bind(this), this.pauseTheGame.bind(this));
         return canvasView;
       }
-      case ViewId.placaholder: return new Placeholder(AppPage.contentId, this.services);
+      case ViewId.placaholder: return new BoardersView(AppPage.contentId, this.services.api.times);
       case ViewId.sounds: return new SoundView('sounds', this.services.sounds.subsribe);
       case ViewId.settingGame: return new SettingIsGame(AppPage.contentId, this.services.gameSettings);
       default: throw new Error(`${viewId} doesn't exit`);

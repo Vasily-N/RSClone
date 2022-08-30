@@ -1,6 +1,13 @@
 @use '../common.scss' as common;
 
+
+.tables {
+  display: flex;
+}
+
 table, th, td {
   border: 1px solid white;
   color: white;
+  padding: .4em;
+  font-size: 1.5rem;
 }
