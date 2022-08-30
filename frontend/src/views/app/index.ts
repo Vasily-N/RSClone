@@ -4,7 +4,9 @@ import style from './app.scss';
 import { IView, View } from '..';
 
 import Canvas2D from '../canvas2D';
-import { Game, WinTheGame } from '../../game';
+import {
+  Game, IGame, IGameCallbacks, WinTheGame,
+} from '../../game';
 import BoardersView from '../boarders';
 import SoundView from '../sound';
 
@@ -13,12 +15,12 @@ import SettingIsGame from '../settingIsGame';
 
 enum ViewId { canvas, placaholder, sounds, settingGame }
 
-class AppPage extends View {
+class AppPage extends View implements IGameCallbacks {
   private static contentId = style.content;
-  private services: Services; // TODO:
+  private services: Services;
   private currentViewId?: ViewId;
   private views: Record<string, IView> = {};
-  private game?: Game;
+  private game?: IGame;
 
   private createView(viewId: ViewId): IView {
     switch (viewId) {
@@ -29,12 +31,13 @@ class AppPage extends View {
           this.services.gameSettings,
           this.services.sounds.play,
         );
-        this.game.start(this.winTheGame.bind(this), this.pauseTheGame.bind(this));
+        this.game.start(this);
         return canvasView;
       }
       case ViewId.placaholder: return new BoardersView(AppPage.contentId, this.services.api.times);
       case ViewId.sounds: return new SoundView('sounds', this.services.sounds.subsribe);
-      case ViewId.settingGame: return new SettingIsGame(AppPage.contentId, this.services.gameSettings);
+      case ViewId.settingGame:
+        return new SettingIsGame(AppPage.contentId, this.services.gameSettings);
       default: throw new Error(`${viewId} doesn't exit`);
     }
   }
@@ -70,13 +73,18 @@ class AppPage extends View {
     return true;
   }
 
-  private winTheGame(win:WinTheGame):void {
+  public win(win:WinTheGame):void {
     alert(JSON.stringify(win));
     console.log(this);
   }
 
-  private pauseTheGame():void {
+  public pause():void {
     alert('pause!');
+    console.log(this);
+  }
+
+  public hp(hp:number) {
+    alert(hp);
     console.log(this);
   }
 }

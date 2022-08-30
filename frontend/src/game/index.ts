@@ -13,9 +13,16 @@ type WinTheGame = {
 
 type WinCallback = (win:WinTheGame)=>void;
 type PauseCallback = ()=>void;
+type HPCallback = (hp:number)=>void;
+
+interface IGameCallbacks {
+  win?: WinCallback
+  pause?: PauseCallback
+  hp?: HPCallback
+}
 
 interface IGame {
-  start:(winCallback?:WinCallback, pauseCallback?:PauseCallback)=>void;
+  start:(report:IGameCallbacks)=>void;
   pauseToggle:()=>void;
 }
 
@@ -28,9 +35,8 @@ class Game implements IGame {
   private levelCurrent?:Level;
   private controls:Controls;
   private pause = false;
-  private winCallback?:WinCallback;
-  private pauseCallback?:PauseCallback;
   private totalElapsed = 0;
+  private report?:IGameCallbacks;
 
   private static RenderError = new Error("the game can't process without canvas");
 
@@ -45,12 +51,11 @@ class Game implements IGame {
     this.gameSettings = gameSettings;
   }
 
-  public start(winCallback?:WinCallback, pauseCallback?:PauseCallback):void {
+  public start(report?:IGameCallbacks):void {
     this.levelCurrent = this.changeLevel({ levelId: LevelId.test, zone: 0, position: 0 }); // temp
     this.requestNextFrame();
     this.totalElapsed = 0;
-    this.winCallback = winCallback;
-    this.pauseCallback = pauseCallback;
+    this.report = report;
   }
 
   private getLevel(id:LevelId):Level {
@@ -128,7 +133,7 @@ class Game implements IGame {
     || elapsed >= this.gameSettings.FrameTimeLimit) {
       if (this.lastFrame && !this.pause && this.processFrame(elapsed)) {
         const elapsedSeconds = this.totalElapsed;
-        if (this.winCallback) this.winCallback({ elapsedSeconds });
+        if (this.report && this.report.win) this.report.win({ elapsedSeconds });
         return;
       }
       this.lastFrame = frametime;
@@ -138,8 +143,10 @@ class Game implements IGame {
 
   public pauseToggle():void {
     this.pause = !this.pause;
-    if (this.pauseCallback) this.pauseCallback();
+    if (this.report && this.report.pause) this.report.pause();
   }
 }
 
-export { Game, IGame, WinTheGame };
+export {
+  Game, IGame, IGameCallbacks, WinTheGame,
+};
