@@ -4,6 +4,7 @@ import { Data } from '../api';
 export type BoarderTime = {
   name: string,
   time: string,
+  date: string,
   _id: string,
   __v: string,
 };
@@ -11,6 +12,7 @@ export type BoarderTime = {
 export type TimeData = {
   name: string,
   time: string,
+  date: string,
 };
 
 interface ITimeService {
