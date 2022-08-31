@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import template from './index.html';
 import style from './app.scss';
 
@@ -10,8 +11,9 @@ import SoundView from '../sound';
 
 import { Services } from '../../services';
 import SettingIsGame from '../settingIsGame';
+import StartPageView from '../startPage';
 
-enum ViewId { canvas, placaholder, sounds, settingGame }
+enum ViewId { startPage, canvas, placaholder, sounds, settingGame }
 
 class AppPage extends View {
   private static contentId = style.content;
@@ -22,6 +24,7 @@ class AppPage extends View {
 
   private createView(viewId: ViewId): IView {
     switch (viewId) {
+      case ViewId.startPage: return new StartPageView(AppPage.contentId);
       case ViewId.canvas: {
         const canvasView = new Canvas2D(AppPage.contentId, this.services.gameSettings);
         this.game = new Game(
@@ -50,6 +53,7 @@ class AppPage extends View {
   }
 
   private initListeners() {
+    this.getElementById('toMainPage')?.addEventListener('click', this.changeTo.bind(this, ViewId.startPage));
     this.getElementById('toCanvas')?.addEventListener('click', this.changeTo.bind(this, ViewId.canvas));
     this.getElementById('toPlaceholder')?.addEventListener('click', this.changeTo.bind(this, ViewId.placaholder));
     this.getElementById('toSettingGame')?.addEventListener('click', this.changeTo.bind(this, ViewId.settingGame));

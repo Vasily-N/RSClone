@@ -41,6 +41,10 @@ const baseConfig = {
         loader: 'html-loader',
       },
       {
+        test: /\.svg$/,
+        loader: 'svg-inline-loader',
+      },
+      {
         test: /\.(png|jpe?g|gif|m4a|mp3|aac|ogg)$/i,
         loader: 'file-loader',
         generator: {
