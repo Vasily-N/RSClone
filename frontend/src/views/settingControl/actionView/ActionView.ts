@@ -12,12 +12,23 @@ class ActionView extends View {
     valueSeting.classList.add('value__seting');
     valueSeting.id = 'value__seting';
     valueSeting.textContent = el;
-    function handleClick(e) {
-      e.currentTarget.addEventListener('keyup', (e)=> {
-        console.log(e);
-      });
-}
-    valueSeting.addEventListener('click', handleClick);
+
+    valueSeting.addEventListener('click', (me:MouseEvent) => {
+      if (!me.target) return;
+      me.preventDefault();
+      const element = me.target as HTMLElement;
+      // сделать: визуальное отображение клика
+      const event = 'keypress';
+      function handleKey(ke:KeyboardEvent) {
+        console.log(element);
+        console.log(ke);
+        // сделать: обработка
+        window.removeEventListener(event, handleKey);
+      }
+
+      window.addEventListener(event, handleKey);
+    });
+
     return valueSeting;
   }
 
