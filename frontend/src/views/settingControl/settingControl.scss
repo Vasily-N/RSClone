@@ -11,3 +11,21 @@ div {
 label {
 	color:white
 }
+
+.setting__control{
+	color:saddlebrown;
+}
+
+:global(.color) {
+	color: pink;
+  }
+  :global(.setting__class) {
+	display: flex;
+	margin: 15px;
+	align-items: center;
+  }
+  :global(.value__seting) {
+	margin: 0 10px;
+	padding: 5px;
+	border: 2px solid white;
+  }

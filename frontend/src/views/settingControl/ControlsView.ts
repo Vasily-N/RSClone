@@ -12,7 +12,7 @@ class ControlsView extends View {
 
   private init():Views {
     return Object.keys(ControlsAction)
-      .filter((v) => Number.isNaN(Number(v)))
+      .filter((v) => !Number.isNaN(Number(v)))
       .map((v) => v as unknown as ControlsAction)
       .reduce(
         (res, v) => ({ ...res, [v]: new ActionView('setting__control', this.controls, v) }),
