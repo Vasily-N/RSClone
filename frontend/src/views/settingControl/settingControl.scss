@@ -15,6 +15,9 @@ label {
 .setting__control{
 	color:saddlebrown;
 }
+:global(.add__value) {
+	color: pink;
+  }
 
 :global(.color) {
 	color: pink;
