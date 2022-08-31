@@ -6,6 +6,15 @@ import { IControlsSettings, ControlsAction } from '../../../services';
 class ActionView extends View {
   private value: ControlsAction;
   private controlsSettings: IControlsSettings;
+
+  private static creteButton(el: string):HTMLDivElement {
+    const valueSeting = document.createElement('div');
+    valueSeting.classList.add('value__seting');
+    valueSeting.id = 'value__seting';
+    valueSeting.textContent = el;
+    return valueSeting;
+  }
+
   init() {
     const element = this.getElementById('setting__class') as Element;
     const elementText = document.createElement('div');
@@ -14,22 +23,15 @@ class ActionView extends View {
     elementText.textContent = ControlsAction[this.value];
     const valueButtons = this.controlsSettings.get(this.value);
 
-    const creteButton = (el: string) => {
-      const valueSeting = document.createElement('div');
-      valueSeting.classList.add('value__seting');
-      valueSeting.id = 'value__seting';
-      valueSeting.textContent = el;
-      element.appendChild(valueSeting);
-    };
-
     valueButtons.forEach((value: string) => {
-      creteButton(value);
+      const newButton = ActionView.creteButton(value);
+      // дальше сам
     });
     if (valueButtons.size < 2) {
-      creteButton('free');
+      ActionView.creteButton('free');
     }
     if (valueButtons.size < 3) {
-      creteButton('free');
+      ActionView.creteButton('free');
     }
   }
 
