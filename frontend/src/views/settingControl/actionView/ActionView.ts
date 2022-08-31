@@ -12,6 +12,12 @@ class ActionView extends View {
     valueSeting.classList.add('value__seting');
     valueSeting.id = 'value__seting';
     valueSeting.textContent = el;
+    function handleClick(e) {
+      e.currentTarget.addEventListener('keyup', (e)=> {
+        console.log(e);
+      });
+}
+    valueSeting.addEventListener('click', handleClick);
     return valueSeting;
   }
 
@@ -21,23 +27,14 @@ class ActionView extends View {
     elementText.classList.add('name__seting');
     element.appendChild(elementText);
     elementText.textContent = ControlsAction[this.value];
-    const valueButtons = this.controlsSettings.get(this.value);
+    const valueButtons = [...this.controlsSettings.get(this.value)];
+    while (valueButtons.length < 3) valueButtons.push('free');
 
     valueButtons.forEach((value: string) => {
       const newButton = ActionView.creteButton(value);
-      // дальше сам
-    });
-    if (valueButtons.size < 2) {
-      ActionView.creteButton('free');
-    }
-    if (valueButtons.size < 3) {
-      ActionView.creteButton('free');
-    }
-  }
 
-  initEventListen() {
-    const elelemnt = this.getElementById('value__seting') as Element;
-    console.log(elelemnt);
+      element.appendChild(newButton);
+    });
   }
 
   constructor(parentId: string, controlsSettings:IControlsSettings, value:ControlsAction) {
@@ -45,7 +42,6 @@ class ActionView extends View {
     this.value = value;
     this.controlsSettings = controlsSettings;
     this.init();
-    this.initEventListen();
   }
 }
 
