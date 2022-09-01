@@ -17,6 +17,7 @@ class ControlsSettings implements IControlsSettings {
 
   public set(action:Action, values:string[]):void {
     this.settings[action] = new Set(values);
+    console.log(this.settings[action]);
   }
 
   public get(action:Action):Set<string> {

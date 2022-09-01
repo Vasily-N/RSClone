@@ -7,41 +7,40 @@ class ActionView extends View {
   private value: ControlsAction;
   private controlsSettings: IControlsSettings;
 
-  private static creteButton(el: string):HTMLDivElement {
+  private creteButton(el: string, valueButtons: string[]):HTMLDivElement {
     const valueSeting = document.createElement('div');
     valueSeting.classList.add('value__seting');
-    valueSeting.id = 'value__seting';
+    valueSeting.id = el;
     valueSeting.textContent = el;
-    function handleClick(me:MouseEvent) {
+    const valueButton = valueButtons;
+
+    valueSeting.addEventListener('click', (me) => {
       if (!me.target) return;
       me.preventDefault();
+      const idName: string = (me.target as HTMLElement).id;
       const element = me.target as HTMLElement;
-
-      const event = 'keypress';
-      function handleKey(ke:KeyboardEvent) {
-        element.classList.remove('add__value');
-        element.textContent = ke.code;
-        console.log(ke);
-        // сделать: обработка
-        window.removeEventListener(event, handleKey);
-      }
-      const classElements = document.getElementsByClassName('add__value');
-      for (let i = 0; i < classElements.length; i++) {
-        classElements[i].removeEventListener('click', handleClick);
-        classElements[i].classList.remove('add__value');
-      }
-
-
       element.classList.add('add__value');
 
-     
+      function handler(e:MouseEvent) {
+        if ((e.target as HTMLElement).classList.contains('value__seting')) {
+          e.stopPropagation();
+          e.preventDefault();
+        }
+      }
+      document.addEventListener('click', handler, true);
+      const event = 'keypress';
+      const handleKey = (ke:KeyboardEvent) => {
+        element.classList.remove('add__value');
+        element.textContent = ke.code;
+        const index = valueButton.indexOf(idName);
+        valueButton[index] = ke.code;
+        this.controlsSettings.set(this.value, valueButton);
+        document.removeEventListener('click', handler, true);
 
-      // сделать: визуальное отображение клика
+        window.removeEventListener(event, handleKey);
+      };
       window.addEventListener(event, handleKey);
-    }
-
-    valueSeting.addEventListener('click', handleClick);
-
+    });
     return valueSeting;
   }
 
@@ -55,7 +54,7 @@ class ActionView extends View {
     while (valueButtons.length < 3) valueButtons.push('free');
 
     valueButtons.forEach((value: string) => {
-      const newButton = ActionView.creteButton(value);
+      const newButton = this.creteButton(value, valueButtons);
 
       element.appendChild(newButton);
     });

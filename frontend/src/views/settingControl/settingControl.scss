@@ -32,3 +32,8 @@ label {
 	padding: 5px;
 	border: 2px solid white;
   }
+
+   :global(.fon) {
+	width: 100vh;
+	height: 100vh;
+  }
