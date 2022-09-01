@@ -1,12 +1,16 @@
+/* eslint-disable import/no-cycle */
+/* eslint-disable max-len */
 /* eslint-disable no-new */
 import bgImg from './background.jpg';
 import logo from './logo.svg';
 import style from './startPage.scss';
-import { View, IView } from '..';
+import { View } from '..';
 import template from './index.html';
 import { Services } from '../../services';
-import { Game } from '../../game';
 import SettingIsGame from '../settingIsGame';
+import BoardersView from '../boarders';
+import RegWindow from '../reg';
+import AuthWindow from '../auth';
 
 class StartPageView extends View {
   services: Services;
@@ -17,10 +21,8 @@ class StartPageView extends View {
   regBtn: HTMLButtonElement;
   authBtn: HTMLButtonElement;
   modal: HTMLDivElement;
+  modalContent: HTMLDivElement;
   closeBtn: HTMLSpanElement;
-  private static contentId = style.content;
-  private views: Record<string, IView> = {};
-  private game?: Game;
 
   initStartPage() {
     this.mainPage.style.backgroundImage = `url(${this.imgSource.src})`;
@@ -36,23 +38,24 @@ class StartPageView extends View {
   initPopup(e: Event) {
     if (e.target === this.regBtn) {
       this.modal.style.display = 'flex';
-      this.modal.children[1].innerHTML = 'its registration';
+      new RegWindow('modalContent', this.services.api.users).append();
     }
     if (e.target === this.getElementById('login')) {
       this.modal.style.display = 'flex';
-      this.modal.children[1].innerHTML = 'its login';
+      new AuthWindow('modalContent', this.services.api.users).append();
     }
     if (e.target === this.getElementById('toSettingGame')) {
       this.modal.style.display = 'flex';
-      this.modal.children[1].innerHTML = 'its settings';
+      new SettingIsGame('modalContent', this.services.gameSettings).append();
     }
     if (e.target === this.getElementById('boarders')) {
       this.modal.style.display = 'flex';
-      this.modal.children[1].innerHTML = 'its boarders';
+      new BoardersView('modalContent', this.services.api.times).append();
     }
   }
 
   closePopup() {
+    this.modalContent.innerHTML = '';
     this.modal.style.display = 'none';
   }
 
@@ -68,6 +71,7 @@ class StartPageView extends View {
     this.svgSource = logo;
     this.modal = this.getElementById('modal') as HTMLDivElement;
     this.closeBtn = this.getElementById('close') as HTMLSpanElement;
+    this.modalContent = this.getElementById('modalContent') as HTMLDivElement;
     this.initStartPage();
   }
 }
