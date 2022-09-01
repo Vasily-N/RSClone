@@ -20,6 +20,7 @@
 
 .menu-button {
   background-color: rgba(243, 194, 134, 0.753);
+  border: 2px solid #775c1d;
   font-weight: 600;
   height: 35px;
   &:hover {
@@ -56,4 +57,29 @@
   &:hover {
     background-color: rgba(255, 255, 0, 0.226);
   }
+}
+
+.modal {
+  position: absolute;
+  display: none;
+  background-color: #fbfcf7;
+  top: 50%;
+  left: 50%;
+  margin-top: -25%;
+  margin-left: -25%;
+  width: 50%;
+  height: 50%;
+}
+
+.close {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.darkBackground {
+  background-color: rgba(0, 0, 0, 0.37);
+  z-index: 300;
 }

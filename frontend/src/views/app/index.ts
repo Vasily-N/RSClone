@@ -1,7 +1,6 @@
 /* eslint-disable max-len */
 import template from './index.html';
 import style from './app.scss';
-
 import { IView, View } from '..';
 
 import Canvas2D from '../canvas2D';
@@ -24,7 +23,7 @@ class AppPage extends View {
 
   private createView(viewId: ViewId): IView {
     switch (viewId) {
-      case ViewId.startPage: return new StartPageView(AppPage.contentId);
+      case ViewId.startPage: return new StartPageView(AppPage.contentId, this.services);
       case ViewId.canvas: {
         const canvasView = new Canvas2D(AppPage.contentId, this.services.gameSettings);
         this.game = new Game(
@@ -63,10 +62,10 @@ class AppPage extends View {
     super.append();
     this.initListeners();
     this.getView(ViewId.sounds).append();
-    this.changeTo(ViewId.canvas);
+    this.changeTo(ViewId.startPage);
   }
 
-  private changeTo(viewId: ViewId): boolean {
+  changeTo(viewId: ViewId): boolean {
     if (this.currentViewId === viewId) return false;
     this.currentViewId = viewId;
     const view = this.getView(viewId);
