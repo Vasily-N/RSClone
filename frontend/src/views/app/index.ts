@@ -65,7 +65,7 @@ class AppPage extends View {
     this.changeTo(ViewId.startPage);
   }
 
-  changeTo(viewId: ViewId): boolean {
+  private changeTo(viewId: ViewId): boolean {
     if (this.currentViewId === viewId) return false;
     this.currentViewId = viewId;
     const view = this.getView(viewId);
