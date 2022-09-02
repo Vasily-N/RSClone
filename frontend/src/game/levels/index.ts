@@ -137,6 +137,7 @@ class Level {
     this.elapsedSeconds = 0;
   }
 
+  private inAirTime = 0; // todo: re-code collision
   private processCollisions(e:Entity, elapsedSeconds:number, char = false):Load | null {
     const posBefore = new Point(e.Position.X, e.Position.Y); // to copy values and not the reference
     e.frame(elapsedSeconds);
@@ -153,21 +154,24 @@ class Level {
 
     const floorCollision = Collision.processFloor(e, this.surfaces[SurfaceGroup.Floors], move);
     if (floorCollision) {
+      this.inAirTime = 0;
       e.Position.Y = floorCollision.point.Y;
       if (floorCollision.surface) e.SurfaceType = floorCollision.surface.type;
-    }
+    } else this.inAirTime += elapsedSeconds;
 
     const wallsCollision = Collision.processWalls(this.surfaces[SurfaceGroup.Walls], e, move)
       || (!floorCollision && !ceilCollision
         && Collision.processCeil2(this.surfaces[SurfaceGroup.Ceils], e, move));
     if (wallsCollision) {
       if (wallsCollision.surface) e.SurfaceType = wallsCollision.surface.type;
-      else e.SurfaceType = null;
+      else if (!floorCollision) e.SurfaceType = null;
 
       if (e.Position.Y !== wallsCollision.point.Y) {
         e.Position.Y = wallsCollision.point.Y; e.resetVelocityY();
       }
-      if (e.Position.X !== wallsCollision.point.X) {
+      if ((this.inAirTime === 0 || this.inAirTime > 0.03)
+        // a temporal hack for wall collision when jump on stairs with high fps
+        && e.Position.X !== wallsCollision.point.X) {
         e.Position.X = wallsCollision.point.X; e.resetVelocityX();
       }
     } else if (!floorCollision) e.SurfaceType = null;
