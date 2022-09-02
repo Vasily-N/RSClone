@@ -153,6 +153,10 @@ abstract class Entity {
     }
     if (drawBoxes) this.drawBoxes(c, zoom, drawPos);
   }
+
+  protected static animationFinished(anim:SpriteAnimation, elapsedSeconds:number):boolean {
+    return anim.Ends <= elapsedSeconds;
+  }
 }
 
 export {
