@@ -23,6 +23,9 @@ class Character extends Entity {
   private static readonly maxAirJumps = 1;
   private static readonly jumpPower = 160; // todo: to character stats
 
+  public get VelocityX() { return this.velocityPerSecond.X; }
+  public get VelocityY() { return this.velocityPerSecond.Y; }
+
   constructor(controls:Controls) {
     super(Point.Zero, states);
     this.conrols = controls;
