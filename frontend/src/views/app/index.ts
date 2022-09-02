@@ -11,9 +11,9 @@ import SoundView from '../sound';
 import { Services } from '../../services';
 import SettingIsGame from '../settingIsGame';
 import ControlsView from '../settingControl/ControlsView';
+import SettingSound from '../settingSound';
 
-enum ViewId { canvas, placaholder, settingGame, settingControl }
-enum ViewId { canvas, placaholder, sounds, settingGame, settingControl }
+enum ViewId { canvas, placaholder, sounds, settingGame, settingControl, settingSound }
 
 class AppPage extends View {
   private static contentId = style.content;
@@ -37,9 +37,13 @@ class AppPage extends View {
 
       case ViewId.placaholder: return new BoardersView(AppPage.contentId, this.services.api.times);
       case ViewId.sounds: return new SoundView('sounds', this.services.sounds.subsribe);
-      case ViewId.settingGame: return new SettingIsGame(AppPage.contentId, this.services.gameSettings);
+      case ViewId.settingGame:
+        return new SettingIsGame(AppPage.contentId, this.services.gameSettings);
       case ViewId.settingControl: {
         return new ControlsView(AppPage.contentId, this.services.controls.settings);
+      }
+      case ViewId.settingSound: {
+        return new SettingSound(AppPage.contentId, this.services.sounds.settings);
       }
       default: throw new Error(`${viewId} doesn't exit`);
     }
@@ -60,6 +64,7 @@ class AppPage extends View {
     this.getElementById('toPlaceholder')?.addEventListener('click', this.changeTo.bind(this, ViewId.placaholder));
     this.getElementById('toSettingGame')?.addEventListener('click', this.changeTo.bind(this, ViewId.settingGame));
     this.getElementById('toSettingControl')?.addEventListener('click', this.changeTo.bind(this, ViewId.settingControl));
+    this.getElementById('settingSound')?.addEventListener('click', this.changeTo.bind(this, ViewId.settingSound));
   }
 
   public append(): void {
