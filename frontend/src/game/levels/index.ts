@@ -169,7 +169,7 @@ class Level {
       if (e.Position.Y !== wallsCollision.point.Y) {
         e.Position.Y = wallsCollision.point.Y; e.resetVelocityY();
       }
-      if ((this.inAirTime === 0 || this.inAirTime > 0.03)
+      if ((this.inAirTime === 0 || this.inAirTime > 0.05)
         // a temporal hack for wall collision when jump on stairs with high fps
         && e.Position.X !== wallsCollision.point.X) {
         e.Position.X = wallsCollision.point.X; e.resetVelocityX();
