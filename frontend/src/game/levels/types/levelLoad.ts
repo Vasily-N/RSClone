@@ -1,4 +1,4 @@
-import LevelId from '../levelsList/levelIds';
+import LevelId from '../list/ids';
 
 type LevelLoad = {
   levelId:LevelId

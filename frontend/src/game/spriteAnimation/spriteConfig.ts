@@ -1,8 +1,8 @@
-import { Point } from '../../shapes';
+import { Point } from '../shapes';
 
 type SpriteConfig = {
   link:string
-  frameLength: number
+  frameLength?: number
   frameSize: number
   frameLengthOverride?: Record<number, number>
   frameSizeOverride?: Record<number, number>

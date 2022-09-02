@@ -3,7 +3,7 @@ import { IControlsSettings, Controls, ControlsAction as Action } from './service
 
 import { IGameSettings } from './services/settings';
 import { Level, LevelLoad } from './levels';
-import { LevelId, levelList } from './levels/levelsList';
+import { LevelId, levelList } from './levels/list';
 import { ISoundPlay } from './services/sound';
 import GameSoundPlay from './soundPlay';
 
@@ -13,9 +13,16 @@ type WinTheGame = {
 
 type WinCallback = (win:WinTheGame)=>void;
 type PauseCallback = ()=>void;
+type HPCallback = (hp:number)=>void;
+
+interface IGameCallbacks {
+  winTheGame?: WinCallback
+  pauseTheGame?: PauseCallback
+  characterHp?: HPCallback
+}
 
 interface IGame {
-  start:(winCallback?:WinCallback, pauseCallback?:PauseCallback)=>void;
+  start:(report:IGameCallbacks)=>void;
   pauseToggle:()=>void;
 }
 
@@ -25,12 +32,11 @@ class Game implements IGame {
   private lastFrame = 0;
   private levels:Partial<Record<LevelId, Level>> = {}; // will a lot of levels cause a memory leak?
   private levelIdCurrent?:LevelId;
-  private levelCurrent?:Level;
+  private levelCurrent:Level = this.getLevel(LevelId.winTheGame);
   private controls:Controls;
   private pause = false;
-  private winCallback?:WinCallback;
-  private pauseCallback?:PauseCallback;
   private totalElapsed = 0;
+  private report?:IGameCallbacks;
 
   private static RenderError = new Error("the game can't process without canvas");
 
@@ -45,12 +51,12 @@ class Game implements IGame {
     this.gameSettings = gameSettings;
   }
 
-  public start(winCallback?:WinCallback, pauseCallback?:PauseCallback):void {
-    this.levelCurrent = this.changeLevel({ levelId: LevelId.test, zone: 0, position: 0 }); // temp
+  public start(report?:IGameCallbacks):void {
+    this.levelCurrent = this
+      .changeLevel({ levelId: LevelId.beggining, zone: 0, position: 0 });
     this.requestNextFrame();
     this.totalElapsed = 0;
-    this.winCallback = winCallback;
-    this.pauseCallback = pauseCallback;
+    this.report = report;
   }
 
   private getLevel(id:LevelId):Level {
@@ -128,7 +134,7 @@ class Game implements IGame {
     || elapsed >= this.gameSettings.FrameTimeLimit) {
       if (this.lastFrame && !this.pause && this.processFrame(elapsed)) {
         const elapsedSeconds = this.totalElapsed;
-        if (this.winCallback) this.winCallback({ elapsedSeconds });
+        if (this.report && this.report.winTheGame) this.report.winTheGame({ elapsedSeconds });
         return;
       }
       this.lastFrame = frametime;
@@ -138,8 +144,10 @@ class Game implements IGame {
 
   public pauseToggle():void {
     this.pause = !this.pause;
-    if (this.pauseCallback) this.pauseCallback();
+    if (this.report && this.report.pauseTheGame) this.report.pauseTheGame();
   }
 }
 
-export { Game, IGame, WinTheGame };
+export {
+  Game, IGame, IGameCallbacks, WinTheGame,
+};
