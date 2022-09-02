@@ -4,8 +4,8 @@ import music from './Beggining.mp3';
 
 import {
   EntityConfig, LevelConfig, LoadingConfig, SurfaceConfig, positionsFromPoints,
-} from '../../levelConfig';
-import LevelId from '../levelIds';
+} from '../../config';
+import LevelId from '../ids';
 
 const entities:EntityConfig[] = [];
 

@@ -3,7 +3,7 @@ import { Point, Line, Rectangle } from '../shapes';
 import { LevelLoad as Load, Surface, Position } from './types';
 import {
   LevelConfig, LoadingConfig as LoadZone, EntityConfig, SurfaceConfig,
-} from './levelConfig';
+} from './config';
 
 import { Entity, EntityClass } from '../entity';
 import entitiesList from '../entity/list';
@@ -13,6 +13,7 @@ import SurfaceType from '../types';
 import Character from '../character';
 import { Camera, Collision } from './helpers';
 import GameSoundPlay from '../soundPlay';
+import { SpriteAnimation } from '../spriteAnimation';
 
 enum SurfaceGroup { All, Walls, Floors, Ceils, Platforms } // Floors = Ceils + Platforms
 type Surfaces = Record<SurfaceGroup, Surface[]>;
@@ -25,9 +26,11 @@ class Level {
   private readonly loadExit:LoadZone[];
   private readonly entitiesConfig:EntityConfig[];
   private readonly music?:string;
+  private bgs?:SpriteAnimation[]; // todo: parallax
   private entities:Entity[] = [];
   private char?:Character;
   private camera:Camera;
+  private elapsedSeconds = 0;
 
   private static newEntity<A extends Entity>(EntityConstructor:EntityClass<A>, position:Point):A {
     return new EntityConstructor(position);
@@ -110,6 +113,7 @@ class Level {
     this.loadEnter = loading;
     this.loadExit = loading.filter((v) => v.zone !== undefined);
     if (config.music) this.music = config.music;
+    if (config.backgrounds) this.bgs = config.backgrounds.map((b) => new SpriteAnimation(b));
   }
 
   public load(char:Character, zone = 0, positionPercentage = 0, portal = false):void {
@@ -126,6 +130,7 @@ class Level {
     this.char.frame(0.0001);
     // hack to not stuck at loading screen and not to process "just loaded" every frame
     if (this.music) GameSoundPlay.music(this.music);
+    this.elapsedSeconds = 0;
   }
 
   private processCollisions(e:Entity, elapsedSeconds:number, char = false):Load | null {
@@ -172,6 +177,7 @@ class Level {
     if (exit) return exit;
     this.entities?.forEach((entity) => this.processCollisions(entity, elapsedSeconds));
     this.camera.process(char, viewSize, zoom, elapsedSeconds);
+    this.elapsedSeconds += elapsedSeconds;
     return undefined;
   }
 
@@ -224,8 +230,17 @@ class Level {
     });
   }
 
+  private drawBgs(c:RenderContext, zoom:number) {
+    if (!this.bgs) return;
+    const elapsed = this.elapsedSeconds;
+    const pos = Point.Zero.minus(this.camera.Current);
+    this.bgs.forEach((bg) => bg.drawFrame(c, pos, zoom, elapsed, false, 1));
+  }
+
   public draw(c:RenderContext, zoom:number, dBoxes = false, dSurfaces = false):void {
     const camPos = this.camera.Current;
+
+    this.drawBgs(c, zoom);
 
     if (dSurfaces) {
       // because canvas is weird, need for sharp lines
@@ -235,7 +250,6 @@ class Level {
       Level.drawLines(c, zoom, camPos, this.loadExit, 'yellow');
       c.translate(-0.5, -0.5);
     }
-
     this.char?.draw(c, camPos, zoom, dBoxes);
     this.entities?.forEach((entity) => entity.draw(c, camPos, zoom, dBoxes));
   }

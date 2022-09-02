@@ -3,7 +3,7 @@ import { IControlsSettings, Controls, ControlsAction as Action } from './service
 
 import { IGameSettings } from './services/settings';
 import { Level, LevelLoad } from './levels';
-import { LevelId, levelList } from './levels/levelsList';
+import { LevelId, levelList } from './levels/list';
 import { ISoundPlay } from './services/sound';
 import GameSoundPlay from './soundPlay';
 
@@ -16,9 +16,9 @@ type PauseCallback = ()=>void;
 type HPCallback = (hp:number)=>void;
 
 interface IGameCallbacks {
-  win?: WinCallback
-  pause?: PauseCallback
-  hp?: HPCallback
+  winTheGame?: WinCallback
+  pauseTheGame?: PauseCallback
+  characterHp?: HPCallback
 }
 
 interface IGame {
@@ -32,7 +32,7 @@ class Game implements IGame {
   private lastFrame = 0;
   private levels:Partial<Record<LevelId, Level>> = {}; // will a lot of levels cause a memory leak?
   private levelIdCurrent?:LevelId;
-  private levelCurrent?:Level;
+  private levelCurrent:Level = this.getLevel(LevelId.winTheGame);
   private controls:Controls;
   private pause = false;
   private totalElapsed = 0;
@@ -52,7 +52,8 @@ class Game implements IGame {
   }
 
   public start(report?:IGameCallbacks):void {
-    this.levelCurrent = this.changeLevel({ levelId: LevelId.test, zone: 0, position: 0 }); // temp
+    this.levelCurrent = this
+      .changeLevel({ levelId: LevelId.beggining, zone: 0, position: 0 });
     this.requestNextFrame();
     this.totalElapsed = 0;
     this.report = report;
@@ -133,7 +134,7 @@ class Game implements IGame {
     || elapsed >= this.gameSettings.FrameTimeLimit) {
       if (this.lastFrame && !this.pause && this.processFrame(elapsed)) {
         const elapsedSeconds = this.totalElapsed;
-        if (this.report && this.report.win) this.report.win({ elapsedSeconds });
+        if (this.report && this.report.winTheGame) this.report.winTheGame({ elapsedSeconds });
         return;
       }
       this.lastFrame = frametime;
@@ -143,7 +144,7 @@ class Game implements IGame {
 
   public pauseToggle():void {
     this.pause = !this.pause;
-    if (this.report && this.report.pause) this.report.pause();
+    if (this.report && this.report.pauseTheGame) this.report.pauseTheGame();
   }
 }
 

@@ -73,17 +73,17 @@ class AppPage extends View implements IGameCallbacks {
     return true;
   }
 
-  public win(win:WinTheGame):void {
+  public winTheGame(win:WinTheGame):void {
     alert(JSON.stringify(win));
     console.log(this);
   }
 
-  public pause():void {
+  public pauseTheGame():void {
     alert('pause!');
     console.log(this);
   }
 
-  public hp(hp:number) {
+  public characterHp(hp:number) {
     alert(hp);
     console.log(this);
   }

@@ -1,8 +1,8 @@
 import {
-  Direction, EntityClass, EntityId, StateConfig, SpriteConfig,
+  Direction, EntityClass, EntityId, StateConfig,
 } from './types';
 
-import SpriteAnimation from './spriteAnimation';
+import { SpriteAnimation, SpriteConfig } from '../spriteAnimation';
 
 import { Point, Rectangle } from '../shapes';
 import Box from '../box';

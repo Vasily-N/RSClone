@@ -1,5 +1,5 @@
-import { Point, Rectangle } from '../../shapes';
-import { SpriteConfig } from '../types';
+import { Point, Rectangle } from '../shapes';
+import SpriteConfig from './spriteConfig';
 
 type SpriteFrame = {
   position:Rectangle;
@@ -7,7 +7,7 @@ type SpriteFrame = {
   ends:number;
 };
 
-type RenderContext = CanvasRenderingContext2D;
+type Render = CanvasRenderingContext2D;
 type Img = CanvasImageSource;
 
 class SpriteAnimation {
@@ -34,7 +34,7 @@ class SpriteAnimation {
       const frameLength = (sprite.frameLengthOverride && sprite.frameLengthOverride[i])
                       || sprite.frameLength;
 
-      ends += frameLength;
+      ends += frameLength || 1;
       const position = sprite.vertical
         ? new Rectangle(0, posInSprite, size, frameSize)
         : new Rectangle(posInSprite, 0, frameSize, size);
@@ -67,7 +67,7 @@ class SpriteAnimation {
       throw new Error(`${sprite.link} - frameWidth can't be below 1`);
     }
 
-    if (SpriteAnimation.isBelow0(sprite.frameLength)
+    if (SpriteAnimation.isBelow0(sprite.frameLength || 1)
     || SpriteAnimation.isAnyBelow0(sprite.frameLengthOverride)) {
       throw new Error(`${sprite.link} - frameLength can't be below 1`);
     }
@@ -103,28 +103,38 @@ class SpriteAnimation {
     return this.frames[this.currentFrame];
   }
 
-  private static draw(img:Img, c:RenderContext, pos:Point, framePos:Rectangle, zoom:number):void {
+  private static aligns:{ [align:number]: (pos:Point, frame:Rectangle, zoom:number) => Point } = {
+    1: (pos:Point) => pos,
+    8: (pos:Point, frame:Rectangle, zoom:number) => new Point(
+      Math.round(pos.X - (frame.Width * zoom) / 2),
+      Math.round(pos.Y - (frame.Height * zoom)),
+    ),
+  };
+
+  private static draw(img:Img, c:Render, pos:Point, frame:Rectangle, zoom:number, align = 8):void {
+    const position = SpriteAnimation.aligns[align](pos, frame, zoom);
+    if (!position) throw new Error('align is not implemented');
     c.drawImage(
       img,
-      framePos.X,
-      framePos.Y,
-      framePos.Width,
-      framePos.Height,
-      Math.round(pos.X - (framePos.Width * zoom) / 2),
-      Math.round(pos.Y - (framePos.Height * zoom)),
-      Math.round(framePos.Width * zoom),
-      Math.round(framePos.Height * zoom),
+      frame.X,
+      frame.Y,
+      frame.Width,
+      frame.Height,
+      position.X,
+      position.Y,
+      Math.round(frame.Width * zoom),
+      Math.round(frame.Height * zoom),
     );
   }
 
-  public drawFrame(c:RenderContext, position:Point, zoom:number, elapsed:number, reverse = false) {
+  public drawFrame(c:Render, pos:Point, zoom:number, elapsed:number, reverse = false, align = 8) {
     const frame = this.getFrame(elapsed);
     if (!frame) return;
-    const drawPosition = position
+    const drawPosition = pos
       .plus((reverse ? this.drawReversePosition : this.drawPosition).multiply(zoom));
     const framePos = reverse && frame.positionReverse ? frame.positionReverse : frame.position;
-    SpriteAnimation.draw(this.imgSource, c, drawPosition, framePos, zoom);
+    SpriteAnimation.draw(this.imgSource, c, drawPosition, framePos, zoom, align);
   }
 }
 
-export default SpriteAnimation;
+export { SpriteAnimation, SpriteConfig };
