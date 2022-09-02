@@ -1,5 +1,5 @@
 html{cursor:default;background-color:#000;font:bold 14px sans-serif}.app__button{cursor:pointer;font:inherit;border:solid 1px;border-bottom-width:3px;border-radius:4px}.app__button_1{background-color:#90ee90;border-color:green}.app__button_2{background-color:#90eee1;border-color:#004680}.app__button_disabled{background-color:#d3d3d3;border-color:gray;cursor:default}.app__content{margin-top:8px}.app__navigation{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
-.canvas{background-color:#db7093}.canvas__bg{background-color:#2f4f4f}.canvas__canvas{image-rendering:pixelated;image-rendering:crisp-edges;image-rendering:optimizespeed}
+.canvas{background-color:#000}.canvas__bg{background-color:#2f4f4f}.canvas__canvas{image-rendering:pixelated;image-rendering:crisp-edges;image-rendering:optimizespeed}
 .boarders__tables{display:flex}table,th,td{border:1px solid #fff;color:#fff;padding:.4em;font-size:1.5rem}
 
 p{color:#fff}label{color:#fff}
