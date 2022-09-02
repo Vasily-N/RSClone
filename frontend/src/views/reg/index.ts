@@ -9,7 +9,10 @@ class RegWindow extends View {
   initRegWindow():void {
     const btnReg = this.getElementById('reg-user') as HTMLButtonElement;
     const skipReg = this.getElementById('reg-skip') as HTMLParagraphElement;
-    btnReg.addEventListener('click', () => this.services.createUser(this.makeUserData('reg')));
+    btnReg.addEventListener('click', (e: Event) => {
+      e.preventDefault();
+      this.services.createUser(this.makeUserData('reg'));
+    });
   }
 
   makeUserData(suffix: string):UserData {

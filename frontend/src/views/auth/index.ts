@@ -9,7 +9,10 @@ class AuthWindow extends View {
   initAuthWindow():void {
     const btnAuth = this.getElementById('auth-user') as HTMLButtonElement;
     const skipAuth = this.getElementById('auth-skip') as HTMLParagraphElement;
-    btnAuth.addEventListener('click', () => this.services.createUser(this.makeUserData('auth')));
+    btnAuth.addEventListener('click', (e: Event) => {
+      e.preventDefault();
+      this.services.createUser(this.makeUserData('auth'));
+    });
   }
 
   makeUserData(suffix: string):UserData {
