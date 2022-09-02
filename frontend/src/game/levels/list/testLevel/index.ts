@@ -41,9 +41,9 @@ const loading:LoadingConfig[] = [
   { position: new Rectangle(750, 20, 0, 100).DiagonalA, levelId: LevelId.test2, zone: 1 },
 ];
 
-const size = new P(800, 500); // todo: calculate dynamically
+const minSize = new P(800, 500);
 const cfg:LevelConfig = {
-  minSize: size, walls: surfaces.concat(loading), entities, music,
+  minSize, walls: surfaces.concat(loading), entities, music, musicLoop: 11.358,
 };
 
 export default cfg;

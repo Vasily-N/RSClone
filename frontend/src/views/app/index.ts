@@ -62,7 +62,7 @@ class AppPage extends View implements IGameCallbacks {
     super.append();
     this.initListeners();
     this.getView(ViewId.sounds).append();
-    this.changeTo(ViewId.canvas);
+    this.changeTo(ViewId.placaholder);
   }
 
   private changeTo(viewId: ViewId): boolean {

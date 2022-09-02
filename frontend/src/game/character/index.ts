@@ -121,8 +121,8 @@ class Character extends Entity {
     if (this.didAFlip) return false;
     this.didAFlip = this.processActions(Character.flipKeys, Character.flipValues);
     if (!this.didAFlip) return false;
-    this.velocityPerSecond.X = 40 * (this.stateCurrent === CharacterState.FlipBack ? -1 : 1);
-    this.velocityPerSecond.Y = -120;
+    this.velocityPerSecond.X = 60 * (this.stateCurrent === CharacterState.FlipBack ? -1 : 1);
+    this.velocityPerSecond.Y = -130;
     if (this.direction) {
       this.State = Character.flipReverse[this.stateCurrent as CharacterState] as CharacterState;
     }

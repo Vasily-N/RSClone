@@ -26,6 +26,7 @@ class Level {
   private readonly loadExit:LoadZone[];
   private readonly entitiesConfig:EntityConfig[];
   private readonly music?:string;
+  private readonly musicLoop?:number;
   private bgs?:SpriteAnimation[]; // todo: parallax
   private entities:Entity[] = [];
   private char?:Character;
@@ -112,7 +113,10 @@ class Level {
     this.entitiesConfig = config.entities;
     this.loadEnter = loading;
     this.loadExit = loading.filter((v) => v.zone !== undefined);
-    if (config.music) this.music = config.music;
+    if (config.music) {
+      this.music = config.music;
+      if (config.musicLoop) this.musicLoop = config.musicLoop;
+    }
     if (config.backgrounds) this.bgs = config.backgrounds.map((b) => new SpriteAnimation(b));
   }
 
@@ -129,7 +133,7 @@ class Level {
     this.char.levelLoad(pos.minus(new Point(0, 0.1)));
     this.char.frame(0.0001);
     // hack to not stuck at loading screen and not to process "just loaded" every frame
-    if (this.music) GameSoundPlay.music(this.music);
+    if (this.music) GameSoundPlay.music(this.music, this.musicLoop);
     this.elapsedSeconds = 0;
   }
 
@@ -199,7 +203,7 @@ class Level {
   }
 
   private static readonly colors:Record<SurfaceType, string> = {
-    [SurfaceType.Normal]: 'black',
+    [SurfaceType.Normal]: '#2F4F4F',
     [SurfaceType.Ice]: 'aqua',
   };
 

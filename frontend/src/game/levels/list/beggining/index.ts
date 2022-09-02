@@ -1,5 +1,6 @@
 import { Point as P } from '../../../shapes';
 import bg from './index.png';
+import music from './Reincarnated Soul.mp3';
 
 import {
   EntityConfig, LevelConfig, LoadingConfig, SurfaceConfig, positionsFromPoints, SpriteConfig,
@@ -24,6 +25,8 @@ const entities:EntityConfig[] = [
 
 const bgconfig:SpriteConfig = { link: bg, frameSize: 512 };
 
-const cfg:LevelConfig = { walls, entities, backgrounds: [bgconfig] };
+const cfg:LevelConfig = {
+  walls, entities, backgrounds: [bgconfig], music, musicLoop: 9.109,
+};
 
 export default cfg;

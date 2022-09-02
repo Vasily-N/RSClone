@@ -13,10 +13,10 @@ class GameSoundPlay {
     GameSoundPlay.soundPlay.playSound(url);
   }
 
-  public static music(url:string) {
+  public static music(url:string, loop?:number) {
     if (url === GameSoundPlay.currentMusic) return;
     GameSoundPlay.currentMusic = url;
-    GameSoundPlay.soundPlay.playMusic(url);
+    GameSoundPlay.soundPlay.playMusic(url, loop);
   }
 }
 

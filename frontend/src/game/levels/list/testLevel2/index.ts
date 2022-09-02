@@ -41,6 +41,8 @@ const entities:EntityConfig[] = [
 
 ];
 
-const cfg:LevelConfig = { walls, entities, music };
+const cfg:LevelConfig = {
+  walls, entities, music, musicLoop: 21.418,
+};
 
 export default cfg;

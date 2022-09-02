@@ -10,6 +10,7 @@ type LevelConfig = {
   walls:(SurfaceConfig | LoadingConfig)[]
   entities:EntityConfig[]
   music?:string
+  musicLoop?:number
   backgrounds?:SpriteConfig[]
 };
 
