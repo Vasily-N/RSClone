@@ -14,22 +14,36 @@ class GameSettings implements IGameSettings {
   public get FpsDisplay():boolean { return this.fpsDisplay; }
   public set FpsDisplay(value:boolean) { this.fpsDisplay = value; }
 
+  private timeDisplay = true;
+  public get TimeDisplay():boolean { return this.timeDisplay; }
+  public set TimeDisplay(value:boolean) { this.timeDisplay = value; }
+
   // because some 60 Hz screens are ackshually 60.5 Hz
   private static readonly fpsLimitAdd = 1;
   private static readonly fpsLimitMult = 1.1;
   private fpsLimitSet = 0;
   private fpsLimitSafer = 0;
+  private fpsLimitMin = 15;
+  private frameTimeLimitMin = Infinity;
   private frameTimeLimit = Infinity;
   public get FrameTimeLimit():number { return this.frameTimeLimit; }
   public set FrameTimeLimit(value:number) { this.FpsLimit = Math.ceil(1000 / value); }
+  public get FrameTimeLimitMin():number { return this.frameTimeLimitMin; }
   public get FrameLimitSafer():number { return this.fpsLimitSafer; }
   public set FrameLimitSafer(value:number) { this.FpsLimit = value; }
+  public get FpsLimitMin():number { return this.fpsLimitMin; }
   public get FpsLimit():number { return this.fpsLimitSet; }
   public set FpsLimit(value:number) {
     this.fpsLimitSet = value;
-    this.fpsLimitSafer = value
-                  && Math.min(value + GameSettings.fpsLimitAdd, value * GameSettings.fpsLimitMult);
-    this.frameTimeLimit = 1000 / this.fpsLimitSafer;
+    this.fpsLimitSafer = value && Math.max(
+      Math.min(value + GameSettings.fpsLimitAdd, value * GameSettings.fpsLimitMult),
+      this.fpsLimitMin,
+    );
+    this.frameTimeLimit = GameSettings.FpsToTimeLimit(this.fpsLimitSafer);
+  }
+
+  private static FpsToTimeLimit(fps:number):number {
+    return 1000 / fps;
   }
 
   private renderSize:Point = Point.Zero;
@@ -48,11 +62,14 @@ class GameSettings implements IGameSettings {
   public setRenderZone(value:CanvasRenderingContext2D | null) { this.renderZone = value; }
   public getRenderZone():CanvasRenderingContext2D | null { return this.renderZone; }
 
-  private zoom = 2;
-  private static readonly zoomMax = 3;
+  private zoom = 3;
+  private readonly zoomMax = 3;
+  public get ZoomMax():number { return this.zoomMax; }
+  private readonly zoomMin = 1;
+  public get ZoomMin():number { return this.zoomMin; }
   public get Zoom():number { return this.zoom; }
   public set Zoom(value:number) {
-    const newValue = Math.min(GameSettings.zoomMax, Math.max(value, 1));
+    const newValue = Math.min(this.zoomMax, Math.max(value, this.zoomMin));
     if (newValue === this.zoom) return;
     this.zoom = newValue;
     this.zoomSubscribers.forEach((f) => f());
@@ -67,8 +84,10 @@ class GameSettings implements IGameSettings {
     };
   }
 
-  public constructor(fpsLimit = 0) {
+  public constructor(fpsLimit = 0, fpsLimitMin = 10) {
     this.FpsLimit = fpsLimit;
+    this.fpsLimitMin = fpsLimitMin;
+    this.frameTimeLimitMin = GameSettings.FpsToTimeLimit(fpsLimitMin);
   }
 }
 

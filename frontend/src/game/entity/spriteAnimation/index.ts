@@ -120,7 +120,8 @@ class SpriteAnimation {
   public drawFrame(c:RenderContext, position:Point, zoom:number, elapsed:number, reverse = false) {
     const frame = this.getFrame(elapsed);
     if (!frame) return;
-    const drawPosition = position.plus(reverse ? this.drawReversePosition : this.drawPosition);
+    const drawPosition = position
+      .plus((reverse ? this.drawReversePosition : this.drawPosition).multiply(zoom));
     const framePos = reverse && frame.positionReverse ? frame.positionReverse : frame.position;
     SpriteAnimation.draw(this.imgSource, c, drawPosition, framePos, zoom);
   }

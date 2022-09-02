@@ -5,6 +5,7 @@ interface IView {
 }
 
 abstract class View implements IView {
+  // todo: be able to add without document
   private parentId:string;
   protected templateItems:Element[];
 
