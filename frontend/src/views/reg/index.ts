@@ -17,12 +17,18 @@ class RegWindow extends View {
     skipReg.addEventListener('click', () => this.initStartButton());
     btnReg.addEventListener('click', (e: Event) => {
       e.preventDefault();
-      this.services.createUser(this.makeUserData('reg'))
-        .then(() => {
-          this.hiddenContent('errorMessage');
-          return this.initStartButton();
-        })
-        .catch((err) => this.showContent('errorMessage'));
+      const data = this.makeUserData('reg');
+      if (data.name === '' || data.password === '') {
+        this.showContent('errorEmpty');
+      } else {
+        this.services.createUser(this.makeUserData('reg'))
+          .then(() => {
+            this.hiddenContent('errorMessage');
+            this.hiddenContent('errorEmpty');
+            return this.initStartButton();
+          })
+          .catch(() => this.showContent('errorMessage'));
+      }
     });
   }
 

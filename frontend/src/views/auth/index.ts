@@ -14,12 +14,18 @@ class AuthWindow extends View {
     skipAuth.addEventListener('click', () => this.initStartButton());
     btnAuth.addEventListener('click', (e: Event) => {
       e.preventDefault();
-      this.services.updateUser(this.makeUserData('auth'))
-        .then(() => {
-          this.hiddenContent('errorMessage');
-          return this.initStartButton();
-        })
-        .catch((err) => this.showContent('errorMessage'));
+      const data = this.makeUserData('auth');
+      if (data.name === '' || data.password === '') {
+        this.showContent('errorEmpty');
+      } else {
+        this.services.updateUser(this.makeUserData('auth'))
+          .then(() => {
+            this.hiddenContent('errorEmpty');
+            this.hiddenContent('errorMessage');
+            return this.initStartButton();
+          })
+          .catch(() => this.showContent('errorMessage'));
+      }
     });
   }
 

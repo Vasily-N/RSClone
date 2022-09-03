@@ -20,7 +20,7 @@
 
 .menu-button {
   background-color: rgba(243, 194, 134, 0.753);
-  border: 2px solid #775c1d;
+  border: 2px solid #d6c8a6;
   font-weight: 600;
   height: 35px;
   &:hover {
@@ -62,7 +62,8 @@
 .modal {
   position: absolute;
   display: none;
-  background-color: rgba(49, 43, 10, 0.904);
+  background-color: #340000;
+  border: 4px solid rgba(78, 25, 9, 0.945);
   top: 50%;
   left: 50%;
   margin-top: -200px;
@@ -73,14 +74,33 @@
 
 .close {
   position: absolute;
-  top: 5px;
-  right: 5px;
+  top: 8px;
+  right: 8px;
   font-size: 20px;
   color: white;
+  width: 32px;
+  height: 32px;
   cursor: pointer;
+  opacity: 0.7;
+}
+.close:hover {
+  opacity: 1;
+}
+.close:before, .close:after {
+  position: absolute;
+  right: 15px;
+  content: ' ';
+  height: 33px;
+  width: 2px;
+  background-color: rgb(209, 183, 183);
+}
+.close:before {
+  transform: rotate(45deg);
+}
+.close:after {
+  transform: rotate(-45deg);
 }
 
-.darkBackground {
-  background-color: rgba(0, 0, 0, 0.37);
-  z-index: 300;
+.darken-overlay {
+  opacity: .3;
 }

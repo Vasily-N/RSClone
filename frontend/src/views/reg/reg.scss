@@ -25,7 +25,7 @@
   color: rgb(225, 252, 249);
   cursor: pointer;
   &:hover {
-    color: palevioletred;
+    color: #ecca7f;
     cursor: pointer;
   }
 }
@@ -34,13 +34,18 @@
 .auth-btn {
   width: 100px;
   border: none;
-  outline: 2px solid pink;
+  outline: 2px solid rgb(238, 215, 116);
   padding: .5em;
-  background-color: aqua;
+  background-color: rgb(214, 240, 120);
   font-weight: 600;
+  cursor: pointer;
   &:hover {
-    outline-color: rgb(247, 39, 247);
+    outline-color: rgb(65, 112, 63);
   }
+}
+
+.back-darker {
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7));
 }
 
 .start-btn {

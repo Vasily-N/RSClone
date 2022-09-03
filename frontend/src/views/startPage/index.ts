@@ -41,28 +41,34 @@ class StartPageView extends View {
 
   initPopup(e: Event) {
     if (e.target === this.regBtn) {
-      this.modal.style.display = 'flex';
+      this.showPopup();
       new RegWindow('modalContent', this.services.api.users).append();
       this.startGame();
     }
     if (e.target === this.getElementById('login')) {
-      this.modal.style.display = 'flex';
+      this.showPopup();
       new AuthWindow('modalContent', this.services.api.users).append();
       this.startGame();
     }
     if (e.target === this.getElementById('toSettingGame')) {
-      this.modal.style.display = 'flex';
+      this.showPopup();
       new SettingIsGame('modalContent', this.services.gameSettings).append();
     }
     if (e.target === this.getElementById('boarders')) {
-      this.modal.style.display = 'flex';
+      this.showPopup();
       new BoardersView('modalContent', this.services.api.times).append();
     }
+  }
+
+  showPopup() {
+    this.modal.style.display = 'flex';
+    this.mainPage.classList.add('startPage__darken-overlay');
   }
 
   closePopup() {
     this.modalContent.innerHTML = '';
     this.modal.style.display = 'none';
+    this.mainPage.classList.remove('startPage__darken-overlay');
   }
 
   startGame() {
