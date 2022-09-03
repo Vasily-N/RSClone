@@ -18,7 +18,10 @@ class RegWindow extends View {
     btnReg.addEventListener('click', (e: Event) => {
       e.preventDefault();
       this.services.createUser(this.makeUserData('reg'))
-        .then(() => this.initStartButton())
+        .then(() => {
+          this.hiddenContent('errorMessage');
+          return this.initStartButton();
+        })
         .catch((err) => this.showContent('errorMessage'));
     });
   }
@@ -34,6 +37,10 @@ class RegWindow extends View {
 
   showContent(id: string) {
     (this.getElementById(`${id}`) as HTMLElement).style.display = 'flex';
+  }
+
+  hiddenContent(id: string) {
+    (this.getElementById(`${id}`) as HTMLElement).style.display = 'none';
   }
 
   initStartButton() {
