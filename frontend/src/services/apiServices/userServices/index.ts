@@ -24,8 +24,9 @@ interface IUserService {
 class UserServices extends ApiService implements IUserService {
   public async createUser(data: UserData):Promise<UserData> {
     const user = await super.create<UserData>(data);
-    console.log(user);
-    localStorage.user = JSON.stringify(user);
+    if (!user) {
+      throw new Error('this name is already taken');
+    }
     return user as UserData;
   }
 

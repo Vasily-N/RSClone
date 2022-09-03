@@ -13,15 +13,6 @@ class AuthWindow extends View {
     const skipAuth = this.getElementById('auth-skip') as HTMLParagraphElement;
     btnAuth.addEventListener('click', (e: Event) => {
       e.preventDefault();
-      // const user = JSON.parse(localStorage.user);
-      // if (this.makeUserData('auth').name === user.name && this.makeUserData('auth').password === user.password) {
-      //   this.services.getUser(user._id);
-      // } else {
-      //   console.log('incorrect login or password');
-      //   (document.getElementById('warning') as HTMLParagraphElement).innerHTML = 'incorrect login or password';
-      // }
-      // console.log('local storage', user);
-      // this.services.getUser(user._id);
       this.services.updateUser(this.makeUserData('auth'));
     });
   }

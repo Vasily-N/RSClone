@@ -87,6 +87,12 @@ class AppPage extends View implements IGameCallbacks {
     return true;
   }
 
+  public changeToGamePage(): boolean {
+    if (this.currentViewId === ViewId.startPage) return false;
+    this.changeTo(ViewId.startPage);
+    return true;
+  }
+
   public winTheGame(win:WinTheGame):void {
     alert(JSON.stringify(win));
     console.log(this);
