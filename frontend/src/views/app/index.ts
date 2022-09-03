@@ -1,6 +1,6 @@
+/* eslint-disable max-len */
 import template from './index.html';
 import style from './app.scss';
-
 import { IView, View } from '..';
 
 import Canvas2D from '../canvas2D';
@@ -12,10 +12,10 @@ import SoundView from '../sound';
 
 import { Services } from '../../services';
 import SettingIsGame from '../settingIsGame';
+import StartPageView from '../startPage';
 import ControlsView from '../settingControl/ControlsView';
 
-enum ViewId { canvas, placaholder, settingGame, settingControl }
-enum ViewId { canvas, placaholder, sounds, settingGame, settingControl }
+enum ViewId { startPage, canvas, placaholder, sounds, settingGame, settingControl }
 
 class AppPage extends View implements IGameCallbacks {
   private static contentId = style.content;
@@ -26,6 +26,7 @@ class AppPage extends View implements IGameCallbacks {
 
   private createView(viewId: ViewId): IView {
     switch (viewId) {
+      case ViewId.startPage: return new StartPageView(AppPage.contentId, this.services);
       case ViewId.canvas: {
         const canvasView = new Canvas2D(AppPage.contentId, this.services.gameSettings);
         this.game = new Game(
@@ -59,6 +60,7 @@ class AppPage extends View implements IGameCallbacks {
   }
 
   private initListeners() {
+    this.getElementById('toMainPage')?.addEventListener('click', this.changeTo.bind(this, ViewId.startPage));
     this.getElementById('toCanvas')?.addEventListener('click', this.changeTo.bind(this, ViewId.canvas));
     this.getElementById('toPlaceholder')?.addEventListener('click', this.changeTo.bind(this, ViewId.placaholder));
     this.getElementById('toSettingGame')?.addEventListener('click', this.changeTo.bind(this, ViewId.settingGame));
@@ -69,7 +71,7 @@ class AppPage extends View implements IGameCallbacks {
     super.append();
     this.initListeners();
     this.getView(ViewId.sounds).append();
-    this.changeTo(ViewId.placaholder);
+    this.changeTo(ViewId.startPage);
   }
 
   private changeTo(viewId: ViewId): boolean {

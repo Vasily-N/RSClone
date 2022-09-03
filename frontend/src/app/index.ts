@@ -8,7 +8,6 @@ import AppPage from '../views/app';
 
 class App {
   page:IView;
-
   contolsSettings = new ControlsSettings();
 
   constructor() {

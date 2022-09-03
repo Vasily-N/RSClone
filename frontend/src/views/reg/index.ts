@@ -1,17 +1,17 @@
 import template from './index.html';
-import style from './auth.scss';
+import style from './reg.scss';
 import { View } from '..';
 import { IUserService, UserData } from '../../services/apiServices/userServices';
 
-class AuthWindow extends View {
+class RegWindow extends View {
   services: IUserService;
 
-  initAuthWindow():void {
-    const btnAuth = this.getElementById('auth-user') as HTMLButtonElement;
-    const skipAuth = this.getElementById('auth-skip') as HTMLParagraphElement;
-    btnAuth.addEventListener('click', (e: Event) => {
+  initRegWindow():void {
+    const btnReg = this.getElementById('reg-user') as HTMLButtonElement;
+    const skipReg = this.getElementById('reg-skip') as HTMLParagraphElement;
+    btnReg.addEventListener('click', (e: Event) => {
       e.preventDefault();
-      this.services.createUser(this.makeUserData('auth'));
+      this.services.createUser(this.makeUserData('reg'));
     });
   }
 
@@ -27,8 +27,8 @@ class AuthWindow extends View {
   constructor(parentId:string, services: IUserService) {
     super(parentId, template, style);
     this.services = services;
-    this.initAuthWindow();
+    this.initRegWindow();
   }
 }
 
-export default AuthWindow;
+export default RegWindow;
