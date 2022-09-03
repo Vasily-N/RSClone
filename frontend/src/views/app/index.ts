@@ -14,8 +14,9 @@ import { Services } from '../../services';
 import SettingIsGame from '../settingIsGame';
 import StartPageView from '../startPage';
 import ControlsView from '../settingControl/ControlsView';
+import SettingSound from '../settingSound';
 
-enum ViewId { startPage, canvas, placaholder, sounds, settingGame, settingControl }
+enum ViewId { startPage, canvas, placaholder, sounds, settingGame, settingControl, settingSound }
 
 class AppPage extends View implements IGameCallbacks {
   private static contentId = style.content;
@@ -45,6 +46,9 @@ class AppPage extends View implements IGameCallbacks {
       case ViewId.settingControl: {
         return new ControlsView(AppPage.contentId, this.services.controls.settings);
       }
+      case ViewId.settingSound: {
+        return new SettingSound(AppPage.contentId, this.services.sounds.settings);
+      }
       default: throw new Error(`${viewId} doesn't exit`);
     }
   }
@@ -65,6 +69,7 @@ class AppPage extends View implements IGameCallbacks {
     this.getElementById('toPlaceholder')?.addEventListener('click', this.changeTo.bind(this, ViewId.placaholder));
     this.getElementById('toSettingGame')?.addEventListener('click', this.changeTo.bind(this, ViewId.settingGame));
     this.getElementById('toSettingControl')?.addEventListener('click', this.changeTo.bind(this, ViewId.settingControl));
+    this.getElementById('settingSound')?.addEventListener('click', this.changeTo.bind(this, ViewId.settingSound));
   }
 
   public append(): void {
