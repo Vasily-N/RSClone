@@ -11,6 +11,7 @@ class AuthWindow extends View {
   initAuthWindow():void {
     const btnAuth = this.getElementById('auth-user') as HTMLButtonElement;
     const skipAuth = this.getElementById('auth-skip') as HTMLParagraphElement;
+    skipAuth.addEventListener('click', () => this.initStartButton());
     btnAuth.addEventListener('click', (e: Event) => {
       e.preventDefault();
       this.services.updateUser(this.makeUserData('auth'))

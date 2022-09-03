@@ -46,6 +46,18 @@
 
 .start-btn {
   display: none;
+  width: 110px;
+  border: none;
+  outline: 2px solid rgb(92, 46, 40);
+  padding: .5em;
+  background-color: rgb(240, 117, 36);
+  justify-content: space-around;
+  font-weight: 600;
+  cursor: pointer;
+  &:hover {
+    outline-color: rgb(243, 182, 92);
+    box-shadow: 3px 2px 15px 2px #000000;
+  }
 }
 
 .error-message {
