@@ -19,8 +19,8 @@ class RegWindow extends View {
     const nameEl = this.getElementById(`name-${suffix}`) as HTMLInputElement;
     const passEl = this.getElementById(`pass-${suffix}`) as HTMLInputElement;
     return {
-      name: nameEl.value,
-      password: passEl.value,
+      name: nameEl.value.trim(),
+      password: passEl.value.trim(),
     };
   }
 

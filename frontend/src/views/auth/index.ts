@@ -1,3 +1,5 @@
+/* eslint-disable max-len */
+/* eslint-disable no-underscore-dangle */
 import template from './index.html';
 import style from './auth.scss';
 import { View } from '..';
@@ -11,7 +13,16 @@ class AuthWindow extends View {
     const skipAuth = this.getElementById('auth-skip') as HTMLParagraphElement;
     btnAuth.addEventListener('click', (e: Event) => {
       e.preventDefault();
-      this.services.createUser(this.makeUserData('auth'));
+      // const user = JSON.parse(localStorage.user);
+      // if (this.makeUserData('auth').name === user.name && this.makeUserData('auth').password === user.password) {
+      //   this.services.getUser(user._id);
+      // } else {
+      //   console.log('incorrect login or password');
+      //   (document.getElementById('warning') as HTMLParagraphElement).innerHTML = 'incorrect login or password';
+      // }
+      // console.log('local storage', user);
+      // this.services.getUser(user._id);
+      this.services.updateUser(this.makeUserData('auth'));
     });
   }
 
@@ -19,8 +30,8 @@ class AuthWindow extends View {
     const nameEl = this.getElementById(`name-${suffix}`) as HTMLInputElement;
     const passEl = this.getElementById(`pass-${suffix}`) as HTMLInputElement;
     return {
-      name: nameEl.value,
-      password: passEl.value,
+      name: nameEl.value.trim(),
+      password: passEl.value.trim(),
     };
   }
 

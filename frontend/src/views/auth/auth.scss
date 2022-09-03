@@ -38,7 +38,12 @@
   padding: .5em;
   background-color: aqua;
   font-weight: 600;
+  cursor: pointer;
   &:hover {
     outline-color: rgb(247, 39, 247);
   }
+}
+
+.warning {
+  color: red;
 }

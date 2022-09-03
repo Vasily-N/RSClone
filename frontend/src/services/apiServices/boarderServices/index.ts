@@ -18,9 +18,9 @@ export type TimeData = {
 interface ITimeService {
   createTimeData:(data: TimeData) => Promise<TimeData>;
   getTimesData:() => Promise<ListResponse<BoarderTime>>;
-  getTimeData:(id: number) => Promise<BoarderTime | undefined>;
-  deleteTimeData:(id: number) => Promise<boolean | Response>;
-  updateTimeData:(id: number, data: TimeData) => Promise<BoarderTime | undefined>;
+  getTimeData:(id: string) => Promise<BoarderTime | undefined>;
+  deleteTimeData:(id: string) => Promise<boolean | Response>;
+  updateTimeData:(data: TimeData) => Promise<BoarderTime | undefined>;
 }
 
 class TimeServices extends ApiService implements ITimeService {
@@ -33,16 +33,16 @@ class TimeServices extends ApiService implements ITimeService {
     return super.getAll<BoarderTime>(query);
   }
 
-  public async getTimeData(id: number):Promise<BoarderTime | undefined> {
+  public async getTimeData(id: string):Promise<BoarderTime | undefined> {
     return super.getId<BoarderTime>(id);
   }
 
-  public async deleteTimeData(id: number):Promise<boolean | Response> {
+  public async deleteTimeData(id: string):Promise<boolean | Response> {
     return super.delete(id);
   }
 
-  public async updateTimeData(id: number, data: TimeData):Promise<BoarderTime | undefined> {
-    return super.update<BoarderTime>(id, data);
+  public async updateTimeData(data: TimeData):Promise<BoarderTime | undefined> {
+    return super.update<BoarderTime>(data);
   }
 }
 
