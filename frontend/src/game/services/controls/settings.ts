@@ -14,10 +14,13 @@ class ControlsSettings implements IControlsSettings {
     [Action.zoomUp]: new Set(['Equal', 'NumpadAdd']),
     [Action.zoomDown]: new Set(['Minus', 'NumpadSubtract']),
     [Action.pause]: new Set(['Escape']),
+    [Action.flipLeft]: new Set(['KeyQ']),
+    [Action.flipRight]: new Set(['KeyE']),
   };
 
   public set(action:Action, values:string[]):void {
     this.settings[action] = new Set(values);
+    console.log(this.settings[action]);
   }
 
   public get(action:Action):Set<string> {

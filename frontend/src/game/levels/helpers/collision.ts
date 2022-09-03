@@ -2,9 +2,9 @@ import { Point, Line, Rectangle } from '../../shapes';
 import {
   LevelLoad as Load, Surface, Position,
 } from '../types';
-import { LoadingConfig as LoadZone } from '../levelConfig';
+import { LoadingConfig as LoadZone } from '../config';
 import { Entity } from '../../entity';
-import { LevelId } from '../levelsList';
+import { LevelId } from '../list';
 
 type FloorCollision = { surface?:Surface, point:Point } | null;
 

@@ -3,7 +3,7 @@ import { Point, Line, Rectangle } from '../shapes';
 import { LevelLoad as Load, Surface, Position } from './types';
 import {
   LevelConfig, LoadingConfig as LoadZone, EntityConfig, SurfaceConfig,
-} from './levelConfig';
+} from './config';
 
 import { Entity, EntityClass } from '../entity';
 import entitiesList from '../entity/list';
@@ -13,6 +13,7 @@ import SurfaceType from '../types';
 import Character from '../character';
 import { Camera, Collision } from './helpers';
 import GameSoundPlay from '../soundPlay';
+import { SpriteAnimation } from '../spriteAnimation';
 
 enum SurfaceGroup { All, Walls, Floors, Ceils, Platforms } // Floors = Ceils + Platforms
 type Surfaces = Record<SurfaceGroup, Surface[]>;
@@ -25,9 +26,12 @@ class Level {
   private readonly loadExit:LoadZone[];
   private readonly entitiesConfig:EntityConfig[];
   private readonly music?:string;
+  private readonly musicLoop?:number;
+  private bgs?:SpriteAnimation[]; // todo: parallax
   private entities:Entity[] = [];
   private char?:Character;
   private camera:Camera;
+  private elapsedSeconds = 0;
 
   private static newEntity<A extends Entity>(EntityConstructor:EntityClass<A>, position:Point):A {
     return new EntityConstructor(position);
@@ -109,7 +113,11 @@ class Level {
     this.entitiesConfig = config.entities;
     this.loadEnter = loading;
     this.loadExit = loading.filter((v) => v.zone !== undefined);
-    if (config.music) this.music = config.music;
+    if (config.music) {
+      this.music = config.music;
+      if (config.musicLoop) this.musicLoop = config.musicLoop;
+    }
+    if (config.backgrounds) this.bgs = config.backgrounds.map((b) => new SpriteAnimation(b));
   }
 
   public load(char:Character, zone = 0, positionPercentage = 0, portal = false):void {
@@ -125,9 +133,11 @@ class Level {
     this.char.levelLoad(pos.minus(new Point(0, 0.1)));
     this.char.frame(0.0001);
     // hack to not stuck at loading screen and not to process "just loaded" every frame
-    if (this.music) GameSoundPlay.music(this.music);
+    if (this.music) GameSoundPlay.music(this.music, this.musicLoop);
+    this.elapsedSeconds = 0;
   }
 
+  private inAirTime = 0; // todo: re-code collision
   private processCollisions(e:Entity, elapsedSeconds:number, char = false):Load | null {
     const posBefore = new Point(e.Position.X, e.Position.Y); // to copy values and not the reference
     e.frame(elapsedSeconds);
@@ -144,21 +154,24 @@ class Level {
 
     const floorCollision = Collision.processFloor(e, this.surfaces[SurfaceGroup.Floors], move);
     if (floorCollision) {
+      this.inAirTime = 0;
       e.Position.Y = floorCollision.point.Y;
       if (floorCollision.surface) e.SurfaceType = floorCollision.surface.type;
-    }
+    } else this.inAirTime += elapsedSeconds;
 
     const wallsCollision = Collision.processWalls(this.surfaces[SurfaceGroup.Walls], e, move)
       || (!floorCollision && !ceilCollision
         && Collision.processCeil2(this.surfaces[SurfaceGroup.Ceils], e, move));
     if (wallsCollision) {
       if (wallsCollision.surface) e.SurfaceType = wallsCollision.surface.type;
-      else e.SurfaceType = null;
+      else if (!floorCollision) e.SurfaceType = null;
 
       if (e.Position.Y !== wallsCollision.point.Y) {
         e.Position.Y = wallsCollision.point.Y; e.resetVelocityY();
       }
-      if (e.Position.X !== wallsCollision.point.X) {
+      if ((this.inAirTime === 0 || this.inAirTime > 0.05)
+        // a temporal hack for wall collision when jump on stairs with high fps
+        && e.Position.X !== wallsCollision.point.X) {
         e.Position.X = wallsCollision.point.X; e.resetVelocityX();
       }
     } else if (!floorCollision) e.SurfaceType = null;
@@ -172,6 +185,7 @@ class Level {
     if (exit) return exit;
     this.entities?.forEach((entity) => this.processCollisions(entity, elapsedSeconds));
     this.camera.process(char, viewSize, zoom, elapsedSeconds);
+    this.elapsedSeconds += elapsedSeconds;
     return undefined;
   }
 
@@ -193,7 +207,7 @@ class Level {
   }
 
   private static readonly colors:Record<SurfaceType, string> = {
-    [SurfaceType.Normal]: 'black',
+    [SurfaceType.Normal]: '#2F4F4F',
     [SurfaceType.Ice]: 'aqua',
   };
 
@@ -224,8 +238,17 @@ class Level {
     });
   }
 
+  private drawBgs(c:RenderContext, zoom:number) {
+    if (!this.bgs) return;
+    const elapsed = this.elapsedSeconds;
+    const pos = Point.Zero.minus(this.camera.Current);
+    this.bgs.forEach((bg) => bg.drawFrame(c, pos, zoom, elapsed, false, 1));
+  }
+
   public draw(c:RenderContext, zoom:number, dBoxes = false, dSurfaces = false):void {
     const camPos = this.camera.Current;
+
+    this.drawBgs(c, zoom);
 
     if (dSurfaces) {
       // because canvas is weird, need for sharp lines
@@ -235,7 +258,6 @@ class Level {
       Level.drawLines(c, zoom, camPos, this.loadExit, 'yellow');
       c.translate(-0.5, -0.5);
     }
-
     this.char?.draw(c, camPos, zoom, dBoxes);
     this.entities?.forEach((entity) => entity.draw(c, camPos, zoom, dBoxes));
   }

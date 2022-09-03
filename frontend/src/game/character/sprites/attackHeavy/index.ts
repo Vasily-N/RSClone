@@ -4,7 +4,7 @@ import { Point } from '../../../shapes';
 
 const sc:SpriteConfig = {
   link: sprite,
-  frameLength: 1 / 15,
+  frameLength: 1 / 12,
   frameSize: 75,
   vertical: true,
   hasReverse: true,

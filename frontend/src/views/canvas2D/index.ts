@@ -4,14 +4,11 @@ import { View } from '..';
 import { IGameSettings } from '../../services';
 
 class Canvas2D extends View {
-  private readonly bg:HTMLDivElement;
   private readonly canvas:HTMLCanvasElement;
   private readonly gameSettings:IGameSettings;
 
   private initCanvas():HTMLCanvasElement {
     const canvas = this.getElementById('canvas') as HTMLCanvasElement;
-    canvas.addEventListener('mousemove', this.showCoords.bind(this));
-    canvas.addEventListener('mouseout', this.removeCoords.bind(this));
     canvas.addEventListener('wheel', this.changeZoom.bind(this), { passive: true });
     window.addEventListener('resize', this.setCanvasSize.bind(this));
     return canvas;
@@ -19,7 +16,6 @@ class Canvas2D extends View {
 
   constructor(parentId:string, gameSettings:IGameSettings) {
     super(parentId, template, style);
-    this.bg = this.getElementById('bg') as HTMLDivElement;
     this.gameSettings = gameSettings;
 
     this.canvas = this.initCanvas();
@@ -30,15 +26,6 @@ class Canvas2D extends View {
     setTimeout(setCanvasSize);
     // hack to fight the developer console not firing the resize event
     setInterval(setCanvasSize, 500);
-  }
-
-  private showCoords(event:MouseEvent) {
-    const canvasRect:DOMRect = (event.target as Element).getBoundingClientRect();
-    this.bg.innerHTML = `x: ${(event.x - canvasRect.x).toString().padStart(4, '0')}, y:${(event.y - canvasRect.y).toString().padStart(4, '0')}`;
-  }
-
-  private removeCoords() {
-    this.bg.innerHTML = '\xa0';
   }
 
   private previousWindowWidth = 0;

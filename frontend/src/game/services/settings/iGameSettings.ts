@@ -14,7 +14,7 @@ interface IGameSettings {
   RenderSize:Point // don't implement change for it for now, in the app it's autosize in canvas
   RenderSizeSet:(value:{ width:number, height:number })=>void
   RenderSizeGet:()=>{ width:number, height:number }
-  setRenderZone:(value:CanvasRenderingContext2D | null)=>void
+  setRenderZone:(value:CanvasRenderingContext2D | null)=>void // todo: recode without this
   getRenderZone:()=>CanvasRenderingContext2D | null
   ZoomChangeSubscribe:(callback:()=>void)=>()=>void
 }

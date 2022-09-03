@@ -49,7 +49,7 @@ class SoundPlay implements ISoundPlay, ISoundSettings, ISoundSubscribe {
     return SoundPlay.subscribe(this.soundVolumeSubscribers, volumeFunc);
   }
 
-  public playMusic(url:string, loop = true):void {
+  public playMusic(url:string, loop?:number):void {
     this.musicSubscribers.forEach((f) => f(url, loop));
   }
 
