@@ -1,29 +1,33 @@
+/* eslint-disable max-len */
 import template from './index.html';
 import style from './app.scss';
-
 import { IView, View } from '..';
 
 import Canvas2D from '../canvas2D';
-import { Game, WinTheGame } from '../../game';
+import {
+  Game, IGame, IGameCallbacks, WinTheGame,
+} from '../../game';
 import BoardersView from '../boarders';
 import SoundView from '../sound';
 
 import { Services } from '../../services';
 import SettingIsGame from '../settingIsGame';
+import StartPageView from '../startPage';
 import ControlsView from '../settingControl/ControlsView';
 import SettingSound from '../settingSound';
 
-enum ViewId { canvas, placaholder, sounds, settingGame, settingControl, settingSound }
+enum ViewId { startPage, canvas, placaholder, sounds, settingGame, settingControl, settingSound }
 
-class AppPage extends View {
+class AppPage extends View implements IGameCallbacks {
   private static contentId = style.content;
-  private services: Services; // TODO:
+  private services: Services;
   private currentViewId?: ViewId;
   private views: Record<string, IView> = {};
-  private game?: Game;
+  private game?: IGame;
 
   private createView(viewId: ViewId): IView {
     switch (viewId) {
+      case ViewId.startPage: return new StartPageView(AppPage.contentId, this.services);
       case ViewId.canvas: {
         const canvasView = new Canvas2D(AppPage.contentId, this.services.gameSettings);
         this.game = new Game(
@@ -31,7 +35,7 @@ class AppPage extends View {
           this.services.gameSettings,
           this.services.sounds.play,
         );
-        this.game.start(this.winTheGame.bind(this), this.pauseTheGame.bind(this));
+        this.game.start(this);
         return canvasView;
       }
 
@@ -60,6 +64,7 @@ class AppPage extends View {
   }
 
   private initListeners() {
+    this.getElementById('toMainPage')?.addEventListener('click', this.changeTo.bind(this, ViewId.startPage));
     this.getElementById('toCanvas')?.addEventListener('click', this.changeTo.bind(this, ViewId.canvas));
     this.getElementById('toPlaceholder')?.addEventListener('click', this.changeTo.bind(this, ViewId.placaholder));
     this.getElementById('toSettingGame')?.addEventListener('click', this.changeTo.bind(this, ViewId.settingGame));
@@ -71,7 +76,7 @@ class AppPage extends View {
     super.append();
     this.initListeners();
     this.getView(ViewId.sounds).append();
-    this.changeTo(ViewId.canvas);
+    this.changeTo(ViewId.startPage);
   }
 
   private changeTo(viewId: ViewId): boolean {
@@ -82,13 +87,18 @@ class AppPage extends View {
     return true;
   }
 
-  private winTheGame(win:WinTheGame):void {
+  public winTheGame(win:WinTheGame):void {
     alert(JSON.stringify(win));
     console.log(this);
   }
 
-  private pauseTheGame():void {
+  public pauseTheGame():void {
     alert('pause!');
+    console.log(this);
+  }
+
+  public characterHp(hp:number) {
+    alert(hp);
     console.log(this);
   }
 }

@@ -10,6 +10,8 @@ enum Action {
   zoomUp,
   zoomDown,
   pause,
+  flipLeft,
+  flipRight,
 }
 
 export default Action;

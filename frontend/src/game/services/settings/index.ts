@@ -62,8 +62,8 @@ class GameSettings implements IGameSettings {
   public setRenderZone(value:CanvasRenderingContext2D | null) { this.renderZone = value; }
   public getRenderZone():CanvasRenderingContext2D | null { return this.renderZone; }
 
-  private zoom = 3;
-  private readonly zoomMax = 3;
+  private zoom = 4;
+  private readonly zoomMax = 4;
   public get ZoomMax():number { return this.zoomMax; }
   private readonly zoomMin = 1;
   public get ZoomMin():number { return this.zoomMin; }

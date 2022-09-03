@@ -1,8 +1,8 @@
 import {
-  Direction, EntityClass, EntityId, StateConfig, SpriteConfig,
+  Direction, EntityClass, EntityId, StateConfig,
 } from './types';
 
-import SpriteAnimation from './spriteAnimation';
+import { SpriteAnimation, SpriteConfig } from '../spriteAnimation';
 
 import { Point, Rectangle } from '../shapes';
 import Box from '../box';
@@ -152,6 +152,10 @@ abstract class Entity {
       this.animation.drawFrame(c, drawPos, zoom, elapsed, !!this.direction);
     }
     if (drawBoxes) this.drawBoxes(c, zoom, drawPos);
+  }
+
+  protected static animationFinished(anim:SpriteAnimation, elapsedSeconds:number):boolean {
+    return anim.Ends <= elapsedSeconds;
   }
 }
 

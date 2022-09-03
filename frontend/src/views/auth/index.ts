@@ -1,26 +1,18 @@
-import template from './registerWindow.html';
+import template from './index.html';
 import style from './auth.scss';
 import { View } from '..';
 import { IUserService, UserData } from '../../services/apiServices/userServices';
 
-class RegWindow extends View {
-  mainWin: HTMLDivElement;
+class AuthWindow extends View {
   services: IUserService;
 
-  initRegWindow():void {
-    const regWin = this.getElementById('reg') as HTMLInputElement;
-    const loginWin = this.getElementById('auth') as HTMLInputElement;
-    RegWindow.hiddenElem(loginWin);
-    const btnReg = this.getElementById('reg-user') as HTMLButtonElement;
+  initAuthWindow():void {
     const btnAuth = this.getElementById('auth-user') as HTMLButtonElement;
-    const isAccaunt = this.getElementById('reg-message') as HTMLParagraphElement;
-    const skipReg = this.getElementById('reg-skip') as HTMLParagraphElement;
     const skipAuth = this.getElementById('auth-skip') as HTMLParagraphElement;
-    btnReg.addEventListener('click', () => this.services.createUser(this.makeUserData('reg')));
-    btnAuth.addEventListener('click', () => this.services.createUser(this.makeUserData('auth')));
-    isAccaunt.addEventListener('click', () => this.hiddenAndShow(regWin, loginWin));
-    skipReg.addEventListener('click', () => RegWindow.hiddenElem(this.mainWin));
-    skipAuth.addEventListener('click', () => RegWindow.hiddenElem(this.mainWin));
+    btnAuth.addEventListener('click', (e: Event) => {
+      e.preventDefault();
+      this.services.createUser(this.makeUserData('auth'));
+    });
   }
 
   makeUserData(suffix: string):UserData {
@@ -32,25 +24,11 @@ class RegWindow extends View {
     };
   }
 
-  static hiddenElem(elem: HTMLDivElement) {
-    elem.remove();
-  }
-
-  showElem(elem: HTMLDivElement) {
-    this.mainWin.append(elem);
-  }
-
-  hiddenAndShow(hidden: HTMLDivElement, show: HTMLDivElement) {
-    RegWindow.hiddenElem(hidden);
-    this.showElem(show);
-  }
-
   constructor(parentId:string, services: IUserService) {
     super(parentId, template, style);
-    this.mainWin = this.getElementById('auth-window') as HTMLDivElement;
     this.services = services;
-    this.initRegWindow();
+    this.initAuthWindow();
   }
 }
 
-export default RegWindow;
+export default AuthWindow;

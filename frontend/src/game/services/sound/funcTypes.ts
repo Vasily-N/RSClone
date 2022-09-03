@@ -1,4 +1,4 @@
-type MusicFunc = (url:string, loop?:boolean)=>void;
+type MusicFunc = (url:string, loop?:number)=>void;
 type SoundFunc = (url:string)=>void;
 type VolumeFunc = (volume:number)=> void;
 

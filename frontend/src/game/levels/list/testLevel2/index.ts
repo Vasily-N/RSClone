@@ -4,8 +4,8 @@ import music from "./Dracula's Castle.mp3";
 
 import {
   EntityConfig, LevelConfig, LoadingConfig, SurfaceConfig, positionsFromPoints,
-} from '../../levelConfig';
-import LevelId from '../levelIds';
+} from '../../config';
+import LevelId from '../ids';
 
 const walls:(SurfaceConfig | LoadingConfig)[] = [
   ...positionsFromPoints([new P(150, 199), new P(150, 200)])
@@ -41,6 +41,8 @@ const entities:EntityConfig[] = [
 
 ];
 
-const cfg:LevelConfig = { walls, entities, music };
+const cfg:LevelConfig = {
+  walls, entities, music, musicLoop: 21.418,
+};
 
 export default cfg;

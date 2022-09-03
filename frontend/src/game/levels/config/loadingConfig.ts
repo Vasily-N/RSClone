@@ -1,5 +1,5 @@
 import { Line } from '../../shapes';
-import LevelId from '../levelsList/levelIds';
+import LevelId from '../list/ids';
 
 type LoadingConfig = {
   position:Line

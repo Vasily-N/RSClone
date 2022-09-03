@@ -8,6 +8,8 @@ import sit from './sprites/sit';
 import normal from './sprites/attackNormal';
 import heavy from './sprites/attackHeavy';
 import range from './sprites/attackRange';
+import flipBack from './sprites/flipBack';
+import flipForward from './sprites/flipForward';
 
 enum CharacterState {
   Idle,
@@ -18,6 +20,8 @@ enum CharacterState {
   AttackNormal,
   AttackHeavy,
   AttackRange,
+  FlipBack,
+  FlipForward,
 }
 
 const hurtboxIdle = new Box(new Rectangle(0, 42, 14, 40));
@@ -49,6 +53,12 @@ const states: Partial<Record<CharacterState, StateConfig>> = {
   },
   [CharacterState.AttackRange]: {
     sprite: range, collisionbox, hurtbox: hurtboxIdle, hitbox: hitboxRange,
+  },
+  [CharacterState.FlipBack]: {
+    sprite: flipBack, collisionbox, hurtbox: hurtboxIdle,
+  },
+  [CharacterState.FlipForward]: {
+    sprite: flipForward, collisionbox, hurtbox: hurtboxIdle,
   },
 };
 

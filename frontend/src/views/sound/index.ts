@@ -9,6 +9,7 @@ class SoundView extends View implements ISoundPlay {
   private soundsIdle:HTMLAudioElement[] = [];
   private soundsDiv:HTMLDivElement;
   private soundVolume = 1;
+  private musicLoop:number | null = null;
 
   constructor(parentId:string, subscribe:ISoundSubscribe) {
     super(parentId, template, style);
@@ -19,11 +20,24 @@ class SoundView extends View implements ISoundPlay {
     subscribe.musicVolumeSubscribe(this.setMusicVolume.bind(this));
     subscribe.soundVolumeSubscribe(this.setSoundVolume.bind(this));
     this.soundsDiv = this.getElementById('sounds') as HTMLDivElement;
+    this.musicSound.addEventListener('timeupdate', this.musicCheck.bind(this));
   }
 
-  public playMusic(url:string, loop = true) {
+  public playMusic(url:string, loop?:number) {
     this.musicSound.src = url;
-    this.musicSound.loop = loop;
+    const loop2 = loop || 0;
+    this.musicLoop = loop2 < 0 ? null : loop2;
+  }
+
+  private static buffer = 0.32;
+  private musicCheck() {
+    if (this.musicSound.currentTime > this.musicSound.duration - SoundView.buffer) this.musicEnd();
+  }
+
+  private musicEnd():void {
+    if (this.musicLoop === null) return;
+    this.musicSound.currentTime = this.musicLoop;
+    this.musicSound.play();
   }
 
   private getIdleSound():HTMLAudioElement {

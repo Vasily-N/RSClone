@@ -23,6 +23,9 @@ class Character extends Entity {
   private static readonly maxAirJumps = 1;
   private static readonly jumpPower = 160; // todo: to character stats
 
+  public get VelocityX() { return this.velocityPerSecond.X; }
+  public get VelocityY() { return this.velocityPerSecond.Y; }
+
   constructor(controls:Controls) {
     super(Point.Zero, states);
     this.conrols = controls;
@@ -76,6 +79,16 @@ class Character extends Entity {
     this.jumpHold = true;
   }
 
+  private processActions(actions:Action[], charStates:CharacterState[]):boolean {
+    for (let i = actions.length - 1; i > -1; i -= 1) {
+      if (!this.conrols.has(actions[i])) continue;
+      this.stateElapsedSeconds = 0;
+      this.State = charStates[i];
+      return true;
+    }
+    return false;
+  }
+
   private static attackStates:Partial<Record<Action, CharacterState>> = {
     [Action.attackLight]: CharacterState.AttackNormal,
     [Action.attackHeavy]: CharacterState.AttackHeavy,
@@ -85,35 +98,62 @@ class Character extends Entity {
   private static attackKeys:Action[] = Object.keys(Character.attackStates) as unknown as Action[];
   private static attackValues:CharacterState[] = Object.values(Character.attackStates);
 
-  private processAttack(elapsedSeconds:number):boolean {
-    if (Character.attackValues.includes(this.stateCurrent)
-    && this.animation && this.animation.Ends > (this.stateElapsedSeconds + elapsedSeconds)) {
-      return true;
-    }
+  private processAttack():boolean {
+    return this.processActions(Character.attackKeys, Character.attackValues);
+  }
 
-    for (let i = Character.attackKeys.length - 1; i > -1; i -= 1) {
-      if (!this.conrols.has(Character.attackKeys[i], true)) continue;
-      this.stateElapsedSeconds = 0;
-      this.State = Character.attackValues[i];
-      return true;
+  private static flipStates:Partial<Record<Action, CharacterState>> = {
+    [Action.flipRight]: CharacterState.FlipForward,
+    [Action.flipLeft]: CharacterState.FlipBack,
+  };
+
+  private static flipReverse:Partial<Record<CharacterState, CharacterState>> = {
+    [CharacterState.FlipBack]: CharacterState.FlipForward,
+    [CharacterState.FlipForward]: CharacterState.FlipBack,
+  };
+
+  private static flipKeys:Action[] = Object.keys(Character.flipStates) as unknown as Action[];
+  private static flipValues:CharacterState[] = Object.values(Character.flipStates);
+
+  private didAFlip = false;
+  private processFlip():boolean {
+    if (this.OnSurface) {
+      this.didAFlip = false;
+      return false;
     }
-    return false;
+    if (this.didAFlip) return false;
+    this.didAFlip = this.processActions(Character.flipKeys, Character.flipValues);
+    if (!this.didAFlip) return false;
+    this.velocityPerSecond.X = 60 * (this.stateCurrent === CharacterState.FlipBack ? -1 : 1);
+    this.velocityPerSecond.Y = -130;
+    if (this.direction) {
+      this.State = Character.flipReverse[this.stateCurrent as CharacterState] as CharacterState;
+    }
+    return true;
+  }
+
+  private static longStates:CharacterState[] = [...Character.attackValues, ...Character.flipValues];
+
+  private longAnimationCheck(elapsedSeconds:number):boolean {
+    return (Character.longStates.includes(this.stateCurrent) && !!this.animation
+    && !Entity.animationFinished(this.animation, this.stateElapsedSeconds + elapsedSeconds));
   }
 
   private processControls(elapsedSeconds:number):void {
-    const attackAnimation = this.processAttack(elapsedSeconds);
+    const longAnimation = this.longAnimationCheck(elapsedSeconds)
+                      || this.processAttack() || this.processFlip();
     const left = this.conrols.has(Action.moveLeft);
     const right = this.conrols.has(Action.moveRight);
     const sit = this.conrols.has(Action.sit);
 
     const xVelocityChange = elapsedSeconds * this.getXVelChangePerSec();
-    if (this.stateCurrent !== CharacterState.AttackRange) {
+    if (!longAnimation) {
       if (right) this.direction = Direction.right;
       if (left) this.direction = Direction.left;
     }
     const leftOrRight = left || right;
-    if (sit || attackAnimation || !leftOrRight) this.processSlowDown(xVelocityChange);
-    if (attackAnimation) return;
+    if (sit || longAnimation || !leftOrRight) this.processSlowDown(xVelocityChange);
+    if (longAnimation) return;
     if (leftOrRight && !sit) {
       this.processWalk(xVelocityChange);
       this.State = CharacterState.Walk;
