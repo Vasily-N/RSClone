@@ -44,7 +44,11 @@ class UserServices extends ApiService implements IUserService {
   }
 
   public async updateUser(data: UserData):Promise<User | undefined> {
-    return super.update<User>(data);
+    const updated = await super.update<User>(data);
+    if (!updated) {
+      throw new Error('that user not found');
+    }
+    return updated;
   }
 }
 

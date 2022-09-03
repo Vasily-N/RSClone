@@ -13,7 +13,12 @@ class AuthWindow extends View {
     const skipAuth = this.getElementById('auth-skip') as HTMLParagraphElement;
     btnAuth.addEventListener('click', (e: Event) => {
       e.preventDefault();
-      this.services.updateUser(this.makeUserData('auth'));
+      this.services.updateUser(this.makeUserData('auth'))
+        .then(() => {
+          this.hiddenContent('errorMessage');
+          return this.initStartButton();
+        })
+        .catch((err) => this.showContent('errorMessage'));
     });
   }
 
@@ -24,6 +29,18 @@ class AuthWindow extends View {
       name: nameEl.value.trim(),
       password: passEl.value.trim(),
     };
+  }
+
+  hiddenContent(id: string) {
+    (this.getElementById(`${id}`) as HTMLElement).style.display = 'none';
+  }
+
+  initStartButton() {
+    (this.getElementById('startBtn') as HTMLButtonElement).style.display = 'flex';
+  }
+
+  showContent(id: string) {
+    (this.getElementById(`${id}`) as HTMLElement).style.display = 'flex';
   }
 
   constructor(parentId:string, services: IUserService) {
