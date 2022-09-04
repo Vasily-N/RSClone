@@ -16,14 +16,18 @@ export type UserData = {
 interface IUserService {
   createUser:(data: UserData) => Promise<UserData>;
   getUsers:() => Promise<ListResponse<User>>;
-  getUser:(id: number) => Promise<User | undefined>;
-  deleteUser:(id: number) => Promise<boolean | Response>;
-  updateUser:(id: number, data: UserData) => Promise<User | undefined>;
+  getUser:(id: string) => Promise<User | undefined>;
+  deleteUser:(id: string) => Promise<boolean | Response>;
+  updateUser:(data: UserData) => Promise<User | undefined>;
 }
 
 class UserServices extends ApiService implements IUserService {
   public async createUser(data: UserData):Promise<UserData> {
-    return (await super.create<UserData>(data)) as UserData;
+    const user = await super.create<UserData>(data);
+    if (!user) {
+      throw new Error('this name is already taken');
+    }
+    return user as UserData;
   }
 
   public async getUsers():Promise<ListResponse<User>> {
@@ -31,16 +35,20 @@ class UserServices extends ApiService implements IUserService {
     return super.getAll<User>(query);
   }
 
-  public async getUser(id: number):Promise<User | undefined> {
+  public async getUser(id: string):Promise<User | undefined> {
     return super.getId<User>(id);
   }
 
-  public async deleteUser(id: number):Promise<boolean | Response> {
+  public async deleteUser(id: string):Promise<boolean | Response> {
     return super.delete(id);
   }
 
-  public async updateUser(id: number, data: UserData):Promise<User | undefined> {
-    return super.update<User>(id, data);
+  public async updateUser(data: UserData):Promise<User | undefined> {
+    const updated = await super.update<User>(data);
+    if (!updated) {
+      throw new Error('that user not found');
+    }
+    return updated;
   }
 }
 

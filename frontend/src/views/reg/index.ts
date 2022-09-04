@@ -1,7 +1,12 @@
+/* eslint-disable import/no-cycle */
 import template from './index.html';
 import style from './reg.scss';
 import { View } from '..';
 import { IUserService, UserData } from '../../services/apiServices/userServices';
+import Canvas2D from '../canvas2D';
+import { Game } from '../../game';
+import AppPage from '../app';
+import { Services } from '../../services';
 
 class RegWindow extends View {
   services: IUserService;
@@ -9,9 +14,21 @@ class RegWindow extends View {
   initRegWindow():void {
     const btnReg = this.getElementById('reg-user') as HTMLButtonElement;
     const skipReg = this.getElementById('reg-skip') as HTMLParagraphElement;
+    skipReg.addEventListener('click', () => this.initStartButton());
     btnReg.addEventListener('click', (e: Event) => {
       e.preventDefault();
-      this.services.createUser(this.makeUserData('reg'));
+      const data = this.makeUserData('reg');
+      if (data.name === '' || data.password === '') {
+        this.showContent('errorEmpty');
+      } else {
+        this.services.createUser(this.makeUserData('reg'))
+          .then(() => {
+            this.hiddenContent('errorMessage');
+            this.hiddenContent('errorEmpty');
+            return this.initStartButton();
+          })
+          .catch(() => this.showContent('errorMessage'));
+      }
     });
   }
 
@@ -19,9 +36,21 @@ class RegWindow extends View {
     const nameEl = this.getElementById(`name-${suffix}`) as HTMLInputElement;
     const passEl = this.getElementById(`pass-${suffix}`) as HTMLInputElement;
     return {
-      name: nameEl.value,
-      password: passEl.value,
+      name: nameEl.value.trim(),
+      password: passEl.value.trim(),
     };
+  }
+
+  showContent(id: string) {
+    (this.getElementById(`${id}`) as HTMLElement).style.display = 'flex';
+  }
+
+  hiddenContent(id: string) {
+    (this.getElementById(`${id}`) as HTMLElement).style.display = 'none';
+  }
+
+  initStartButton() {
+    (this.getElementById('startBtn') as HTMLButtonElement).style.display = 'flex';
   }
 
   constructor(parentId:string, services: IUserService) {

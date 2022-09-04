@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 /* eslint-disable max-len */
 import template from './index.html';
 import style from './app.scss';
@@ -84,6 +85,12 @@ class AppPage extends View implements IGameCallbacks {
     this.currentViewId = viewId;
     const view = this.getView(viewId);
     view.replace();
+    return true;
+  }
+
+  public changeToGamePage(): boolean {
+    if (this.currentViewId === ViewId.startPage) return false;
+    this.changeTo(ViewId.startPage);
     return true;
   }
 
