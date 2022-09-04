@@ -28,9 +28,10 @@ class UserService {
   }
 
   async update(user: IUser) {
-    if (!user._id) {
-      throw new Error('no ID');
-    }
+    // if (!user._id) {
+    //   throw new Error('no ID');
+    // }
+    // const updatedData = await User.findOne({ name: user.name, password: user.password });
     const updatedData = await User.findByIdAndUpdate(user._id, user, { new: true });
     return updatedData;
   }

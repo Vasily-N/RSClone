@@ -45,8 +45,19 @@ class UserController {
 
   async update(request: TypedRequestBody<IUserBodyReq>, response: ResponseType) {
     try {
-      const updatedUser = await UserService.update(request.body);
-      return response.json(updatedUser);
+      // const updatedUser = await UserService.update(request.body);
+      // return response.json(updatedUser);
+
+      User.findOne({ name: request.body.name, password: request.body.password }, async (err: Error, example: any) => {
+        if (err) {
+          console.log('?????');
+        }
+        if (example) {
+          // response.status(500).json({ result: 'this name is already taken' });
+          return response.status(202).json({ result: 'you are logged' });
+        }
+        return response.status(500).json({ result: 'user not found' });
+      });
     } catch (err) {
       response.status(500).json(err);
     }

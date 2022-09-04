@@ -34,13 +34,14 @@ class AuthController {
 
   async update(request: TypedRequestBody<IUserBodyReq>, response: ResponseType) {
     try {
-      User.find({ name: request.body.name, password: request.body.password }, async (err: Error, example: any) => {
-        if (err) console.log(err);
-        if (example) {
-          const userLoginPassword = await AuthService.update(example[0]._id);
-          return response.json(userLoginPassword);
+      User.findOne({ name: request.body.name, password: request.body.password }, async (err: Error, example: any) => {
+        if (err) {
+          return response.status(500).json({ result: 'user not found' });
         }
-        return response.status(500).json({ result: 'this name is not exist' });
+        if (example) {
+          return response.status(202).json({ result: 'you are logged' });
+        }
+        return response.status(500).json({ result: 'user not found' });
       });
     } catch (err) {
       response.status(500).json(err);
