@@ -60,23 +60,28 @@ class Character extends Entity {
       : Math.max(this.velocityPerSecond.X - xVelocityChange, 0);
   }
 
-  private processJump():void {
+  private processJump():boolean {
     if (this.OnSurface) this.airJumps = Character.maxAirJumps;
     if (!this.conrols.has(Action.jump)) {
       this.jumpHold = false;
-      return;
+      return false;
     }
-    if (this.jumpHold) return;
+    if (this.jumpHold) return false;
     if (!this.OnSurface) {
-      if (!this.airJumps) return;
+      if (!this.airJumps) return false;
       this.airJumps -= 1;
     } else this.surfaceType = null;
     // because surfaces are sticky (to prevent "floating" from stairs)
 
-    this.State = CharacterState.Walk;
     GameSoundPlay.sound(sounds.jump);
-    this.velocityPerSecond.Y = -Character.jumpPower;
+    const ignoreFloorCollision = this.stateCurrent === CharacterState.Sit && this.platform;
+    if (ignoreFloorCollision) this.Position.Y += 8;
+    else this.velocityPerSecond.Y = -Character.jumpPower;
+
+    this.State = CharacterState.Walk;
     this.jumpHold = true;
+
+    return ignoreFloorCollision;
   }
 
   private processActions(actions:Action[], charStates:CharacterState[]):boolean {
@@ -139,9 +144,13 @@ class Character extends Entity {
     && !Entity.animationFinished(this.animation, this.stateElapsedSeconds + elapsedSeconds));
   }
 
-  private processControls(elapsedSeconds:number):void {
+  private processControls(elapsedSeconds:number):boolean {
+    if (this.OnSurface && Character.flipValues.includes(this.stateCurrent)) {
+      this.State = CharacterState.Walk;
+    }
     const longAnimation = this.longAnimationCheck(elapsedSeconds)
                       || this.processAttack() || this.processFlip();
+
     const left = this.conrols.has(Action.moveLeft);
     const right = this.conrols.has(Action.moveRight);
     const sit = this.conrols.has(Action.sit);
@@ -153,19 +162,20 @@ class Character extends Entity {
     }
     const leftOrRight = left || right;
     if (sit || longAnimation || !leftOrRight) this.processSlowDown(xVelocityChange);
-    if (longAnimation) return;
+    if (longAnimation) return false;
     if (leftOrRight && !sit) {
       this.processWalk(xVelocityChange);
       this.State = CharacterState.Walk;
     } else
     if (!this.OnSurface) this.State = CharacterState.Walk; // todo: jump
     else this.State = sit ? CharacterState.Sit : CharacterState.Idle;
-    this.processJump();
+    return this.processJump();
   }
 
-  public frame(elapsedSeconds:number):void {
-    this.processControls(elapsedSeconds);
+  public frame(elapsedSeconds:number):boolean {
+    const result = this.processControls(elapsedSeconds);
     super.frame(elapsedSeconds);
+    return result;
   }
 
   public levelLoad(position:Point) {

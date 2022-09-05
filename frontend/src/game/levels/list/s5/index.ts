@@ -7,16 +7,16 @@ import {
 } from '../../config';
 import LevelId from '../ids';
 
-const loop = new P(48, 0);
-
 const walls:(SurfaceConfig | LoadingConfig)[] = [
-  ...positionsFromPoints([new P(128, 160), new P(128, 160)])
-    .map((v) => ({ ...v, levelId: LevelId.Beggining })),
   ...positionsFromPoints([
-    loop, new P(48, 160), new P(416, 160), new P(480, 128), new P(512, 128),
-    new P(512, 64), new P(464, 64), new P(432, 32), new P(432, 0), loop,
+    new P(48, 0), new P(48, 256),
+    new P(0, 256), new P(0, 320),
+    new P(32, 320), new P(96, 352), new P(928, 352), new P(992, 320),
+    new P(1024, 320), new P(1024, 256),
+    new P(960, 256), new P(960, 224), new P(992, 224), new P(992, 0),
   ]).map((s, i) => {
-    if (i === 4) return { ...s, levelId: LevelId.S2, zone: 1 };
+    if (i === 2) return { ...s, levelId: LevelId.S4, zone: 3 };
+    if (i === 8) return { ...s, levelId: LevelId.S6, zone: 0 };
     return s;
   }),
 ];
@@ -25,12 +25,12 @@ const entities:EntityConfig[] = [
 
 ];
 
-const bgconfig:SpriteConfig = { link: bg, frameSize: 512 };
+const bgconfig:SpriteConfig = { link: bg, frameSize: 1024 };
 const backgrounds = [bgconfig];
 const music = musicList[MusicId.DraculasCastle];
 
 const cfg:LevelConfig = {
-  walls, entities, backgrounds, music, minSize: new P(bgconfig.frameSize, 192),
+  walls, entities, backgrounds, music, minSize: new P(bgconfig.frameSize, 384),
 };
 
 export default cfg;

@@ -1,6 +1,6 @@
 import { Point as P, Rectangle } from '../../../shapes';
 import SurfaceType from '../../../types';
-import music from './Beggining.mp3';
+import music from '../../music/Beggining';
 
 import {
   EntityConfig, LevelConfig, LoadingConfig, SurfaceConfig, positionsFromPoints,
@@ -43,7 +43,7 @@ const loading:LoadingConfig[] = [
 
 const minSize = new P(800, 500);
 const cfg:LevelConfig = {
-  minSize, walls: surfaces.concat(loading), entities, music, musicLoop: 11.358,
+  minSize, walls: surfaces.concat(loading), entities, music,
 };
 
 export default cfg;

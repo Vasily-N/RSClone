@@ -1,6 +1,6 @@
 import { Point as P } from '../../../shapes';
 import SurfaceType from '../../../types';
-import music from "./Dracula's Castle.mp3";
+import music from "../../music/Dracula's Castle";
 
 import {
   EntityConfig, LevelConfig, LoadingConfig, SurfaceConfig, positionsFromPoints,
@@ -23,7 +23,7 @@ const walls:(SurfaceConfig | LoadingConfig)[] = [
     if (i === 5) return { ...v, levelId: LevelId.test, zone: 1 };
     if (i === 9) return { ...v, levelId: LevelId.test, zone: 0 };
     if (i === 13) return { ...v, levelId: LevelId.test2, zone: 1 };
-    if (i === 16) return { ...v, levelId: LevelId.winTheGame, zone: -1 };
+    if (i === 16) return { ...v, levelId: LevelId.WinTheGame, zone: -1 };
     return v;
   }),
 
@@ -42,7 +42,7 @@ const entities:EntityConfig[] = [
 ];
 
 const cfg:LevelConfig = {
-  walls, entities, music, musicLoop: 21.418,
+  walls, entities, music,
 };
 
 export default cfg;

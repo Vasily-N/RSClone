@@ -4,16 +4,17 @@ import LoadingConfig from './loadingConfig';
 import SurfaceConfig from './surfaceConfig';
 import positionsFromPoints from './positionsFromPoints';
 import { SpriteConfig } from '../../spriteAnimation';
+import { MusicConfig } from '../music';
 
 type LevelConfig = {
   minSize?:Point
   walls:(SurfaceConfig | LoadingConfig)[]
   entities:EntityConfig[]
-  music?:string
-  musicLoop?:number
+  music?:MusicConfig
   backgrounds?:SpriteConfig[]
 };
 
 export {
-  LevelConfig, SurfaceConfig, EntityConfig, LoadingConfig, positionsFromPoints, SpriteConfig,
+  LevelConfig, SurfaceConfig, EntityConfig, LoadingConfig, positionsFromPoints,
+  SpriteConfig, MusicConfig,
 };

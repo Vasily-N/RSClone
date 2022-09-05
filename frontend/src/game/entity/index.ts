@@ -7,6 +7,7 @@ import { SpriteAnimation, SpriteConfig } from '../spriteAnimation';
 import { Point, Rectangle } from '../shapes';
 import Box from '../box';
 import SurfaceType from '../types';
+import { Surface } from '../levels/types';
 
 type State = {
   animation?:SpriteAnimation;
@@ -36,9 +37,16 @@ abstract class Entity {
     return (this.collisionBox?.getRect(!!this.direction) || Rectangle.Zero);
   }
 
+  protected platform = false;
   protected surfaceType:SurfaceType | null = null;
-  public set SurfaceType(value:SurfaceType | null) {
+  protected set SurfaceType(value:SurfaceType | null) {
     this.surfaceType = value;
+    if (value !== null) this.resetVelocityY();
+  }
+
+  public set Surface(value:Surface | null) {
+    this.SurfaceType = value && value.type;
+    this.platform = !!value && value.platform;
   }
 
   public get OnSurface():boolean { return this.surfaceType !== null; }
@@ -95,7 +103,7 @@ abstract class Entity {
     this.State = defaultState || Number(Object.keys(states)[0]);
   }
 
-  public frame(elapsedSeconds:number):void {
+  public frame(elapsedSeconds:number):boolean {
     this.stateElapsedSeconds += elapsedSeconds;
 
     if (!this.OnSurface && this.velocityPerSecond.Y < Entity.maxVelY) {
@@ -105,6 +113,7 @@ abstract class Entity {
 
     this.position.Y += elapsedSeconds * this.velocityPerSecond.Y;
     this.position.X += elapsedSeconds * this.velocityPerSecond.X;
+    return false;
   }
 
   public resetVelocityX() {
@@ -115,7 +124,7 @@ abstract class Entity {
     if ((!negativeOnly && !positiveOnly)
       || (negativeOnly && this.velocityPerSecond.Y < 0)
       || (positiveOnly && this.velocityPerSecond.Y > 0)) {
-      this.velocityPerSecond.Y = this.gravity / 24;
+      this.velocityPerSecond.Y = this.gravity / 5;
     }
   }
 
