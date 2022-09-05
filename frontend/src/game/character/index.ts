@@ -100,11 +100,19 @@ class Character extends Entity {
     [Action.attackRange]: CharacterState.AttackRange,
   };
 
+  private static attackSounds:Partial<Record<CharacterState, string>> = {
+    [CharacterState.AttackNormal]: sounds.light,
+    [CharacterState.AttackHeavy]: sounds.heavy,
+    [CharacterState.AttackRange]: sounds.gun,
+  };
+
   private static attackKeys:Action[] = Object.keys(Character.attackStates) as unknown as Action[];
   private static attackValues:CharacterState[] = Object.values(Character.attackStates);
 
   private processAttack():boolean {
-    return this.processActions(Character.attackKeys, Character.attackValues);
+    if (!this.processActions(Character.attackKeys, Character.attackValues)) return false;
+    GameSoundPlay.sound(Character.attackSounds[this.stateCurrent as CharacterState] as string);
+    return true;
   }
 
   private static flipStates:Partial<Record<Action, CharacterState>> = {
@@ -129,6 +137,7 @@ class Character extends Entity {
     if (this.didAFlip) return false;
     this.didAFlip = this.processActions(Character.flipKeys, Character.flipValues);
     if (!this.didAFlip) return false;
+    GameSoundPlay.sound(sounds.spin);
     this.velocityPerSecond.X = 60 * (this.stateCurrent === CharacterState.FlipBack ? -1 : 1);
     this.velocityPerSecond.Y = -130;
     if (this.direction) {
