@@ -1,4 +1,3 @@
-/* eslint-disable import/no-cycle */
 /* eslint-disable max-len */
 /* eslint-disable no-new */
 import bgImg from './background.jpg';
@@ -11,7 +10,6 @@ import SettingIsGame from '../settingIsGame';
 import BoardersView from '../boarders';
 import RegWindow from '../reg';
 import AuthWindow from '../auth';
-import AppPage from '../app';
 import Canvas2D from '../canvas2D';
 import { Game } from '../../game';
 
