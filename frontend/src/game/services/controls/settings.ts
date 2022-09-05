@@ -8,19 +8,18 @@ class ControlsSettings implements IControlsSettings {
     [Action.jump]: new Set(['KeyW', 'ArrowUp']),
     [Action.sit]: new Set(['KeyS', 'ArrowDown']),
     [Action.run]: new Set(['Space']),
-    [Action.attackLight]: new Set(['KeyI']),
-    [Action.attackHeavy]: new Set(['KeyO']),
-    [Action.attackRange]: new Set(['KeyP']),
-    [Action.zoomUp]: new Set(['Equal', 'NumpadAdd']),
-    [Action.zoomDown]: new Set(['Minus', 'NumpadSubtract']),
+    [Action.attackLight]: new Set(['KeyI', 'KeyZ', 'Numpad0']),
+    [Action.attackHeavy]: new Set(['KeyO', 'KeyX', 'Numpad1']),
+    [Action.attackRange]: new Set(['KeyP', 'KeyC', 'Numpad3']),
+    [Action.zoomUp]: new Set(['Equal', 'NumpadAdd', 'PageUp']),
+    [Action.zoomDown]: new Set(['Minus', 'NumpadSubtract', 'PageDown']),
     [Action.pause]: new Set(['Escape']),
-    [Action.flipLeft]: new Set(['KeyQ']),
-    [Action.flipRight]: new Set(['KeyE']),
+    [Action.flipLeft]: new Set(['KeyQ', 'Numpad7']),
+    [Action.flipRight]: new Set(['KeyE', 'Numpad9']),
   };
 
   public set(action:Action, values:string[]):void {
     this.settings[action] = new Set(values);
-    console.log(this.settings[action]);
   }
 
   public get(action:Action):Set<string> {

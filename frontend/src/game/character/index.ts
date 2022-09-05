@@ -60,23 +60,30 @@ class Character extends Entity {
       : Math.max(this.velocityPerSecond.X - xVelocityChange, 0);
   }
 
-  private processJump():void {
+  private processJump():boolean {
     if (this.OnSurface) this.airJumps = Character.maxAirJumps;
     if (!this.conrols.has(Action.jump)) {
       this.jumpHold = false;
-      return;
+      return false;
     }
-    if (this.jumpHold) return;
+    if (this.jumpHold) return false;
     if (!this.OnSurface) {
-      if (!this.airJumps) return;
+      if (!this.airJumps) return false;
       this.airJumps -= 1;
     } else this.surfaceType = null;
     // because surfaces are sticky (to prevent "floating" from stairs)
 
-    this.State = CharacterState.Walk;
+    const sit = this.stateCurrent === CharacterState.Sit;
+    if (sit && !this.platform) return false;
     GameSoundPlay.sound(sounds.jump);
-    this.velocityPerSecond.Y = -Character.jumpPower;
+    const ignoreFloorCollision = sit && this.platform;
+    if (ignoreFloorCollision) this.Position.Y += 2;
+    else this.velocityPerSecond.Y = -Character.jumpPower;
+
+    this.State = CharacterState.Walk;
     this.jumpHold = true;
+
+    return ignoreFloorCollision;
   }
 
   private processActions(actions:Action[], charStates:CharacterState[]):boolean {
@@ -95,11 +102,19 @@ class Character extends Entity {
     [Action.attackRange]: CharacterState.AttackRange,
   };
 
+  private static attackSounds:Partial<Record<CharacterState, string>> = {
+    [CharacterState.AttackNormal]: sounds.light,
+    [CharacterState.AttackHeavy]: sounds.heavy,
+    [CharacterState.AttackRange]: sounds.gun,
+  };
+
   private static attackKeys:Action[] = Object.keys(Character.attackStates) as unknown as Action[];
   private static attackValues:CharacterState[] = Object.values(Character.attackStates);
 
   private processAttack():boolean {
-    return this.processActions(Character.attackKeys, Character.attackValues);
+    if (!this.processActions(Character.attackKeys, Character.attackValues)) return false;
+    GameSoundPlay.sound(Character.attackSounds[this.stateCurrent as CharacterState] as string);
+    return true;
   }
 
   private static flipStates:Partial<Record<Action, CharacterState>> = {
@@ -124,7 +139,11 @@ class Character extends Entity {
     if (this.didAFlip) return false;
     this.didAFlip = this.processActions(Character.flipKeys, Character.flipValues);
     if (!this.didAFlip) return false;
-    this.velocityPerSecond.X = 60 * (this.stateCurrent === CharacterState.FlipBack ? -1 : 1);
+    GameSoundPlay.sound(sounds.spin);
+    const newX = 60 * (this.stateCurrent === CharacterState.FlipBack ? -1 : 1);
+    this.velocityPerSecond.X = newX < 0
+      ? Math.min(this.velocityPerSecond.X, newX)
+      : Math.max(this.velocityPerSecond.X, newX);
     this.velocityPerSecond.Y = -130;
     if (this.direction) {
       this.State = Character.flipReverse[this.stateCurrent as CharacterState] as CharacterState;
@@ -139,9 +158,13 @@ class Character extends Entity {
     && !Entity.animationFinished(this.animation, this.stateElapsedSeconds + elapsedSeconds));
   }
 
-  private processControls(elapsedSeconds:number):void {
+  private processControls(elapsedSeconds:number):boolean {
+    if (this.OnSurface && Character.flipValues.includes(this.stateCurrent)) {
+      this.State = CharacterState.Walk;
+    }
     const longAnimation = this.longAnimationCheck(elapsedSeconds)
                       || this.processAttack() || this.processFlip();
+
     const left = this.conrols.has(Action.moveLeft);
     const right = this.conrols.has(Action.moveRight);
     const sit = this.conrols.has(Action.sit);
@@ -153,19 +176,20 @@ class Character extends Entity {
     }
     const leftOrRight = left || right;
     if (sit || longAnimation || !leftOrRight) this.processSlowDown(xVelocityChange);
-    if (longAnimation) return;
+    if (longAnimation) return false;
     if (leftOrRight && !sit) {
       this.processWalk(xVelocityChange);
       this.State = CharacterState.Walk;
     } else
     if (!this.OnSurface) this.State = CharacterState.Walk; // todo: jump
     else this.State = sit ? CharacterState.Sit : CharacterState.Idle;
-    this.processJump();
+    return this.processJump();
   }
 
-  public frame(elapsedSeconds:number):void {
-    this.processControls(elapsedSeconds);
+  public frame(elapsedSeconds:number):boolean {
+    const result = this.processControls(elapsedSeconds);
     super.frame(elapsedSeconds);
+    return result;
   }
 
   public levelLoad(position:Point) {

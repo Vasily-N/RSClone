@@ -1,17 +1,17 @@
 enum Action {
   moveRight,
   moveLeft,
-  jump,
-  sit,
-  run,
   attackLight,
   attackHeavy,
   attackRange,
+  jump,
+  flipLeft,
+  flipRight,
+  sit,
+  run,
   zoomUp,
   zoomDown,
   pause,
-  flipLeft,
-  flipRight,
 }
 
 export default Action;

@@ -32,7 +32,7 @@ class Game implements IGame {
   private lastFrame = 0;
   private levels:Partial<Record<LevelId, Level>> = {}; // will a lot of levels cause a memory leak?
   private levelIdCurrent?:LevelId;
-  private levelCurrent:Level = this.getLevel(LevelId.winTheGame);
+  private levelCurrent:Level = this.getLevel(LevelId.WinTheGame);
   private controls:Controls;
   private pause = false;
   private totalElapsed = 0;
@@ -53,7 +53,7 @@ class Game implements IGame {
 
   public start(report?:IGameCallbacks):void {
     this.levelCurrent = this
-      .changeLevel({ levelId: LevelId.beggining, zone: 0, position: 0 });
+      .changeLevel({ levelId: LevelId.Beggining, zone: 0, position: 0 });
     this.requestNextFrame();
     this.totalElapsed = 0;
     this.report = report;
@@ -115,9 +115,9 @@ class Game implements IGame {
     const elapsedSeconds = Math.min(elapsed / 1000, this.gameSettings.FrameTimeLimitMin);
     this.totalElapsed += elapsedSeconds;
     const load = this.levelCurrent.frame(elapsedSeconds, size, zoom);
-    if (load?.levelId === LevelId.winTheGame) return true;
-    this.levelCurrent.draw(c, zoom, this.gameSettings.DrawBoxes, this.gameSettings.DrawSurfaces);
+    if (load?.levelId === LevelId.WinTheGame) return true;
 
+    this.levelCurrent.draw(c, zoom, this.gameSettings.DrawBoxes, this.gameSettings.DrawSurfaces);
     if (this.gameSettings.FpsDisplay) Game.drawFps(c, Game.fontSize, elapsed);
     if (this.gameSettings.TimeDisplay) Game.drawTime(c, Game.fontSize, this.totalElapsed);
 

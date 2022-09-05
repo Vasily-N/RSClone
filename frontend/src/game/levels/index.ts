@@ -2,7 +2,7 @@ import { Point, Line, Rectangle } from '../shapes';
 
 import { LevelLoad as Load, Surface, Position } from './types';
 import {
-  LevelConfig, LoadingConfig as LoadZone, EntityConfig, SurfaceConfig,
+  LevelConfig, LoadingConfig as LoadZone, EntityConfig, SurfaceConfig, MusicConfig,
 } from './config';
 
 import { Entity, EntityClass } from '../entity';
@@ -25,8 +25,7 @@ class Level {
   private readonly loadEnter:LoadZone[];
   private readonly loadExit:LoadZone[];
   private readonly entitiesConfig:EntityConfig[];
-  private readonly music?:string;
-  private readonly musicLoop?:number;
+  private readonly music?:MusicConfig;
   private bgs?:SpriteAnimation[]; // todo: parallax
   private entities:Entity[] = [];
   private char?:Character;
@@ -86,10 +85,10 @@ class Level {
   }
 
   private static initArea(surface:Surface[], minSize?:Point):Rectangle {
-    const left = surface.reduce((p, c) => Math.min(p, c.position.MinX), Number.MAX_SAFE_INTEGER);
+    const left = surface.reduce((p, c) => Math.min(p, c.position.MinX), 0); // todo: MAXSAFEINTEGER
     const right = surface.reduce((p, c) => Math.max(p, c.position.MaxX), 0);
     const width = Math.max(right - left + 1, minSize?.X || 0);
-    const top = surface.reduce((p, c) => Math.min(p, c.position.MinY), Number.MAX_SAFE_INTEGER);
+    const top = surface.reduce((p, c) => Math.min(p, c.position.MinY), 0); // todo: MAXSAFEINTEGER
     const bottom = surface.reduce((p, c) => Math.max(p, c.position.MaxY), 0);
     const height = Math.max(bottom - top + 1, minSize?.Y || 0);
     return new Rectangle(left - 1, top - 1, width + 1, height + 1);
@@ -113,10 +112,7 @@ class Level {
     this.entitiesConfig = config.entities;
     this.loadEnter = loading;
     this.loadExit = loading.filter((v) => v.zone !== undefined);
-    if (config.music) {
-      this.music = config.music;
-      if (config.musicLoop) this.musicLoop = config.musicLoop;
-    }
+    if (config.music) this.music = config.music;
     if (config.backgrounds) this.bgs = config.backgrounds.map((b) => new SpriteAnimation(b));
   }
 
@@ -133,14 +129,14 @@ class Level {
     this.char.levelLoad(pos.minus(new Point(0, 0.1)));
     this.char.frame(0.0001);
     // hack to not stuck at loading screen and not to process "just loaded" every frame
-    if (this.music) GameSoundPlay.music(this.music, this.musicLoop);
+    if (this.music) GameSoundPlay.music(this.music.url, this.music.loop);
     this.elapsedSeconds = 0;
   }
 
   private inAirTime = 0; // todo: re-code collision
   private processCollisions(e:Entity, elapsedSeconds:number, char = false):Load | null {
     const posBefore = new Point(e.Position.X, e.Position.Y); // to copy values and not the reference
-    e.frame(elapsedSeconds);
+    const ignoreFloor = e.frame(elapsedSeconds);
     const move = new Line(posBefore, e.Position);
     if (char) {
       const exit = Collision.processExitZones(this.loadExit, move);
@@ -152,20 +148,17 @@ class Level {
       e.Position.Y = ceilCollision.point.Y + e.Collision.Height; e.resetVelocityY(true);
     }
 
-    const floorCollision = Collision.processFloor(e, this.surfaces[SurfaceGroup.Floors], move);
+    const floorCollision = !ignoreFloor
+    && Collision.processFloor(e, this.surfaces[SurfaceGroup.Floors], move);
     if (floorCollision) {
       this.inAirTime = 0;
       e.Position.Y = floorCollision.point.Y;
-      if (floorCollision.surface) e.SurfaceType = floorCollision.surface.type;
     } else this.inAirTime += elapsedSeconds;
 
     const wallsCollision = Collision.processWalls(this.surfaces[SurfaceGroup.Walls], e, move)
       || (!floorCollision && !ceilCollision
         && Collision.processCeil2(this.surfaces[SurfaceGroup.Ceils], e, move));
     if (wallsCollision) {
-      if (wallsCollision.surface) e.SurfaceType = wallsCollision.surface.type;
-      else if (!floorCollision) e.SurfaceType = null;
-
       if (e.Position.Y !== wallsCollision.point.Y) {
         e.Position.Y = wallsCollision.point.Y; e.resetVelocityY();
       }
@@ -174,8 +167,10 @@ class Level {
         && e.Position.X !== wallsCollision.point.X) {
         e.Position.X = wallsCollision.point.X; e.resetVelocityX();
       }
-    } else if (!floorCollision) e.SurfaceType = null;
-
+    }
+    e.Surface = (floorCollision && floorCollision?.surface)
+              || (wallsCollision && wallsCollision.surface)
+              || null;
     return null;
   }
 
@@ -230,7 +225,7 @@ class Level {
   private drawSurfaces(c:RenderContext, zoom:number, camPos:Point) {
     Level.surfaceTypesKeys.forEach((type) => {
       const color = Level.colors[type];
-      c.setLineDash([9, 3]);
+      c.setLineDash([15, 5]);
       Level.drawLines(c, zoom, camPos, this.surfaceFilter(SurfaceGroup.Platforms, type), color);
       c.setLineDash([]);
       Level.drawLines(c, zoom, camPos, this.surfaceFilter(SurfaceGroup.Walls, type), color);
@@ -248,16 +243,16 @@ class Level {
   public draw(c:RenderContext, zoom:number, dBoxes = false, dSurfaces = false):void {
     const camPos = this.camera.Current;
 
-    this.drawBgs(c, zoom);
-
+    const [translateX, translateY] = [0.5, 0.5];
+    c.translate(translateX, translateY);
+    this.drawBgs(c, zoom); // some bg drawn ugly without translate, and some with :(
     if (dSurfaces) {
-      // because canvas is weird, need for sharp lines
-      c.translate(0.5, 0.5);
+      // line are always ugly without translate
       this.drawSurfaces(c, zoom, camPos);
       Level.drawLines(c, zoom, camPos, this.loadEnter, 'white');
       Level.drawLines(c, zoom, camPos, this.loadExit, 'yellow');
-      c.translate(-0.5, -0.5);
     }
+    c.translate(-translateX, -translateY);
     this.char?.draw(c, camPos, zoom, dBoxes);
     this.entities?.forEach((entity) => entity.draw(c, camPos, zoom, dBoxes));
   }

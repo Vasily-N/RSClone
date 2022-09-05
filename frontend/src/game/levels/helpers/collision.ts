@@ -196,7 +196,9 @@ class Collision {
         if (res?.A.X === res?.B.X) {
           return {
             point: new Point(
-              colPrev.X < colPos.X ? walPos.MinX - colVal.Right : walPos.MaxX - colVal.Left,
+              colPrev.X < colPos.X
+                ? walPos.MinX - colVal.Right - 0.33
+                : walPos.MaxX - colVal.Left + 0.33,
               move.B.Y,
             ),
           };

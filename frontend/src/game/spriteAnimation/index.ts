@@ -114,16 +114,17 @@ class SpriteAnimation {
   private static draw(img:Img, c:Render, pos:Point, frame:Rectangle, zoom:number, align = 8):void {
     const position = SpriteAnimation.aligns[align](pos, frame, zoom);
     if (!position) throw new Error('align is not implemented');
+    const bg = frame.Width > 64 || frame.Height > 64; // todo: remove
     c.drawImage(
       img,
       frame.X,
       frame.Y,
       frame.Width,
       frame.Height,
-      position.X,
-      position.Y,
-      Math.round(frame.Width * zoom),
-      Math.round(frame.Height * zoom),
+      Math.round(position.X) + (bg ? 0.5 : 0),
+      Math.round(position.Y) + (bg ? 0.5 : 0),
+      frame.Width * zoom,
+      frame.Height * zoom,
     );
   }
 
