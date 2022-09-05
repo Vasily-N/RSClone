@@ -73,9 +73,11 @@ class Character extends Entity {
     } else this.surfaceType = null;
     // because surfaces are sticky (to prevent "floating" from stairs)
 
+    const sit = this.stateCurrent === CharacterState.Sit;
+    if (sit && !this.platform) return false;
     GameSoundPlay.sound(sounds.jump);
-    const ignoreFloorCollision = this.stateCurrent === CharacterState.Sit && this.platform;
-    if (ignoreFloorCollision) this.Position.Y += 8;
+    const ignoreFloorCollision = sit && this.platform;
+    if (ignoreFloorCollision) this.Position.Y += 2;
     else this.velocityPerSecond.Y = -Character.jumpPower;
 
     this.State = CharacterState.Walk;
@@ -138,7 +140,10 @@ class Character extends Entity {
     this.didAFlip = this.processActions(Character.flipKeys, Character.flipValues);
     if (!this.didAFlip) return false;
     GameSoundPlay.sound(sounds.spin);
-    this.velocityPerSecond.X = 60 * (this.stateCurrent === CharacterState.FlipBack ? -1 : 1);
+    const newX = 60 * (this.stateCurrent === CharacterState.FlipBack ? -1 : 1);
+    this.velocityPerSecond.X = newX < 0
+      ? Math.min(this.velocityPerSecond.X, newX)
+      : Math.max(this.velocityPerSecond.X, newX);
     this.velocityPerSecond.Y = -130;
     if (this.direction) {
       this.State = Character.flipReverse[this.stateCurrent as CharacterState] as CharacterState;
