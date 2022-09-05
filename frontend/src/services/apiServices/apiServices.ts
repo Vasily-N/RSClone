@@ -1,8 +1,9 @@
-import { ITimeService } from './boarderServices';
+import { ITimeService } from './boarderServices/timeService';
+import { IWinService } from './boarderServices/winService';
 import { IUserService } from './userServices';
 
 type ApiServices = {
-  placeholder1:null,
+  wins: IWinService,
   times: ITimeService,
   users: IUserService,
 };

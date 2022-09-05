@@ -56,7 +56,7 @@ class StartPageView extends View {
     }
     if (e.target === this.getElementById('boarders')) {
       this.showPopup();
-      new BoardersView('modalContent', this.services.api.times).append();
+      new BoardersView('modalContent', this.services.api).append();
     }
   }
 

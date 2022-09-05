@@ -35,6 +35,7 @@ class RegWindow extends View {
   makeUserData(suffix: string):UserData {
     const nameEl = this.getElementById(`name-${suffix}`) as HTMLInputElement;
     const passEl = this.getElementById(`pass-${suffix}`) as HTMLInputElement;
+    localStorage.setItem('username', nameEl.value.trim());
     return {
       name: nameEl.value.trim(),
       password: passEl.value.trim(),
