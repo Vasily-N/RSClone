@@ -34,6 +34,11 @@ class SettingIsGame extends View {
       const value = +(e.target as HTMLInputElement).value;
       this.gameSettings.Zoom = value;
     });
+    const DisplayTime = this.getElementById('Display__Time') as HTMLInputElement;
+    DisplayTime.checked = this.gameSettings.TimeDisplay;
+    DisplayTime?.addEventListener('click', () => {
+      this.gameSettings.TimeDisplay = drawSurfaces.checked;
+    });
   }
 
   constructor(parentId: string, gameSettings: IGameSettings) {
