@@ -12,7 +12,27 @@ class BoardersView extends View {
   services: ApiServices;
 
   initTimeTable() {
+    // if (localStorage.getItem('username')) {
+    //   this.services.times.getTimesData();
+    //   this.services.wins.getWinsData();
+    // }
+    this.getTable();
     return this.timeTable;
+  }
+
+  getTable() {
+    if (localStorage.getItem('username')) {
+      this.services.times.getTimesData()
+        .then((res) => {
+          if (!res.values) return;
+          this.drawTimeTable(res.values);
+        });
+      this.services.wins.getWinsData()
+        .then((res) => {
+          if (!res.values) return;
+          this.drawWinTable(res.values);
+        });
+    }
   }
 
   postWinData() {
@@ -25,11 +45,11 @@ class BoardersView extends View {
     this.services.wins.createWinData(data);
   }
 
-  postTimeData() {
+  postTimeData(time: number) {
     if (!localStorage.getItem('username')) return;
     const data = {
       name: BoardersView.getUserName(),
-      time: '',
+      time: `${time}`,
       date: BoardersView.getDateAndTime(),
     };
     this.services.times.createTimeData(data);

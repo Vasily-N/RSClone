@@ -1,4 +1,3 @@
-/* eslint-disable import/no-cycle */
 /* eslint-disable max-len */
 import template from './index.html';
 import style from './app.scss';
@@ -78,6 +77,7 @@ class AppPage extends View implements IGameCallbacks {
     this.initListeners();
     this.getView(ViewId.sounds).append();
     this.changeTo(ViewId.startPage);
+  }
 
   private changeTo(viewId: ViewId): boolean {
     if (this.currentViewId === viewId) return false;
@@ -90,6 +90,8 @@ class AppPage extends View implements IGameCallbacks {
   public winTheGame(win:WinTheGame):void {
     alert(JSON.stringify(win));
     console.log(this);
+    new BoardersView(AppPage.contentId, this.services.api).postTimeData(+win.elapsedSeconds.toFixed(3));
+    new BoardersView(AppPage.contentId, this.services.api).postWinData();
   }
 
   public pauseTheGame():void {

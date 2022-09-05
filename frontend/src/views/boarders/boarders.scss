@@ -5,9 +5,16 @@
   display: flex;
 }
 
-th, td {
+th {
   border: 1px solid white;
   color: white;
   padding: .4em;
   font-size: 1.5rem;
+}
+
+td {
+  border: 1px solid white;
+  color: white;
+  padding: .4em;
+  font-size: 1.3rem;
 }

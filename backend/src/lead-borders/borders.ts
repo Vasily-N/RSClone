@@ -28,7 +28,7 @@ export interface IWinsId {
 
 const Times = new mongoose.Schema(
   {
-    name: { type: String, required: true, unique: true },
+    name: { type: String, required: true },
     time: { type: String, required: true },
     date: { type: String, required: true },
   },
@@ -36,7 +36,7 @@ const Times = new mongoose.Schema(
 
 const Wins = new mongoose.Schema(
   {
-    name: { type: String, required: true, unique: true },
+    name: { type: String, required: true },
     win: { type: String, required: true },
     date: { type: String, required: true },
   },
