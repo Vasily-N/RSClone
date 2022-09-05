@@ -3,10 +3,6 @@ import template from './index.html';
 import style from './reg.scss';
 import { View } from '..';
 import { IUserService, UserData } from '../../services/apiServices/userServices';
-import Canvas2D from '../canvas2D';
-import { Game } from '../../game';
-import AppPage from '../app';
-import { Services } from '../../services';
 
 class RegWindow extends View {
   services: IUserService;
@@ -14,6 +10,8 @@ class RegWindow extends View {
   initRegWindow():void {
     const btnReg = this.getElementById('reg-user') as HTMLButtonElement;
     const skipReg = this.getElementById('reg-skip') as HTMLParagraphElement;
+    const checkBox = this.getElementById('togglePassVisibilityReg') as HTMLInputElement;
+    checkBox.addEventListener('input', () => this.togglePassVisibility(checkBox));
     skipReg.addEventListener('click', () => this.initStartButton());
     btnReg.addEventListener('click', (e: Event) => {
       e.preventDefault();
@@ -40,6 +38,15 @@ class RegWindow extends View {
       name: nameEl.value.trim(),
       password: passEl.value.trim(),
     };
+  }
+
+  togglePassVisibility(inputEl: HTMLInputElement) {
+    const pass = this.getElementById('pass-reg') as HTMLInputElement;
+    if (inputEl.checked === true) {
+      pass.type = 'text';
+    } else {
+      pass.type = 'password';
+    }
   }
 
   showContent(id: string) {
