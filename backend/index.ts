@@ -24,7 +24,7 @@ async function startClone() {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     } as ConnectOptions);
-    app.listen(port, () => console.log(`server run, port ${port}`));
+    app.listen(process.env.PORT || port, () => console.log(`server run, port ${port}`));
   } catch (error) {
     console.log(error);
   }

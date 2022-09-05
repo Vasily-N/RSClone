@@ -20,8 +20,8 @@ class App {
       sounds: { subsribe: soundPlay, settings: soundPlay, play: soundPlay },
       api: {
         placeholder1: null,
-        times: new TimeServices(new Api('http://127.0.0.1:5000/api/'), 'times', {}),
-        users: new UserServices(new Api('http://127.0.0.1:5000/api/'), 'users', {}),
+        times: new TimeServices(new Api('https://castledeploy.herokuapp.com/api/'), 'times', {}),
+        users: new UserServices(new Api('https://castledeploy.herokuapp.com/api/'), 'users', {}),
       },
     };
     this.page = new AppPage('body', services);
