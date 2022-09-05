@@ -40,7 +40,7 @@ class AppPage extends View implements IGameCallbacks {
         return canvasView;
       }
 
-      case ViewId.placaholder: return new BoardersView(AppPage.contentId, this.services.api.times);
+      case ViewId.placaholder: return new BoardersView(AppPage.contentId, this.services.api);
       case ViewId.sounds: return new SoundView('sounds', this.services.sounds.subsribe);
       case ViewId.settingGame:
         return new SettingIsGame(AppPage.contentId, this.services.gameSettings);
@@ -85,12 +85,6 @@ class AppPage extends View implements IGameCallbacks {
     this.currentViewId = viewId;
     const view = this.getView(viewId);
     view.replace();
-    return true;
-  }
-
-  public changeToGamePage(): boolean {
-    if (this.currentViewId === ViewId.startPage) return false;
-    this.changeTo(ViewId.startPage);
     return true;
   }
 

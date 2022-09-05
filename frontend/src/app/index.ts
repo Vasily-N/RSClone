@@ -1,7 +1,8 @@
 import {
   Api, Services, GameSettings, ControlsSettings, ControlsAction, SoundPlay,
 } from '../services';
-import { TimeServices } from '../services/apiServices/boarderServices';
+import { TimeServices } from '../services/apiServices/boarderServices/timeService';
+import { WinServices } from '../services/apiServices/boarderServices/winService';
 import { UserServices } from '../services/apiServices/userServices';
 import { IView } from '../views';
 import AppPage from '../views/app';
@@ -19,7 +20,7 @@ class App {
       gameSettings: new GameSettings(),
       sounds: { subsribe: soundPlay, settings: soundPlay, play: soundPlay },
       api: {
-        placeholder1: null,
+        wins: new WinServices(new Api('https://castledeploy.herokuapp.com/api/'), 'wins', {}),
         times: new TimeServices(new Api('https://castledeploy.herokuapp.com/api/'), 'times', {}),
         users: new UserServices(new Api('https://castledeploy.herokuapp.com/api/'), 'users', {}),
       },
