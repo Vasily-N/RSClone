@@ -1,6 +1,7 @@
+/* eslint-disable import/no-cycle */
+/* eslint-disable max-len */
 import template from './index.html';
 import style from './app.scss';
-
 import { IView, View } from '..';
 
 import Canvas2D from '../canvas2D';
@@ -12,9 +13,11 @@ import SoundView from '../sound';
 
 import { Services } from '../../services';
 import SettingIsGame from '../settingIsGame';
+import StartPageView from '../startPage';
 import ControlsView from '../settingControl/ControlsView';
+import SettingSound from '../settingSound';
 
-enum ViewId { canvas, placeholder, sounds, settingGame, settingControl }
+enum ViewId { startPage, canvas, placeholder, sounds, settingGame, settingControl, settingSound }
 
 class AppPage extends View implements IGameCallbacks {
   private static contentId = style.content;
@@ -25,6 +28,7 @@ class AppPage extends View implements IGameCallbacks {
 
   private createView(viewId: ViewId): IView {
     switch (viewId) {
+      case ViewId.startPage: return new StartPageView(AppPage.contentId, this.services);
       case ViewId.canvas: {
         const canvasView = new Canvas2D(AppPage.contentId, this.services.gameSettings);
         this.game = new Game(
@@ -36,12 +40,15 @@ class AppPage extends View implements IGameCallbacks {
         return canvasView;
       }
 
-      case ViewId.placeholder: return new BoardersView(AppPage.contentId, this.services.api.times);
+      case ViewId.placeholder: return new BoardersView(AppPage.contentId, this.services.api);
       case ViewId.sounds: return new SoundView('sounds', this.services.sounds.subsribe);
       case ViewId.settingGame:
         return new SettingIsGame(AppPage.contentId, this.services.gameSettings);
       case ViewId.settingControl: {
         return new ControlsView(AppPage.contentId, this.services.controls.settings);
+      }
+      case ViewId.settingSound: {
+        return new SettingSound(AppPage.contentId, this.services.sounds.settings);
       }
       default: throw new Error(`${viewId} doesn't exit`);
     }
@@ -58,18 +65,19 @@ class AppPage extends View implements IGameCallbacks {
   }
 
   private initListeners() {
+    this.getElementById('toMainPage')?.addEventListener('click', this.changeTo.bind(this, ViewId.startPage));
     this.getElementById('toCanvas')?.addEventListener('click', this.changeTo.bind(this, ViewId.canvas));
     this.getElementById('toPlaceholder')?.addEventListener('click', this.changeTo.bind(this, ViewId.placeholder));
     this.getElementById('toSettingGame')?.addEventListener('click', this.changeTo.bind(this, ViewId.settingGame));
     this.getElementById('toSettingControl')?.addEventListener('click', this.changeTo.bind(this, ViewId.settingControl));
+    this.getElementById('settingSound')?.addEventListener('click', this.changeTo.bind(this, ViewId.settingSound));
   }
 
   public append(): void {
     super.append();
     this.initListeners();
     this.getView(ViewId.sounds).append();
-    this.changeTo(ViewId.placeholder);
-  }
+    this.changeTo(ViewId.startPage);
 
   private changeTo(viewId: ViewId): boolean {
     if (this.currentViewId === viewId) return false;

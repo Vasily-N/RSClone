@@ -18,7 +18,7 @@ abstract class ApiService {
     this.options = options;
   }
 
-  protected getIdUrl(id:number) {
+  protected getIdUrl(id:string) {
     return `${this.url}/${id}`;
   }
 
@@ -31,23 +31,26 @@ abstract class ApiService {
     return { totalCount, values: await res.json() };
   }
 
-  protected async getId<T>(id:number):Promise<T | undefined> {
+  protected async getId<T>(id:string):Promise<T | undefined> {
     const res:Response = await this.api.get(this.getIdUrl(id));
     return res.ok ? res.json() : res.status;
   }
 
   protected async create<T>(data:Query):Promise<T | undefined> {
     const res:Response = await this.api.post(this.url, data);
-    return res.ok ? res.json() : undefined;
+    if (res.ok) {
+      return res.json();
+    }
+    return undefined;
   }
 
-  protected async delete(id:number):Promise<boolean | Response> {
+  protected async delete(id:string):Promise<boolean | Response> {
     const res:Response = await this.api.delete(this.getIdUrl(id));
     return res.ok;
   }
 
-  protected async update<T>(id:number, data:Query):Promise<T | undefined> {
-    const res:Response = await this.api.put(this.getIdUrl(id), data);
+  protected async update<T>(data:Query):Promise<T | undefined> {
+    const res:Response = await this.api.put(this.url, data);
     return res.ok ? res.json() : undefined;
   }
 }

@@ -1,29 +1,28 @@
-/* eslint-disable max-len */
-/* eslint-disable no-underscore-dangle */
+/* eslint-disable import/no-cycle */
 import template from './index.html';
-import style from './auth.scss';
+import style from './reg.scss';
 import { View } from '..';
 import { IUserService, UserData } from '../../services/apiServices/userServices';
 
-class AuthWindow extends View {
+class RegWindow extends View {
   services: IUserService;
 
-  initAuthWindow():void {
-    const btnAuth = this.getElementById('auth-user') as HTMLButtonElement;
-    const skipAuth = this.getElementById('auth-skip') as HTMLParagraphElement;
-    const checkBox = this.getElementById('togglePassVisibility') as HTMLInputElement;
+  initRegWindow():void {
+    const btnReg = this.getElementById('reg-user') as HTMLButtonElement;
+    const skipReg = this.getElementById('reg-skip') as HTMLParagraphElement;
+    const checkBox = this.getElementById('togglePassVisibilityReg') as HTMLInputElement;
     checkBox.addEventListener('input', () => this.togglePassVisibility(checkBox));
-    skipAuth.addEventListener('click', () => this.initStartButton());
-    btnAuth.addEventListener('click', (e: Event) => {
+    skipReg.addEventListener('click', () => this.initStartButton());
+    btnReg.addEventListener('click', (e: Event) => {
       e.preventDefault();
-      const data = this.makeUserData('auth');
+      const data = this.makeUserData('reg');
       if (data.name === '' || data.password === '') {
         this.showContent('errorEmpty');
       } else {
-        this.services.updateUser(this.makeUserData('auth'))
+        this.services.createUser(this.makeUserData('reg'))
           .then(() => {
-            this.hiddenContent('errorEmpty');
             this.hiddenContent('errorMessage');
+            this.hiddenContent('errorEmpty');
             return this.initStartButton();
           })
           .catch(() => this.showContent('errorMessage'));
@@ -42,12 +41,16 @@ class AuthWindow extends View {
   }
 
   togglePassVisibility(inputEl: HTMLInputElement) {
-    const pass = this.getElementById('pass-auth') as HTMLInputElement;
+    const pass = this.getElementById('pass-reg') as HTMLInputElement;
     if (inputEl.checked === true) {
       pass.type = 'text';
     } else {
       pass.type = 'password';
     }
+  }
+
+  showContent(id: string) {
+    (this.getElementById(`${id}`) as HTMLElement).style.display = 'flex';
   }
 
   hiddenContent(id: string) {
@@ -58,15 +61,11 @@ class AuthWindow extends View {
     (this.getElementById('startBtn') as HTMLButtonElement).style.display = 'flex';
   }
 
-  showContent(id: string) {
-    (this.getElementById(`${id}`) as HTMLElement).style.display = 'flex';
-  }
-
   constructor(parentId:string, services: IUserService) {
     super(parentId, template, style);
     this.services = services;
-    this.initAuthWindow();
+    this.initRegWindow();
   }
 }
 
-export default AuthWindow;
+export default RegWindow;

@@ -1,14 +1,14 @@
 import {
   Api, Services, GameSettings, ControlsSettings, ControlsAction, SoundPlay,
 } from '../services';
-import { TimeServices } from '../services/apiServices/boarderServices';
+import { TimeServices } from '../services/apiServices/boarderServices/timeService';
+import { WinServices } from '../services/apiServices/boarderServices/winService';
 import { UserServices } from '../services/apiServices/userServices';
 import { IView } from '../views';
 import AppPage from '../views/app';
 
 class App {
   page:IView;
-
   contolsSettings = new ControlsSettings();
 
   constructor() {
@@ -20,9 +20,9 @@ class App {
       gameSettings: new GameSettings(),
       sounds: { subsribe: soundPlay, settings: soundPlay, play: soundPlay },
       api: {
-        placeholder1: null,
-        times: new TimeServices(new Api('http://127.0.0.1:5000/api/'), 'times', {}),
-        users: new UserServices(new Api('http://127.0.0.1:5000/api/'), 'users', {}),
+        wins: new WinServices(new Api('https://castledeploy.herokuapp.com/api/'), 'wins', {}),
+        times: new TimeServices(new Api('https://castledeploy.herokuapp.com/api/'), 'times', {}),
+        users: new UserServices(new Api('https://castledeploy.herokuapp.com/api/'), 'users', {}),
       },
     };
     this.page = new AppPage('body', services);
