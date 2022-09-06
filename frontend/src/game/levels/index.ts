@@ -85,10 +85,10 @@ class Level {
   }
 
   private static initArea(surface:Surface[], minSize?:Point):Rectangle {
-    const left = surface.reduce((p, c) => Math.min(p, c.position.MinX), 0); // todo: MAXSAFEINTEGER
+    const left = 0;
     const right = surface.reduce((p, c) => Math.max(p, c.position.MaxX), 0);
     const width = Math.max(right - left + 1, minSize?.X || 0);
-    const top = surface.reduce((p, c) => Math.min(p, c.position.MinY), 0); // todo: MAXSAFEINTEGER
+    const top = 0;
     const bottom = surface.reduce((p, c) => Math.max(p, c.position.MaxY), 0);
     const height = Math.max(bottom - top + 1, minSize?.Y || 0);
     return new Rectangle(left - 1, top - 1, width + 1, height + 1);
@@ -144,7 +144,7 @@ class Level {
     }
 
     const ceilCollision = Collision.processCeil(this.surfaces[SurfaceGroup.Ceils], e, move);
-    if (ceilCollision) {
+    if (ceilCollision && ceilCollision.point.Y) {
       e.Position.Y = ceilCollision.point.Y + e.Collision.Height; e.resetVelocityY(true);
     }
 

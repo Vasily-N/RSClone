@@ -7,14 +7,14 @@ import {
 } from '../../config';
 import LevelId from '../ids';
 
-const loop = new P(48, 0);
+const loop = new P(48, -100);
 
 const walls:(SurfaceConfig | LoadingConfig)[] = [
   ...positionsFromPoints([new P(128, 160), new P(128, 160)])
     .map((v) => ({ ...v, levelId: LevelId.Beggining })),
   ...positionsFromPoints([
     loop, new P(48, 160), new P(416, 160), new P(480, 128), new P(512, 128),
-    new P(512, 64), new P(464, 64), new P(432, 32), new P(432, 0), loop,
+    new P(512, 64), new P(464, 64), new P(432, 32), new P(432, loop.Y), loop,
   ]).map((s, i) => {
     if (i === 4) return { ...s, levelId: LevelId.S2, zone: 1 };
     return s;

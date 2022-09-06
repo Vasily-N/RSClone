@@ -12,12 +12,11 @@ const walls:(SurfaceConfig | LoadingConfig)[] = [
   ...positionsFromPoints([
     new P(432, 128),
     new P(512, 128), new P(512, 64),
-    new P(432, 64), new P(432, 16), new P(48, 16), new P(48, 256), new P(0, 256),
+    new P(432, 64), new P(432, -100), new P(48, -100), new P(48, 256), new P(0, 256),
     new P(0, 320), new P(64, 320),
   ]).map((s, i) => {
     if (i === 1) return { ...s, levelId: LevelId.S14, zone: 0 };
     if (i === 7) return { ...s, levelId: LevelId.S9, zone: 3 };
-
     return s;
   }),
 

@@ -8,13 +8,13 @@ class SettingSound extends View {
 
   init() {
     const musicVolume = this.getElementById('music');
-    (musicVolume as HTMLInputElement).value = String(this.settingSound.MusicVolume);
+    (musicVolume as HTMLInputElement).value = String(this.settingSound.MusicVolume * 100);
     musicVolume?.addEventListener('change', (e) => {
       const value = Number((e.target as HTMLInputElement).value);
       this.settingSound.MusicVolume = +value / 100;
     });
     const SoundsVolume = this.getElementById('Sounds');
-    (SoundsVolume as HTMLInputElement).value = String(this.settingSound.SoundsVolume);
+    (SoundsVolume as HTMLInputElement).value = String(this.settingSound.SoundsVolume * 100);
     SoundsVolume?.addEventListener('change', (e) => {
       const value = Number((e.target as HTMLInputElement).value);
       this.settingSound.SoundsVolume = +value / 100;

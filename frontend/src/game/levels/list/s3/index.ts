@@ -7,22 +7,34 @@ import {
 } from '../../config';
 import LevelId from '../ids';
 
-const loop = new P(48, 0);
+const loop = new P(48, -100);
 
 const walls:(SurfaceConfig | LoadingConfig)[] = [
   ...positionsFromPoints([
     loop, new P(48, 16), new P(16, 48), new P(16, 48), new P(16, 112), new P(32, 112),
-    new P(48, 112), new P(80, 144), new P(80, 160), new P(48, 192), new P(48, 576),
+    new P(48, 112), new P(80, 144),
+  ]),
+
+  ...positionsFromPoints([
+    new P(80, 146), new P(80, 160), new P(48, 192), new P(48, 576),
     new P(48, 576), new P(80, 576), new P(80, 608), new P(48, 640),
     new P(0, 640), new P(0, 704),
     new P(288, 704), new P(352, 720), new P(512, 720), new P(576, 704),
     new P(768, 704), new P(768, 640),
     new P(720, 640), new P(688, 608), new P(688, 576), new P(720, 576), new P(720, 192),
-    new P(688, 160), new P(688, 128), new P(752, 128),
-    new P(752, 64), new P(688, 64), new P(688, 0), loop,
+    new P(688, 160), new P(688, 130),
   ]).map((s, i) => {
-    if (i === 15) return { ...s, levelId: LevelId.S2, zone: 2 };
-    if (i === 21) return { ...s, levelId: LevelId.S4, zone: 0 };
+    if (i === 8) return { ...s, levelId: LevelId.S2, zone: 2 };
+    if (i === 14) return { ...s, levelId: LevelId.S4, zone: 0 };
+    return s;
+  }),
+
+  ...positionsFromPoints([
+    new P(688, 128), new P(752, 128),
+    new P(752, 64), new P(688, 64), new P(688, loop.Y), loop,
+  ]).map((s, i) => {
+    if (i === 8) return { ...s, levelId: LevelId.S2, zone: 2 };
+    if (i === 14) return { ...s, levelId: LevelId.S4, zone: 0 };
     return s;
   }),
 

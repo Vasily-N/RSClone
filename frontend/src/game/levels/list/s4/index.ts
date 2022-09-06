@@ -7,7 +7,7 @@ import {
 } from '../../config';
 import LevelId from '../ids';
 
-const loop = new P(48, 0);
+const loop = new P(48, -100);
 
 const walls:(SurfaceConfig | LoadingConfig)[] = [
   ...positionsFromPoints([
@@ -19,7 +19,7 @@ const walls:(SurfaceConfig | LoadingConfig)[] = [
     new P(256, 320), new P(256, 256),
     new P(224, 256), new P(160, 176), new P(224, 128),
     new P(256, 128), new P(256, 64),
-    new P(208, 64), new P(208, 0), loop,
+    new P(208, 64), new P(208, loop.Y), loop,
   ]).map((s, i) => {
     if (i === 2) return { ...s, levelId: LevelId.S3, zone: 1 };
     if (i === 7) return { ...s, levelId: LevelId.S8, zone: 1 };
