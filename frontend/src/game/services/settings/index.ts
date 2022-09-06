@@ -18,20 +18,25 @@ class GameSettings implements IGameSettings {
   public get TimeDisplay():boolean { return this.timeDisplay; }
   public set TimeDisplay(value:boolean) { this.timeDisplay = value; }
 
-  // because some 60 Hz screens are ackshually 60.5 Hz
-  private static readonly fpsLimitAdd = 1;
-  private static readonly fpsLimitMult = 1.1;
-  private fpsLimitSet = 0;
-  private fpsLimitSafer = 0;
+  // todo: refactor to separate class
   private fpsLimitMin = 15;
-  private frameTimeLimitMin = Infinity;
+  public get FpsLimitMin():number { return this.fpsLimitMin; }
+
+  private frameTimeLimitMax = Math.ceil(1000 / this.fpsLimitMin);
+  public get FrameTimeLimitMax():number { return this.frameTimeLimitMax; }
+
   private frameTimeLimit = Infinity;
   public get FrameTimeLimit():number { return this.frameTimeLimit; }
   public set FrameTimeLimit(value:number) { this.FpsLimit = Math.ceil(1000 / value); }
-  public get FrameTimeLimitMin():number { return this.frameTimeLimitMin; }
+
+  private fpsLimitSafer = Infinity;
   public get FrameLimitSafer():number { return this.fpsLimitSafer; }
   public set FrameLimitSafer(value:number) { this.FpsLimit = value; }
-  public get FpsLimitMin():number { return this.fpsLimitMin; }
+
+  // because some 60 Hz screens are ackshually 60.5 Hz
+  private static readonly fpsLimitAdd = 1;
+  private static readonly fpsLimitMult = 1.1;
+  private fpsLimitSet = Infinity;
   public get FpsLimit():number { return this.fpsLimitSet; }
   public set FpsLimit(value:number) {
     this.fpsLimitSet = value;
@@ -87,7 +92,7 @@ class GameSettings implements IGameSettings {
   public constructor(fpsLimit = 0, fpsLimitMin = 10) {
     this.FpsLimit = fpsLimit;
     this.fpsLimitMin = fpsLimitMin;
-    this.frameTimeLimitMin = GameSettings.FpsToTimeLimit(fpsLimitMin);
+    this.frameTimeLimitMax = GameSettings.FpsToTimeLimit(fpsLimitMin);
   }
 }
 
