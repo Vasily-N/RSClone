@@ -2,14 +2,14 @@ import mongoose from 'mongoose';
 
 export interface ITimes{
   name: string,
-  time: string,
+  time: number,
   date: string,
 }
 
 export interface ITimesId {
   _id?: string;
   name: string,
-  time: string,
+  time: number,
   date: string,
 }
 
@@ -29,7 +29,7 @@ export interface IWinsId {
 const Times = new mongoose.Schema(
   {
     name: { type: String, required: true },
-    time: { type: String, required: true },
+    time: { type: Number, required: true },
     date: { type: String, required: true },
   },
 );
