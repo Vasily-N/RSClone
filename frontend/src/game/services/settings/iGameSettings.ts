@@ -7,7 +7,7 @@ interface IGameSettings {
   TimeDisplay:boolean
   FpsLimit:number
   FpsLimitMin:number
-  FrameTimeLimitMin:number
+  FrameTimeLimitMax:number
   FrameLimitSafer:number
   FrameTimeLimit:number
   Zoom:number

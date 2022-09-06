@@ -112,7 +112,7 @@ class Game implements IGame {
     const { RenderSize: size, Zoom: zoom } = this.gameSettings;
 
     c.clearRect(0, 0, size.X, size.Y);
-    const elapsedSeconds = Math.min(elapsed / 1000, this.gameSettings.FrameTimeLimitMin);
+    const elapsedSeconds = Math.min(elapsed / 1000, this.gameSettings.FrameTimeLimitMax);
     this.totalElapsed += elapsedSeconds;
     const load = this.levelCurrent.frame(elapsedSeconds, size, zoom);
     if (load?.levelId === LevelId.WinTheGame) return true;
