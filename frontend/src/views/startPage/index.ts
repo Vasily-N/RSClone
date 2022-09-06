@@ -6,7 +6,7 @@ import style from './startPage.scss';
 import { View } from '..';
 import template from './index.html';
 import { Services } from '../../services';
-import SettingIsGame from '../settingIsGame';
+import SettingsGame from '../settingsGame';
 import BoardersView from '../boarders';
 import RegWindow from '../reg';
 import AuthWindow from '../auth';
@@ -50,7 +50,7 @@ class StartPageView extends View {
     }
     if (e.target === this.getElementById('toSettingGame')) {
       this.showPopup();
-      new SettingIsGame('modalContent', this.services.gameSettings).append();
+      new SettingsGame('modalContent', this.services.gameSettings).append();
     }
     if (e.target === this.getElementById('boarders')) {
       this.showPopup();
