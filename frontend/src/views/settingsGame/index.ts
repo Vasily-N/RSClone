@@ -51,8 +51,8 @@ class SettingsGame extends View {
   }
 
   private setFpsLimit() {
-    if (!this.fpsLimit[FpsLimit.enabled].checked) return;
-    this.gameSettings.FpsLimit = +this.fpsLimit[FpsLimit.value].value;
+    this.gameSettings.FpsLimit = this.fpsLimit[FpsLimit.enabled].checked
+      ? +this.fpsLimit[FpsLimit.value].value : 0;
   }
 
   constructor(parentId: string, gameSettings: IGameSettings) {
