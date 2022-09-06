@@ -78,6 +78,7 @@ class AppPage extends View implements IGameCallbacks {
     this.initListeners();
     this.getView(ViewId.sounds).append();
     this.changeTo(ViewId.startPage);
+}
 
   private changeTo(viewId: ViewId): boolean {
     if (this.currentViewId === viewId) return false;
