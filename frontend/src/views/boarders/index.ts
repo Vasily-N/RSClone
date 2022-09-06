@@ -12,7 +12,27 @@ class BoardersView extends View {
   services: ApiServices;
 
   initTimeTable() {
+    // if (localStorage.getItem('username')) {
+    //   this.services.times.getTimesData();
+    //   this.services.wins.getWinsData();
+    // }
+    this.getTable();
     return this.timeTable;
+  }
+
+  getTable() {
+    if (localStorage.getItem('username')) {
+      this.services.times.getTimesData()
+        .then((res) => {
+          if (!res.values) return;
+          this.drawTimeTable(res.values);
+        });
+      this.services.wins.getWinsData()
+        .then((res) => {
+          if (!res.values) return;
+          this.drawWinTable(res.values);
+        });
+    }
   }
 
   postWinData() {
@@ -25,11 +45,11 @@ class BoardersView extends View {
     this.services.wins.createWinData(data);
   }
 
-  postTimeData() {
+  postTimeData(timeOfUser: number) {
     if (!localStorage.getItem('username')) return;
     const data = {
       name: BoardersView.getUserName(),
-      time: '',
+      time: timeOfUser,
       date: BoardersView.getDateAndTime(),
     };
     this.services.times.createTimeData(data);
@@ -38,7 +58,8 @@ class BoardersView extends View {
   drawWinTable(arr: BoarderWin[]) {
     this.winTable.innerHTML = '';
     for (let i = 0; i < arr.length; i += 1) {
-      this.winTable.innerHTML += BoardersView.drawTableCeil(arr[i].name, arr[i].win, arr[i].date);
+      this.winTable.innerHTML += BoardersView
+        .drawTableCeil(arr[i].name, arr[i].win, arr[i].date, true);
     }
   }
 
@@ -49,7 +70,16 @@ class BoardersView extends View {
     }
   }
 
-  static drawTableCeil(name: string, param: string, date: string) {
+  static drawTableCeil(name: string, param: string | number, date: string, green?: boolean) {
+    if (green) {
+      return `
+        <tr>
+          <td>${name}</td>
+          <td style="color: green">${param}</td>
+          <td>${date}</td>
+        </tr>
+      `;
+    }
     return `
       <tr>
         <td>${name}</td>

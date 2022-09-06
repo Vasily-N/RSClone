@@ -17,7 +17,7 @@ export type WinData = {
 
 interface IWinService {
   createWinData:(data: WinData) => Promise<WinData>;
-  getTimesData:() => Promise<ListResponse<BoarderWin>>;
+  getWinsData:() => Promise<ListResponse<BoarderWin>>;
   getWinData:(id: string) => Promise<BoarderWin | undefined>;
   deleteWinData:(id: string) => Promise<boolean | Response>;
   updateWinData:(data: WinData) => Promise<BoarderWin | undefined>;
@@ -28,7 +28,7 @@ class WinServices extends ApiService implements IWinService {
     return (await super.create<WinData>(data)) as WinData;
   }
 
-  public async getTimesData():Promise<ListResponse<BoarderWin>> {
+  public async getWinsData():Promise<ListResponse<BoarderWin>> {
     const query: Data = {};
     return super.getAll<BoarderWin>(query);
   }

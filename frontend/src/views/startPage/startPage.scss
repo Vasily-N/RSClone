@@ -1,5 +1,4 @@
 @use '../common.scss' as common;
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap');
 
 .start-page {
   background-size: 100% 100%;
@@ -76,6 +75,7 @@
   margin-left: -200px;
   width: 400px;
   height: 400px;
+  overflow-y: auto;
 }
 
 .close {

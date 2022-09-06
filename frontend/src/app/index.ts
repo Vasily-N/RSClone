@@ -23,6 +23,9 @@ class App {
         wins: new WinServices(new Api('https://castledeploy.herokuapp.com/api/'), 'wins', {}),
         times: new TimeServices(new Api('https://castledeploy.herokuapp.com/api/'), 'times', {}),
         users: new UserServices(new Api('https://castledeploy.herokuapp.com/api/'), 'users', {}),
+        // wins: new WinServices(new Api('http://127.0.0.1:5000/api/'), 'wins', {}),
+        // times: new TimeServices(new Api('http://127.0.0.1:5000/api/'), 'times', {}),
+        // users: new UserServices(new Api('http://127.0.0.1:5000/api/'), 'users', {}),
       },
     };
     this.page = new AppPage('body', services);

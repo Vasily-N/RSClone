@@ -9,7 +9,7 @@ class TimeService {
   }
 
   async getAll() {
-    const times = await TimesScheme.find();
+    const times = await TimesScheme.find().sort({ time: 1 });
     return times;
   }
 
