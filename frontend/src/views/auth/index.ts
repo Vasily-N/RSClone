@@ -1,5 +1,3 @@
-/* eslint-disable max-len */
-/* eslint-disable no-underscore-dangle */
 import template from './index.html';
 import style from './auth.scss';
 import { View } from '..';

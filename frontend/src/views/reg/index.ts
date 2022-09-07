@@ -1,4 +1,3 @@
-/* eslint-disable import/no-cycle */
 import template from './index.html';
 import style from './reg.scss';
 import { View } from '..';

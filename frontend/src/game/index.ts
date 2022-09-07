@@ -24,6 +24,7 @@ interface IGameCallbacks {
 interface IGame {
   start:(report:IGameCallbacks)=>void;
   pauseToggle:()=>void;
+  pause: boolean;
 }
 
 class Game implements IGame {
@@ -34,7 +35,7 @@ class Game implements IGame {
   private levelIdCurrent?:LevelId;
   private levelCurrent:Level = this.getLevel(LevelId.WinTheGame);
   private controls:Controls;
-  private pause = false;
+  pause = false;
   private totalElapsed = 0;
   private report?:IGameCallbacks;
 
