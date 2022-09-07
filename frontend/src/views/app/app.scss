@@ -15,8 +15,20 @@ html {
 }
 
 .button_1 {
-  background-color: lightgreen;
-  border-color: green;
+  // background-color: lightgreen;
+  // border-color: green;
+  background-color: rgba(243, 194, 134, 0.904);
+  justify-content: space-around;
+  border: 3px solid #550d19;
+  color: #340000;
+  height: 35px;
+  font-size: 18px;
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  &:hover {
+    background-color: rgba(243, 194, 134, 0.966);
+    color: rgb(9, 38, 65);
+  }
 }
 
 .button_disabled {
@@ -35,14 +47,16 @@ html {
   // margin-bottom: common.$gap;
   position: absolute;
   display: flex;
+  background-color: rgba(208, 219, 226, 0.322);
+  padding: 40px;
   flex-direction: column;
   justify-content: space-between;
   top: 50%;
   left: 50%;
-  margin-top: -125px;
-  margin-left: -75px;
-  width: 150px;
-  height: 250px;
+  margin-top: -180px;
+  margin-left: -140px;
+  width: 200px;
+  height: 300px;
   z-index: 700;
 }
 
@@ -53,10 +67,10 @@ html {
   border: 4px solid rgba(78, 25, 9, 0.945);
   top: 50%;
   left: 50%;
-  margin-top: -200px;
-  margin-left: -200px;
-  width: 400px;
-  height: 400px;
+  margin-top: -250px;
+  margin-left: -250px;
+  width: 500px;
+  height: 500px;
   overflow-y: auto;
   z-index: 800;
 }

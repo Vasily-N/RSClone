@@ -172,7 +172,7 @@ class AppPage extends View implements IGameCallbacks {
       (this.getElementById('login') as HTMLButtonElement).style.display = 'flex';
       (this.getElementById('registration') as HTMLButtonElement).style.display = 'flex';
       (this.getElementById('toMainPage') as HTMLButtonElement).style.display = 'none';
-      (this.getElementById('toCanvas') as HTMLButtonElement).style.display = 'flex';
+      (this.getElementById('toCanvas') as HTMLButtonElement).style.display = 'none';
     }
     this.currentViewId = viewId;
     const view = this.getView(viewId);
