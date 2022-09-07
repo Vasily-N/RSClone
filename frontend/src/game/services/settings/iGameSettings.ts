@@ -11,6 +11,8 @@ interface IGameSettings {
   FrameLimitSafer:number
   FrameTimeLimit:number
   Zoom:number
+  ZoomMax:number
+  ZoomMin:number
   RenderSize:Point // don't implement change for it for now, in the app it's autosize in canvas
   RenderSizeSet:(value:{ width:number, height:number })=>void
   RenderSizeGet:()=>{ width:number, height:number }

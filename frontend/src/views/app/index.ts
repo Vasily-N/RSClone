@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import template from './index.html';
 import style from './app.scss';
 import { IView, View } from '..';
@@ -11,7 +10,7 @@ import BoardersView from '../boarders';
 import SoundView from '../sound';
 
 import { Services } from '../../services';
-import SettingIsGame from '../settingIsGame';
+import SettingsGame from '../settingsGame';
 import StartPageView from '../startPage';
 import ControlsView from '../settingControl/ControlsView';
 import SettingSound from '../settingSound';
@@ -19,7 +18,9 @@ import RegWindow from '../reg';
 import AuthWindow from '../auth';
 import Logo from './logo.svg';
 
-enum ViewId { startPage, reg, auth, canvas, placeholder, sounds, settingGame, settingControl, settingSound }
+enum ViewId {
+  startPage, reg, auth, canvas, placeholder, sounds, settingsGame, settingControl, settingSound,
+}
 
 class AppPage extends View implements IGameCallbacks {
   private static contentId = style.content;
@@ -46,8 +47,8 @@ class AppPage extends View implements IGameCallbacks {
 
       case ViewId.placeholder: return new BoardersView(AppPage.contentId, this.services.api);
       case ViewId.sounds: return new SoundView('sounds', this.services.sounds.subsribe);
-      case ViewId.settingGame:
-        return new SettingIsGame(AppPage.contentId, this.services.gameSettings);
+      case ViewId.settingsGame:
+        return new SettingsGame(AppPage.contentId, this.services.gameSettings);
       case ViewId.settingControl: {
         return new ControlsView(AppPage.contentId, this.services.controls.settings);
       }
@@ -104,7 +105,7 @@ class AppPage extends View implements IGameCallbacks {
     }
     if (e.target === this.getElementById('toSettingGame')) {
       this.showPopup();
-      new SettingIsGame('modalContent', this.services.gameSettings).append();
+      new SettingsGame('modalContent', this.services.gameSettings).append();
     }
     if (e.target === this.getElementById('toSettingControl')) {
       this.showPopup();
@@ -170,20 +171,18 @@ class AppPage extends View implements IGameCallbacks {
     }
     this.currentViewId = viewId;
     const view = this.getView(viewId);
+    if (viewId === ViewId.canvas && this.game) this.game.pause = false;
     view.replace();
     return true;
   }
 
   public winTheGame(win:WinTheGame):void {
-    alert(JSON.stringify(win));
-    console.log(this);
-    new BoardersView(AppPage.contentId, this.services.api).postTimeData(+win.elapsedSeconds.toFixed(3));
+    new BoardersView(AppPage.contentId, this.services.api)
+      .postTimeData(+win.elapsedSeconds.toFixed(3));
     new BoardersView(AppPage.contentId, this.services.api).postWinData();
   }
 
   public pauseTheGame():void {
-    // alert('pause!');
-    // console.log(this);
     if (this.game?.pause) {
       this.navigateShow();
     } else {
