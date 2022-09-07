@@ -171,6 +171,7 @@ class AppPage extends View implements IGameCallbacks {
     }
     this.currentViewId = viewId;
     const view = this.getView(viewId);
+    if (viewId === ViewId.canvas && this.game) this.game.pause = false;
     view.replace();
     return true;
   }
