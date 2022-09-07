@@ -87,11 +87,11 @@ class Level {
   private static initArea(surface:Surface[], minSize?:Point):Rectangle {
     const left = 0;
     const right = surface.reduce((p, c) => Math.max(p, c.position.MaxX), 0);
-    const width = Math.max(right - left + 1, minSize?.X || 0);
+    const width = Math.max(right - left, minSize?.X || 0);
     const top = 0;
     const bottom = surface.reduce((p, c) => Math.max(p, c.position.MaxY), 0);
-    const height = Math.max(bottom - top + 1, minSize?.Y || 0);
-    return new Rectangle(left - 1, top - 1, width + 1, height + 1);
+    const height = Math.max(bottom - top, minSize?.Y || 0);
+    return new Rectangle(left, top, width, height);
   }
 
   private static splitConfig(walls:(SurfaceConfig | LoadZone)[]):[SurfaceConfig[], LoadZone[]] {
