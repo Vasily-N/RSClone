@@ -1,8 +1,6 @@
 /* eslint-disable max-len */
 /* eslint-disable no-new */
-import bgImg from './background.jpg';
-import logo from './logo.svg';
-import style from './startPage.scss';
+import style from './menu.scss';
 import { View } from '..';
 import template from './index.html';
 import { Services } from '../../services';
@@ -12,14 +10,9 @@ import RegWindow from '../reg';
 import AuthWindow from '../auth';
 import Canvas2D from '../canvas2D';
 import { Game } from '../../game';
-// import AppPage from '../app';
 
-class StartPageView extends View {
+class MenuView extends View {
   services: Services;
-  mainPage: HTMLDivElement;
-  imgSource: HTMLImageElement;
-  svgSource: SVGElement;
-  logoDiv: HTMLImageElement;
   regBtn: HTMLButtonElement;
   authBtn: HTMLButtonElement;
   modal: HTMLDivElement;
@@ -27,27 +20,25 @@ class StartPageView extends View {
   closeBtn: HTMLSpanElement;
   game?: Game;
 
-  initStartPage() {
-    this.mainPage.style.backgroundImage = `url(${this.imgSource.src})`;
-    // this.logoDiv.src = `${this.svgSource}`;
-    // this.addListeners();
+  initMenu() {
+    this.addListeners();
   }
 
   addListeners() {
-    this.getElementById('startPage')?.addEventListener('click', (e: Event) => this.initPopup(e));
-    this.closeBtn.addEventListener('click', () => this.closePopup());
+    // this.getElementById('startPage')?.addEventListener('click', (e: Event) => this.initPopup(e));
+    this.getElementById('close')?.addEventListener('click', () => this.closePopup());
   }
 
   initPopup(e: Event) {
     if (e.target === this.regBtn) {
       this.showPopup();
       new RegWindow('modalContent', this.services.api.users).append();
-      this.startGame();
+      this.continueGame();
     }
     if (e.target === this.getElementById('login')) {
       this.showPopup();
       new AuthWindow('modalContent', this.services.api.users).append();
-      this.startGame();
+      this.continueGame();
     }
     if (e.target === this.getElementById('toSettingGame')) {
       this.showPopup();
@@ -61,16 +52,14 @@ class StartPageView extends View {
 
   showPopup() {
     this.modal.style.display = 'flex';
-    this.mainPage.classList.add('startPage__darken-overlay');
   }
 
   closePopup() {
     this.modalContent.innerHTML = '';
     this.modal.style.display = 'none';
-    this.mainPage.classList.remove('startPage__darken-overlay');
   }
 
-  startGame() {
+  continueGame() {
     this.getElementById('startBtn')?.addEventListener('click', () => {
       (this.getElementById('startPage') as HTMLDivElement).style.display = 'none';
       this.modal.style.display = 'none';
@@ -82,25 +71,19 @@ class StartPageView extends View {
       );
       this.game.start();
       return canvasView;
-      // new AppPage(this, this.services).changeToCanvas();
     });
   }
 
   constructor(parentId: string, services: Services) {
     super(parentId, template, style);
     this.services = services;
-    this.mainPage = this.getElementById('startPage') as HTMLDivElement;
-    this.logoDiv = this.getElementById('logo') as HTMLImageElement;
     this.regBtn = this.getElementById('registration') as HTMLButtonElement;
     this.authBtn = this.getElementById('login') as HTMLButtonElement;
-    this.imgSource = new Image();
-    this.imgSource.src = bgImg;
-    this.svgSource = logo;
     this.modal = this.getElementById('modal') as HTMLDivElement;
     this.closeBtn = this.getElementById('close') as HTMLSpanElement;
     this.modalContent = this.getElementById('modalContent') as HTMLDivElement;
-    this.initStartPage();
+    this.initMenu();
   }
 }
 
-export default StartPageView;
+export default MenuView;

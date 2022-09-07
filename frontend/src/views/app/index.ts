@@ -15,8 +15,11 @@ import SettingIsGame from '../settingIsGame';
 import StartPageView from '../startPage';
 import ControlsView from '../settingControl/ControlsView';
 import SettingSound from '../settingSound';
+// import MenuView from '../menu';
+import RegWindow from '../reg';
+import AuthWindow from '../auth';
 
-enum ViewId { startPage, canvas, placeholder, sounds, settingGame, settingControl, settingSound }
+enum ViewId { startPage, reg, auth, canvas, placeholder, sounds, settingGame, settingControl, settingSound }
 
 class AppPage extends View implements IGameCallbacks {
   private static contentId = style.content;
@@ -28,6 +31,8 @@ class AppPage extends View implements IGameCallbacks {
   private createView(viewId: ViewId): IView {
     switch (viewId) {
       case ViewId.startPage: return new StartPageView(AppPage.contentId, this.services);
+      case ViewId.reg: return new RegWindow(AppPage.contentId, this.services.api.users);
+      case ViewId.auth: return new AuthWindow(AppPage.contentId, this.services.api.users);
       case ViewId.canvas: {
         const canvasView = new Canvas2D(AppPage.contentId, this.services.gameSettings);
         this.game = new Game(
@@ -65,11 +70,88 @@ class AppPage extends View implements IGameCallbacks {
 
   private initListeners() {
     this.getElementById('toMainPage')?.addEventListener('click', this.changeTo.bind(this, ViewId.startPage));
-    this.getElementById('toCanvas')?.addEventListener('click', this.changeTo.bind(this, ViewId.canvas));
-    this.getElementById('toPlaceholder')?.addEventListener('click', this.changeTo.bind(this, ViewId.placeholder));
-    this.getElementById('toSettingGame')?.addEventListener('click', this.changeTo.bind(this, ViewId.settingGame));
-    this.getElementById('toSettingControl')?.addEventListener('click', this.changeTo.bind(this, ViewId.settingControl));
-    this.getElementById('settingSound')?.addEventListener('click', this.changeTo.bind(this, ViewId.settingSound));
+    this.getElementById('toCanvas')?.addEventListener('click', () => this.changeToCanvas());
+    this.getElementById('login')?.addEventListener('click', (e) => {
+      this.changeToAuthReg(e);
+    });
+    this.getElementById('registration')?.addEventListener('click', (e) => {
+      this.changeToAuthReg(e);
+    });
+    this.getElementById('toPlaceholder')?.addEventListener('click', (e) => {
+      // this.changeTo.bind(this, ViewId.placeholder);
+      this.changeToSettingsOrBorders(e);
+    });
+    this.getElementById('toSettingGame')?.addEventListener('click', (e) => {
+      // this.changeTo.bind(this, ViewId.placeholder);
+      this.changeToSettingsOrBorders(e);
+    });
+    this.getElementById('toSettingControl')?.addEventListener('click', (e) => {
+      // this.changeTo.bind(this, ViewId.placeholder);
+      this.changeToSettingsOrBorders(e);
+    });
+    this.getElementById('settingSound')?.addEventListener('click', (e) => {
+      // this.changeTo.bind(this, ViewId.placeholder);
+      this.changeToSettingsOrBorders(e);
+    });
+  }
+
+  changeToCanvas() {
+    this.navigateHidden();
+    this.changeTo(ViewId.canvas);
+    this.closePopup();
+  }
+
+  changeToSettingsOrBorders(e: Event) {
+    if (e.target === this.getElementById('toPlaceholder')) {
+      this.showPopup();
+      new BoardersView('modalContent', this.services.api).append();
+    }
+    if (e.target === this.getElementById('toSettingGame')) {
+      this.showPopup();
+      new SettingIsGame('modalContent', this.services.gameSettings).append();
+    }
+    if (e.target === this.getElementById('toSettingControl')) {
+      this.showPopup();
+      new ControlsView('modalContent', this.services.controls.settings).append();
+    }
+    if (e.target === this.getElementById('settingSound')) {
+      this.showPopup();
+      new SettingSound('modalContent', this.services.sounds.settings).append();
+    }
+  }
+
+  changeToAuthReg(e: Event) {
+    if (e.target === this.getElementById('login')) {
+      this.showPopup();
+      new AuthWindow('modalContent', this.services.api.users).append();
+      (this.getElementById('startBtn') as HTMLButtonElement).addEventListener('click', () => this.changeToCanvas());
+    }
+    if (e.target === this.getElementById('registration')) {
+      this.showPopup();
+      new RegWindow('modalContent', this.services.api.users).append();
+      (this.getElementById('startBtn') as HTMLButtonElement).addEventListener('click', () => this.changeToCanvas());
+    }
+  }
+
+  showPopup() {
+    (this.getElementById('modal') as HTMLDivElement).style.display = 'flex';
+    (this.getElementById('close') as HTMLSpanElement).addEventListener('click', () => this.closePopup());
+    // this.mainPage.classList.add('startPage__darken-overlay');
+    // (this.getElementById('modalContent') as HTMLDivElement).i;
+  }
+
+  closePopup() {
+    (this.getElementById('modalContent') as HTMLDivElement).innerHTML = '';
+    (this.getElementById('modal') as HTMLDivElement).style.display = 'none';
+    // this.mainPage.classList.remove('startPage__darken-overlay');
+  }
+
+  navigateHidden() {
+    (this.getElementById('navigation') as HTMLElement).style.display = 'none';
+  }
+
+  navigateShow() {
+    (this.getElementById('navigation') as HTMLElement).style.display = 'flex';
   }
 
   public append(): void {
@@ -81,6 +163,17 @@ class AppPage extends View implements IGameCallbacks {
 
   private changeTo(viewId: ViewId): boolean {
     if (this.currentViewId === viewId) return false;
+    if (viewId !== ViewId.startPage) {
+      (this.getElementById('login') as HTMLButtonElement).style.display = 'none';
+      (this.getElementById('registration') as HTMLButtonElement).style.display = 'none';
+      (this.getElementById('toCanvas') as HTMLButtonElement).style.display = 'none';
+      (this.getElementById('toMainPage') as HTMLButtonElement).style.display = 'flex';
+    } else {
+      (this.getElementById('login') as HTMLButtonElement).style.display = 'flex';
+      (this.getElementById('registration') as HTMLButtonElement).style.display = 'flex';
+      (this.getElementById('toMainPage') as HTMLButtonElement).style.display = 'none';
+      (this.getElementById('toCanvas') as HTMLButtonElement).style.display = 'flex';
+    }
     this.currentViewId = viewId;
     const view = this.getView(viewId);
     view.replace();
@@ -97,6 +190,18 @@ class AppPage extends View implements IGameCallbacks {
   public pauseTheGame():void {
     alert('pause!');
     console.log(this);
+    if (this.game?.pause === true) {
+      this.navigateShow();
+      // new MenuView('app__content', this.services).append();
+      // (document.getElementById('navigation') as HTMLElement).style.display = 'flex';
+      // console.log(document.getElementById('navigation'));
+      // (this.getElementById('navigation') as HTMLElement).style.display = 'flex';
+    } else {
+      this.navigateHidden();
+      // (document.getElementById('navigation') as HTMLElement).style.display = 'none';
+      // (document.getElementById('buttons') ).style.display = 'none';
+      // (this.getElementById('buttons') as HTMLDivElement).style.display = 'none';
+    }
   }
 
   public characterHp(hp:number) {

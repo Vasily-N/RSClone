@@ -1,38 +1,11 @@
 @use '../common.scss' as common;
 
-html {
-  cursor: default;
-  background-color: black;
-  font: bold 14px sans-serif;
-}
+// .start-page {
+//   background-size: 100% 100%;
+//   height: 95vh;
+// }
 
-.button {
-  cursor: pointer;
-  font: inherit;
-  border: solid 1px;
-  border-bottom-width: 3px;
-  border-radius: 4px;
-}
-
-.button_1 {
-  background-color: lightgreen;
-  border-color: green;
-}
-
-.button_disabled {
-  background-color: lightgrey;
-  border-color: grey;
-  cursor: default;
-}
-
-.content {
-  margin-top: common.$gap;
-}
-
-.navigation {
-  // @include common.flex;
-  // flex-wrap: wrap;
-  // margin-bottom: common.$gap;
+.menu {
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -43,7 +16,52 @@ html {
   margin-left: -75px;
   width: 150px;
   height: 250px;
-  z-index: 700;
+}
+
+.menu-button {
+  background-color: rgba(243, 194, 134, 0.904);
+  border: 3px solid #550d19;
+  color: #340000;
+  height: 35px;
+  font-size: 18px;
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  &:hover {
+    background-color: rgba(243, 194, 134, 0.966);
+    color: rgb(9, 38, 65);
+  }
+}
+
+.contacts {
+  position: absolute;
+  display: flex;
+  width: 350px;
+  left: 50%;
+  bottom: 0;
+  margin-left: -175px;
+  justify-content: space-around;
+  align-items: center;
+  align-content: center;
+}
+
+.developer {
+  color: gray;
+  &:visited {
+    color: rgb(136, 145, 163);
+  }
+  &:hover {
+    color: rgb(218, 216, 115);
+  }
+}
+
+.logo {
+  width: 92px;
+  height: 35px;
+  transition: .5s;
+  &:hover {
+    background-color: rgba(59, 11, 11, 0.83);
+    box-shadow: 4px 2px 20px 20px rgba(59, 11, 11, 0.83);
+  }
 }
 
 .modal {
@@ -58,7 +76,6 @@ html {
   width: 400px;
   height: 400px;
   overflow-y: auto;
-  z-index: 800;
 }
 
 .close {
@@ -88,4 +105,8 @@ html {
 }
 .close:after {
   transform: rotate(-45deg);
+}
+
+.darken-overlay {
+  opacity: .3;
 }
