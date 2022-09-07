@@ -6,7 +6,7 @@ class Camera {
   private target:Point = Point.Zero;
   private current:Point = Point.Zero;
   public get Current():Point { return this.current; }
-  private static readonly cameraSpeed = 90;
+  private static readonly cameraSpeedPerViewSqrtPixel = 9;
   private static readonly cameraShift = new Point(1 / 15, 6 / 11);
   private lastZoom = -1;
   private lastViewSize = Point.Zero;
@@ -19,7 +19,7 @@ class Camera {
     this.lastZoom = -1;
   }
 
-  public process(char:Character, viewSize:Point, zoom:number, elapsedSeconds:number):void {
+  private newPosition(char:Character, viewSize:Point, zoom:number, elapsedSeconds:number) {
     // some doublicate-code, I wasn't able to find how in TS dynamically access setters field
     // I specially used Size[key] instead of Width/Height to easily see the doublicate-code
     const areaZoom = this.area.multiply(zoom);
@@ -46,17 +46,27 @@ class Camera {
       const maxPosY = areaZoom.Size.Y - viewSize.Y;
       this.current.Y = Math.min(Math.max(newCameraY, areaZoom.Y), maxPosY);
     }
+  }
 
+  private moveCamera(viewSize:Point, zoom:number, elapsedSeconds:number):void {
     if (this.lastZoom !== zoom || this.lastViewSize !== viewSize) {
       this.current.X = this.target.X;
       this.lastZoom = zoom;
       this.lastViewSize = viewSize;
-    } else if (this.current.X !== this.target.X) {
-      const cameraShift = elapsedSeconds * Camera.cameraSpeed * Math.sqrt(zoom);
-      this.current.X = (this.current.X > this.target.X)
-        ? Math.max(this.current.X - cameraShift, this.target.X)
-        : Math.min(this.current.X + cameraShift, this.target.X);
+      return;
     }
+
+    if (this.current.X === this.target.X) return;
+
+    const cameraShift = elapsedSeconds * Camera.cameraSpeedPerViewSqrtPixel * Math.sqrt(viewSize.X);
+    this.current.X = (this.current.X > this.target.X)
+      ? Math.max(this.current.X - cameraShift, this.target.X)
+      : Math.min(this.current.X + cameraShift, this.target.X);
+  }
+
+  public process(char:Character, viewSize:Point, zoom:number, elapsedSeconds:number):void {
+    this.newPosition(char, viewSize, zoom, elapsedSeconds);
+    this.moveCamera(viewSize, zoom, elapsedSeconds);
   }
 }
 

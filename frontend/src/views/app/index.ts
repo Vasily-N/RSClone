@@ -11,7 +11,7 @@ import BoardersView from '../boarders';
 import SoundView from '../sound';
 
 import { Services } from '../../services';
-import SettingIsGame from '../settingIsGame';
+import SettingsGame from '../settingsGame';
 import StartPageView from '../startPage';
 import ControlsView from '../settingControl/ControlsView';
 import SettingSound from '../settingSound';
@@ -46,8 +46,8 @@ class AppPage extends View implements IGameCallbacks {
 
       case ViewId.placeholder: return new BoardersView(AppPage.contentId, this.services.api);
       case ViewId.sounds: return new SoundView('sounds', this.services.sounds.subsribe);
-      case ViewId.settingGame:
-        return new SettingIsGame(AppPage.contentId, this.services.gameSettings);
+      case ViewId.settingsGame:
+        return new SettingsGame(AppPage.contentId, this.services.gameSettings);
       case ViewId.settingControl: {
         return new ControlsView(AppPage.contentId, this.services.controls.settings);
       }
@@ -145,7 +145,6 @@ class AppPage extends View implements IGameCallbacks {
 
   navigateShow() {
     (this.getElementById('navigation') as HTMLElement).style.display = 'flex';
-  }
 
   public append(): void {
     super.append();
