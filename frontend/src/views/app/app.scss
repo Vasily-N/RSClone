@@ -86,9 +86,11 @@ html {
   cursor: pointer;
   opacity: 0.7;
 }
+
 .close:hover {
   opacity: 1;
 }
+
 .close:before, .close:after {
   position: absolute;
   right: 15px;
@@ -97,9 +99,43 @@ html {
   width: 2px;
   background-color: rgb(209, 183, 183);
 }
+
 .close:before {
   transform: rotate(45deg);
 }
+
 .close:after {
   transform: rotate(-45deg);
+}
+
+.contacts {
+  position: absolute;
+  display: flex;
+  width: 350px;
+  left: 50%;
+  bottom: 0;
+  margin-left: -175px;
+  justify-content: space-around;
+  align-items: center;
+  align-content: center;
+}
+
+.developer {
+  color: gray;
+  &:visited {
+    color: rgb(136, 145, 163);
+  }
+  &:hover {
+    color: rgb(218, 216, 115);
+  }
+}
+
+.logo {
+  width: 92px;
+  height: 35px;
+  transition: .5s;
+  &:hover {
+    background-color: rgba(59, 11, 11, 0.83);
+    box-shadow: 4px 2px 20px 20px rgba(59, 11, 11, 0.83);
+  }
 }

@@ -15,9 +15,9 @@ import SettingIsGame from '../settingIsGame';
 import StartPageView from '../startPage';
 import ControlsView from '../settingControl/ControlsView';
 import SettingSound from '../settingSound';
-// import MenuView from '../menu';
 import RegWindow from '../reg';
 import AuthWindow from '../auth';
+import Logo from './logo.svg';
 
 enum ViewId { startPage, reg, auth, canvas, placeholder, sounds, settingGame, settingControl, settingSound }
 
@@ -159,6 +159,7 @@ class AppPage extends View implements IGameCallbacks {
     this.initListeners();
     this.getView(ViewId.sounds).append();
     this.changeTo(ViewId.startPage);
+    (this.getElementById('logo') as HTMLImageElement).src = `${Logo}`;
   }
 
   private changeTo(viewId: ViewId): boolean {
