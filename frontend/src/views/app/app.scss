@@ -15,8 +15,6 @@ html {
 }
 
 .button_1 {
-  // background-color: lightgreen;
-  // border-color: green;
   background-color: rgba(243, 194, 134, 0.904);
   justify-content: space-around;
   border: 3px solid #550d19;
@@ -42,9 +40,6 @@ html {
 }
 
 .navigation {
-  // @include common.flex;
-  // flex-wrap: wrap;
-  // margin-bottom: common.$gap;
   position: absolute;
   display: flex;
   background-color: rgba(208, 219, 226, 0.322);

@@ -78,19 +78,15 @@ class AppPage extends View implements IGameCallbacks {
       this.changeToAuthReg(e);
     });
     this.getElementById('toPlaceholder')?.addEventListener('click', (e) => {
-      // this.changeTo.bind(this, ViewId.placeholder);
       this.changeToSettingsOrBorders(e);
     });
     this.getElementById('toSettingGame')?.addEventListener('click', (e) => {
-      // this.changeTo.bind(this, ViewId.placeholder);
       this.changeToSettingsOrBorders(e);
     });
     this.getElementById('toSettingControl')?.addEventListener('click', (e) => {
-      // this.changeTo.bind(this, ViewId.placeholder);
       this.changeToSettingsOrBorders(e);
     });
     this.getElementById('settingSound')?.addEventListener('click', (e) => {
-      // this.changeTo.bind(this, ViewId.placeholder);
       this.changeToSettingsOrBorders(e);
     });
   }
@@ -136,14 +132,11 @@ class AppPage extends View implements IGameCallbacks {
   showPopup() {
     (this.getElementById('modal') as HTMLDivElement).style.display = 'flex';
     (this.getElementById('close') as HTMLSpanElement).addEventListener('click', () => this.closePopup());
-    // this.mainPage.classList.add('startPage__darken-overlay');
-    // (this.getElementById('modalContent') as HTMLDivElement).i;
   }
 
   closePopup() {
     (this.getElementById('modalContent') as HTMLDivElement).innerHTML = '';
     (this.getElementById('modal') as HTMLDivElement).style.display = 'none';
-    // this.mainPage.classList.remove('startPage__darken-overlay');
   }
 
   navigateHidden() {
@@ -189,19 +182,12 @@ class AppPage extends View implements IGameCallbacks {
   }
 
   public pauseTheGame():void {
-    alert('pause!');
-    console.log(this);
+    // alert('pause!');
+    // console.log(this);
     if (this.game?.pause === true) {
       this.navigateShow();
-      // new MenuView('app__content', this.services).append();
-      // (document.getElementById('navigation') as HTMLElement).style.display = 'flex';
-      // console.log(document.getElementById('navigation'));
-      // (this.getElementById('navigation') as HTMLElement).style.display = 'flex';
     } else {
       this.navigateHidden();
-      // (document.getElementById('navigation') as HTMLElement).style.display = 'none';
-      // (document.getElementById('buttons') ).style.display = 'none';
-      // (this.getElementById('buttons') as HTMLDivElement).style.display = 'none';
     }
   }
 
