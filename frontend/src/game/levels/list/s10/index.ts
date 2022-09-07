@@ -27,7 +27,7 @@ const walls:(SurfaceConfig | LoadingConfig)[] = [
   ]).map((s, i) => {
     if (i === 4) return { ...s, levelId: LevelId.S11, zone: 3 };
     if (i === 10) return { ...s, levelId: LevelId.S11, zone: 2 };
-    if (i === 17) return { ...s, levelId: LevelId.S11, zone: 3 };
+    if (i === 17) return { ...s, levelId: LevelId.S11, zone: 0 };
     if (i === 20) return { ...s, type: SurfaceType.Ice };
     if (i === 23) return { ...s, levelId: LevelId.S9, zone: 4 };
     if (i === 33) return { ...s, levelId: LevelId.S9, zone: 2 };

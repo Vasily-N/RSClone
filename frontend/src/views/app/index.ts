@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import template from './index.html';
 import style from './app.scss';
 import { IView, View } from '..';
@@ -19,7 +18,9 @@ import RegWindow from '../reg';
 import AuthWindow from '../auth';
 import Logo from './logo.svg';
 
-enum ViewId { startPage, reg, auth, canvas, placeholder, sounds, settingGame, settingControl, settingSound }
+enum ViewId {
+  startPage, reg, auth, canvas, placeholder, sounds, settingsGame, settingControl, settingSound,
+}
 
 class AppPage extends View implements IGameCallbacks {
   private static contentId = style.content;
@@ -104,7 +105,7 @@ class AppPage extends View implements IGameCallbacks {
     }
     if (e.target === this.getElementById('toSettingGame')) {
       this.showPopup();
-      new SettingIsGame('modalContent', this.services.gameSettings).append();
+      new SettingsGame('modalContent', this.services.gameSettings).append();
     }
     if (e.target === this.getElementById('toSettingControl')) {
       this.showPopup();
@@ -145,6 +146,7 @@ class AppPage extends View implements IGameCallbacks {
 
   navigateShow() {
     (this.getElementById('navigation') as HTMLElement).style.display = 'flex';
+  }
 
   public append(): void {
     super.append();
@@ -174,15 +176,12 @@ class AppPage extends View implements IGameCallbacks {
   }
 
   public winTheGame(win:WinTheGame):void {
-    alert(JSON.stringify(win));
-    console.log(this);
-    new BoardersView(AppPage.contentId, this.services.api).postTimeData(+win.elapsedSeconds.toFixed(3));
+    new BoardersView(AppPage.contentId, this.services.api)
+      .postTimeData(+win.elapsedSeconds.toFixed(3));
     new BoardersView(AppPage.contentId, this.services.api).postWinData();
   }
 
   public pauseTheGame():void {
-    // alert('pause!');
-    // console.log(this);
     if (this.game?.pause === true) {
       this.navigateShow();
     } else {
