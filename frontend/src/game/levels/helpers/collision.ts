@@ -9,7 +9,7 @@ import { LevelId } from '../list';
 type FloorCollision = { surface?:Surface, point:Point } | null;
 
 class Collision {
-  // this should be recoded but I don't have time
+  // todo: completely recode
   private static filterNear<T>(array:Position[], checkZone:Rectangle):T[] {
     return array
       .filter((s) => s.position.MinX <= checkZone.Right
@@ -150,7 +150,7 @@ class Collision {
     return Collision.processCeilDot(nearFloors, move2);
   }
 
-  private static RayVsRect(ray:Line, target:Rectangle):Line | null {
+  private static rayVsRect(ray:Line, target:Rectangle):Line | null {
     const rayPos = ray.A; const direction = ray.Direction;
     const invdir:Point = new Point(1.0 / direction.X, 1.0 / direction.Y);
     const tNear:Point = target.Position.minus(rayPos).multiplyPoint(invdir);
@@ -177,15 +177,18 @@ class Collision {
     const colVal = e.Collision;
     const colPos = colVal.plusPoint(e.Position);
     const colPrev = colPos.minusPoint(move.Direction);
+    const top = Math.min(colPos.Top, colPrev.Top);
+    const bottomTmp = Math.max(colPos.Bottom, colPrev.Bottom);
+    const bottom = e.OnSurface ? (top + bottomTmp) / 2 : bottomTmp;
     const zoneCheck = Rectangle.fromLine(new Line(
-      new Point(Math.min(colPos.Left, colPrev.Left), Math.min(colPos.Top, colPrev.Top)),
-      new Point(Math.max(colPos.Right, colPrev.Right), Math.max(colPos.Bottom, colPrev.Bottom)),
+      new Point(Math.min(colPos.Left, colPrev.Left), top),
+      new Point(Math.max(colPos.Right, colPrev.Right), bottom),
     ));
 
     const nearWalls = Collision.filterNear<Surface>(surfaces, zoneCheck);
     for (let i = nearWalls.length - 1; i > -1; i -= 1) {
       const walPos = nearWalls[i].position;
-      const res = this.RayVsRect(walPos, colPos);
+      const res = this.rayVsRect(walPos, colPos);
       if (res) {
         if (colPrev.Bottom <= walPos.MinY) {
           return { surface: nearWalls[i], point: new Point(move.B.X, walPos.MinY) };
@@ -216,7 +219,7 @@ class Collision {
     const nearCeils = Collision.filterNear<Surface>(surfaces, colPos);
     for (let i = nearCeils.length - 1; i > -1; i -= 1) {
       const ceilPos = nearCeils[i].position;
-      const res = Collision.RayVsRect(ceilPos, colPos);
+      const res = Collision.rayVsRect(ceilPos, colPos);
       if (!res) continue;
       if (Math.abs(ceilPos.MinX - res.A.X) < Math.abs(res.B.X - ceilPos.MaxX)) {
         if (ceilPos.MinX < colPos.Left) continue;
