@@ -183,7 +183,7 @@ class AppPage extends View implements IGameCallbacks {
   }
 
   public pauseTheGame():void {
-    if (this.game?.pause === true) {
+    if (this.game?.pause) {
       this.navigateShow();
     } else {
       this.navigateHidden();
