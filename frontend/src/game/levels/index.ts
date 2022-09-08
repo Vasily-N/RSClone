@@ -14,6 +14,7 @@ import Character from '../character';
 import { Camera, Collision } from './helpers';
 import GameSoundPlay from '../soundPlay';
 import { SpriteAnimation } from '../spriteAnimation';
+import { LevelId } from './list';
 
 enum SurfaceGroup { All, Walls, Floors, Ceils, Platforms } // Floors = Ceils + Platforms
 type Surfaces = Record<SurfaceGroup, Surface[]>;
@@ -31,6 +32,7 @@ class Level {
   private char?:Character;
   private camera:Camera;
   private elapsedSeconds = 0;
+  private nearLevels:LevelId[];
 
   private static newEntity<A extends Entity>(EntityConstructor:EntityClass<A>, position:Point):A {
     return new EntityConstructor(position);
@@ -114,9 +116,11 @@ class Level {
     this.loadExit = loading.filter((v) => v.zone !== undefined);
     if (config.music) this.music = config.music;
     if (config.backgrounds) this.bgs = config.backgrounds.map((b) => new SpriteAnimation(b));
+
+    this.nearLevels = [...new Set<LevelId>(loading.map((v) => v.levelId))];
   }
 
-  public load(char:Character, zone = 0, positionPercentage = 0, portal = false):void {
+  public load(char:Character, zone = 0, positionPercentage = 0, portal = false):LevelId[] {
     if (!portal) this.entities = Level.initEntities(this.entitiesConfig);
     this.char = char;
     const loadPos:Line = this.loadEnter[
@@ -131,6 +135,7 @@ class Level {
     // hack to not stuck at loading screen and not to process "just loaded" every frame
     if (this.music) GameSoundPlay.music(this.music.url, this.music.loop);
     this.elapsedSeconds = 0;
+    return this.nearLevels;
   }
 
   private inAirTime = 0; // todo: re-code collision

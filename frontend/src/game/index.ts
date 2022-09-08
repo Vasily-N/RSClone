@@ -69,7 +69,7 @@ class Game implements IGame {
     const portal = this.levelIdCurrent === load.levelId;
     const levelCurrent = portal ? this.levelCurrent as Level : this.getLevel(load.levelId);
     if (!portal) this.levelIdCurrent = load.levelId;
-    levelCurrent.load(this.char, load.zone, load.position, portal);
+    levelCurrent.load(this.char, load.zone, load.position, portal).forEach((v) => this.getLevel(v));
     return levelCurrent;
   }
 
