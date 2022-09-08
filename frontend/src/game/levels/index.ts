@@ -164,11 +164,12 @@ class Level {
       || (!floorCollision && !ceilCollision
         && Collision.processCeil2(this.surfaces[SurfaceGroup.Ceils], e, move));
     if (wallsCollision) {
-      if (e.Position.Y !== wallsCollision.point.Y) {
+      if (wallsCollision.point.Y && e.Position.Y !== wallsCollision.point.Y) {
         e.Position.Y = wallsCollision.point.Y; e.resetVelocityY();
       }
       if ((this.inAirTime === 0 || this.inAirTime > 0.05)
         // a temporal hack for wall collision when jump on stairs with high fps
+        && wallsCollision.point.X
         && e.Position.X !== wallsCollision.point.X) {
         e.Position.X = wallsCollision.point.X; e.resetVelocityX();
       }

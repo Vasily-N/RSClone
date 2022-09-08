@@ -37,6 +37,8 @@ const hitboxesHeavy = [
 ];
 const hitboxRange = new Box(new Rectangle(114, 40, 180, 4));
 
+const flipCollission = new Box(new Rectangle(2, 32, 14, 32));
+
 const states: Partial<Record<CharacterState, StateConfig>> = {
   [CharacterState.Idle]: {
     sprite: idle, collisionbox, hurtbox: hurtboxIdle,
@@ -55,10 +57,10 @@ const states: Partial<Record<CharacterState, StateConfig>> = {
     sprite: range, collisionbox, hurtbox: hurtboxIdle, hitbox: hitboxRange,
   },
   [CharacterState.FlipBack]: {
-    sprite: flipBack, collisionbox, hurtbox: hurtboxIdle,
+    sprite: flipBack, collisionbox: flipCollission, hurtbox: hurtboxIdle,
   },
   [CharacterState.FlipForward]: {
-    sprite: flipForward, collisionbox, hurtbox: hurtboxIdle,
+    sprite: flipForward, collisionbox: flipCollission, hurtbox: hurtboxIdle,
   },
 };
 
