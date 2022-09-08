@@ -144,7 +144,7 @@ class Level {
     }
 
     const ceilCollision = Collision.processCeil(this.surfaces[SurfaceGroup.Ceils], e, move);
-    if (ceilCollision && ceilCollision.point.Y) {
+    if (ceilCollision && !Number.isNaN(ceilCollision.point.Y)) {
       e.Position.Y = ceilCollision.point.Y + e.Collision.Height; e.resetVelocityY(true);
     }
 
