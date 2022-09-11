@@ -1,8 +1,8 @@
-import jump from './jump.wav';
-import gun from './gun.wav';
-import heavy from './heavy.wav';
-import light from './light.wav';
-import spin from './spin.wav';
+import jump from './jump.mp3';
+import gun from './gun.mp3';
+import heavy from './heavy.mp3';
+import light from './light.mp3';
+import spin from './spin.mp3';
 
 const sounds = {
   jump, gun, heavy, light, spin,
