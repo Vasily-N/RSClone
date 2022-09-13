@@ -4,7 +4,8 @@ import { Point } from '../shapes';
 import { CharacterState, states } from './states';
 import SurfaceType from '../types';
 import sounds from './sounds';
-import GameSoundPlay from '../soundPlay';
+import GameSoundPlay from '../soundPlay'; // todo: get rid of
+import { Attack, Flip } from './actionStates';
 
 type ChangeVelX = Partial<{ [t in SurfaceType]: number }> & {
   default: number
@@ -86,49 +87,32 @@ class Character extends Entity {
     return ignoreFloorCollision;
   }
 
+  // todo: move to Entity
+  public static readonly StartStateSounds:Partial<Record<CharacterState, string>> = {
+    [CharacterState.AttackNormal]: sounds.light,
+    [CharacterState.AttackHeavy]: sounds.heavy,
+    [CharacterState.AttackRange]: sounds.gun,
+    [CharacterState.FlipForward]: sounds.spin,
+    [CharacterState.FlipBack]: sounds.spin,
+  };
+
   private processActions(actions:Action[], charStates:CharacterState[]):boolean {
     for (let i = actions.length - 1; i > -1; i -= 1) {
       if (!this.conrols.has(actions[i])) continue;
+      const state = charStates[i];
       this.stateElapsedSeconds = 0;
-      this.State = charStates[i];
+      this.State = state;
+      // todo: move to Entity
+      const sound = Character.StartStateSounds[state];
+      if (sound) GameSoundPlay.sound(sound);
       return true;
     }
     return false;
   }
 
-  private static attackStates:Partial<Record<Action, CharacterState>> = {
-    [Action.attackLight]: CharacterState.AttackNormal,
-    [Action.attackHeavy]: CharacterState.AttackHeavy,
-    [Action.attackRange]: CharacterState.AttackRange,
-  };
-
-  private static attackSounds:Partial<Record<CharacterState, string>> = {
-    [CharacterState.AttackNormal]: sounds.light,
-    [CharacterState.AttackHeavy]: sounds.heavy,
-    [CharacterState.AttackRange]: sounds.gun,
-  };
-
-  private static attackKeys:Action[] = Object.keys(Character.attackStates) as unknown as Action[];
-  private static attackValues:CharacterState[] = Object.values(Character.attackStates);
-
   private processAttack():boolean {
-    if (!this.processActions(Character.attackKeys, Character.attackValues)) return false;
-    GameSoundPlay.sound(Character.attackSounds[this.stateCurrent as CharacterState] as string);
-    return true;
+    return this.processActions(Attack.Keys, Attack.Values);
   }
-
-  private static flipStates:Partial<Record<Action, CharacterState>> = {
-    [Action.flipRight]: CharacterState.FlipForward,
-    [Action.flipLeft]: CharacterState.FlipBack,
-  };
-
-  private static flipReverse:Partial<Record<CharacterState, CharacterState>> = {
-    [CharacterState.FlipBack]: CharacterState.FlipForward,
-    [CharacterState.FlipForward]: CharacterState.FlipBack,
-  };
-
-  private static flipKeys:Action[] = Object.keys(Character.flipStates) as unknown as Action[];
-  private static flipValues:CharacterState[] = Object.values(Character.flipStates);
 
   private didAFlip = false;
   private processFlip():boolean {
@@ -137,21 +121,20 @@ class Character extends Entity {
       return false;
     }
     if (this.didAFlip) return false;
-    this.didAFlip = this.processActions(Character.flipKeys, Character.flipValues);
+    this.didAFlip = this.processActions(Flip.Keys, Flip.Values);
     if (!this.didAFlip) return false;
-    GameSoundPlay.sound(sounds.spin);
     const newX = 60 * (this.stateCurrent === CharacterState.FlipBack ? -1 : 1);
     this.velocityPerSecond.X = newX < 0
       ? Math.min(this.velocityPerSecond.X, newX)
       : Math.max(this.velocityPerSecond.X, newX);
     this.velocityPerSecond.Y = -130;
     if (this.direction) {
-      this.State = Character.flipReverse[this.stateCurrent as CharacterState] as CharacterState;
+      this.State = Flip.Reverse[this.stateCurrent as CharacterState] as CharacterState;
     }
     return true;
   }
 
-  private static longStates:CharacterState[] = [...Character.attackValues, ...Character.flipValues];
+  private static longStates:CharacterState[] = [...Attack.Values, ...Flip.Values];
 
   private longAnimationCheck(elapsedSeconds:number):boolean {
     return (Character.longStates.includes(this.stateCurrent) && !!this.animation
@@ -159,7 +142,7 @@ class Character extends Entity {
   }
 
   private processControls(elapsedSeconds:number):boolean {
-    if (this.OnSurface && Character.flipValues.includes(this.stateCurrent)) {
+    if (this.OnSurface && Flip.Values.includes(this.stateCurrent)) {
       this.State = CharacterState.Walk;
     }
     const longAnimation = this.longAnimationCheck(elapsedSeconds)
