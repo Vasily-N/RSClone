@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import template from './index.html';
 import style from './settings-game.scss';
 import { View } from '..';
@@ -35,14 +36,33 @@ class SettingsGame extends View {
 
     const fpsLimit = this.getElementById('fps-limit-value') as HTMLInputElement;
     fpsLimit.value = '60';
+    const btnDecrementFps = this.getElementById('btnDecrement') as HTMLButtonElement;
+    const btnIncrementFps = this.getElementById('btnIncrement') as HTMLButtonElement;
+    const btnDecrementZoom = this.getElementById('btnDecrementZoom') as HTMLButtonElement;
+    const btnIncrementZoom = this.getElementById('btnIncrementZoom') as HTMLButtonElement;
+    btnDecrementFps.addEventListener('click', () => SettingsGame.decreaseNum(fpsLimit));
+    btnIncrementFps.addEventListener('click', () => SettingsGame.increaseNum(fpsLimit));
     fpsLimit.addEventListener('change', this.setFpsLimit.bind(this));
-
     const zoom = this.getElementById('zoom') as HTMLInputElement;
+    btnDecrementZoom.addEventListener('click', () => SettingsGame.decreaseNum(zoom));
+    btnIncrementZoom.addEventListener('click', () => SettingsGame.increaseNum(zoom));
     zoom.addEventListener('change', () => { this.gameSettings.Zoom = +zoom.value; });
 
     return {
       displayFps, displayTimer, displayHitboxes, displayCollisions, fpsLimit, fpsLimitEnabled, zoom,
     };
+  }
+
+  static increaseNum(el: HTMLInputElement) {
+    let ValNum = +el.value;
+    ValNum += 1;
+    el.value = `${ValNum}`;
+  }
+
+  static decreaseNum(el: HTMLInputElement) {
+    let ValNum = +el.value;
+    ValNum -= 1;
+    el.value = `${ValNum}`;
   }
 
   private setFpsLimit() {
