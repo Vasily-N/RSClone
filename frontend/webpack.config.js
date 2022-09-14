@@ -41,10 +41,30 @@ const baseConfig = {
         loader: 'html-loader',
       },
       {
-        test: /\.(png|jpe?g|gif|m4a|mp3|aac|ogg|wav|svg)$/i,
+        test: /\.(m4a|mp3|aac|ogg|wav)$/i,
         loader: 'file-loader',
-        generator: {
-          filename: 'images/[hash][ext]',
+        options: {
+          name: '[hash].[ext]',
+          outputPath: (url, resourcePath) => `/assets/${resourcePath.includes('music') ? 'music' : 'sounds'}/${url}`,
+        },
+      },
+      {
+        test: /\.(png|jpe?g|gif)$/i,
+        loader: 'file-loader',
+        options: {
+          name: '[hash].[ext]',
+          outputPath: (url, resourcePath) => {
+            const match = resourcePath.match(/([^/\\]*)[/\\]sprites/);
+            if (match) return `/assets/sprites/${match[1]}/${url}`;
+            return `/assets/${resourcePath.includes('levels') ? 'levels' : 'images'}/${url}`;
+          },
+        },
+      },
+      {
+        test: /\.(svg)$/i,
+        loader: 'file-loader',
+        options: {
+          name: '/assets/icons/[hash].[ext]',
         },
       },
     ],
@@ -59,6 +79,10 @@ const baseConfig = {
     }),
     new MiniCssExtractPlugin(),
   ],
+  performance: {
+    maxEntrypointSize: 128000,
+    maxAssetSize: 2048000,
+  },
 };
 
 module.exports = ({ mode }) => {
@@ -69,10 +93,8 @@ module.exports = ({ mode }) => {
       plugins: [
         new CleanWebpackPlugin({
           cleanOnceBeforeBuildPatterns: [
-            buildPath,
+            '**/*', '!.git',
           ],
-          dry: false,
-          dangerouslyAllowCleanPatternsOutsideProject: true,
         }),
       ],
     }
