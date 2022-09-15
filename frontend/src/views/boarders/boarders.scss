@@ -1,0 +1,23 @@
+@use '../common.scss' as common;
+
+
+.tables {
+  display: flex;
+  flex-direction: column;
+  font-family: 'Cinzel', serif;
+}
+
+th {
+  border: 1px solid rgba(255, 255, 255, 0.685);
+  color: rgb(208, 223, 233);
+  padding: .4em;
+  font-size: 1.5rem;
+}
+
+td {
+  border: 1px solid rgba(255, 255, 255, 0.767);
+  color: rgb(212, 225, 233);
+  font-weight: 300;
+  padding: .4em;
+  font-size: 1.3rem;
+}

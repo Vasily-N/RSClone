@@ -1,0 +1,136 @@
+@use '../common.scss' as common;
+
+html {
+  cursor: default;
+  background-color: black;
+  font: bold 14px sans-serif;
+}
+
+.button {
+  cursor: pointer;
+  font: inherit;
+  border: solid 1px;
+  border-bottom-width: 3px;
+  border-radius: 4px;
+}
+
+.button_1 {
+  background-color: rgba(243, 194, 134, 0.904);
+  justify-content: space-around;
+  border: 3px solid #550d19;
+  color: #340000;
+  height: 35px;
+  font-size: 18px;
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  &:hover {
+    background-color: rgba(243, 194, 134, 0.966);
+    color: rgb(9, 38, 65);
+  }
+}
+
+.button_disabled {
+  background-color: lightgrey;
+  border-color: grey;
+  cursor: default;
+}
+
+.content {
+  margin-top: common.$gap;
+}
+
+.navigation {
+  position: absolute;
+  display: flex;
+  background-color: rgba(208, 219, 226, 0.322);
+  padding: 40px;
+  flex-direction: column;
+  justify-content: space-between;
+  top: 50%;
+  left: 50%;
+  margin-top: -180px;
+  margin-left: -140px;
+  width: 200px;
+  height: 300px;
+  z-index: 700;
+}
+
+.modal {
+  position: absolute;
+  display: none;
+  background-color: #340000;
+  border: 4px solid rgba(78, 25, 9, 0.945);
+  top: 50%;
+  left: 50%;
+  margin-top: -250px;
+  margin-left: -250px;
+  width: 500px;
+  height: 500px;
+  overflow-y: auto;
+  z-index: 800;
+}
+
+.close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 20px;
+  color: white;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.close:hover {
+  opacity: 1;
+}
+
+.close:before, .close:after {
+  position: absolute;
+  right: 15px;
+  content: ' ';
+  height: 33px;
+  width: 2px;
+  background-color: rgb(209, 183, 183);
+}
+
+.close:before {
+  transform: rotate(45deg);
+}
+
+.close:after {
+  transform: rotate(-45deg);
+}
+
+.contacts {
+  position: absolute;
+  display: flex;
+  width: 350px;
+  left: 50%;
+  bottom: 0;
+  margin-left: -175px;
+  justify-content: space-around;
+  align-items: center;
+  align-content: center;
+}
+
+.developer {
+  color: gray;
+  &:visited {
+    color: rgb(136, 145, 163);
+  }
+  &:hover {
+    color: rgb(218, 216, 115);
+  }
+}
+
+.logo {
+  width: 92px;
+  height: 35px;
+  transition: .5s;
+  &:hover {
+    background-color: rgba(59, 11, 11, 0.83);
+    box-shadow: 4px 2px 20px 20px rgba(59, 11, 11, 0.83);
+  }
+}

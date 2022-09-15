@@ -1,0 +1,15 @@
+@use '../common.scss' as common;
+
+:global(.canvas) {
+  background-color:#000;
+}
+
+.bg {
+  background-color: darkslategrey;
+}
+
+.canvas {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  image-rendering: optimizespeed;
+}

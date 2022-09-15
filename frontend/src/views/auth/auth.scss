@@ -1,0 +1,67 @@
+@use '../common.scss' as common;
+
+.input-auth {
+  &:focus {
+    outline: 1px solid pink;
+  }
+}
+
+.reg,
+.auth {
+  display: flex;
+  position: absolute;
+  flex-direction: column;
+  justify-content: center;
+  top: 50%;
+  left: 50%;
+  margin-left: -115px;
+  margin-top: -75px;
+  width: 230px;
+  gap: 10px;
+  align-items: center
+}
+
+.skip {
+  color: rgb(225, 252, 249);
+  cursor: pointer;
+  &:hover {
+    color: #ecca7f;
+    cursor: pointer;
+  }
+}
+
+.reg-btn,
+.auth-btn {
+  width: 100px;
+  border: none;
+  outline: 2px solid rgb(238, 215, 116);
+  padding: .5em;
+  background-color: rgb(214, 240, 120);
+  font-weight: 600;
+  cursor: pointer;
+  &:hover {
+    outline-color: rgb(65, 112, 63);
+  }
+}
+
+.start-btn {
+  display: none;
+  width: 110px;
+  border: none;
+  outline: 2px solid rgb(92, 46, 40);
+  padding: .5em;
+  background-color: rgb(240, 117, 36);
+  justify-content: space-around;
+  font-weight: 600;
+  cursor: pointer;
+  &:hover {
+    outline-color: rgb(243, 182, 92);
+    box-shadow: 3px 2px 15px 2px #000000;
+  }
+}
+
+.error-message {
+  display: none;
+  color: red;
+  border: 1px solid rgb(184, 7, 7);
+}

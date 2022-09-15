@@ -1,0 +1,149 @@
+@use '../common.scss' as common;
+
+.setting__game {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  width: 150px;
+  left: 50%;
+  margin-left: -75px;
+  font-family: 'Cinzel', serif;
+}
+
+.check-box_align {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+p {
+	color: white
+}
+
+label {
+	color:white
+}
+
+.box {
+  width: 300px;
+  margin: 18px 0 18px -20px;
+  display: flex;
+  align-items: center;
+  user-select: none;
+
+  label {
+      width: 200px;
+      font-size: 20px;
+      color: #f7ddddf1;
+      position: absolute;
+      z-index: 10;
+      padding-left: 50px;
+      cursor: pointer;
+  }
+
+  input {
+      opacity: 0;
+      visibility: hidden;
+      position: absolute;
+
+      &:checked {
+          ~ .check {
+              border-color: #f3ef20;
+              box-shadow: 0px 0px 0px 15px #ecce1f inset;
+              &::after {
+                  opacity: 1;
+                  transform: scale(1);
+              }
+          }
+      }
+  }
+
+  .check {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      border-radius: 100px;
+      background-color: rgba(238, 90, 80, 0.247);
+      border: 2px solid #eada00;
+      box-shadow: 0px 0px 0px 0px #f5db49 inset;
+      transition: all 0.15s cubic-bezier(0, 1.05, 0.72, 1.07);
+
+      &::after {
+          content: '';
+          width: 100%;
+          height: 100%;
+          opacity: 0;
+          z-index: 4;
+          position: absolute;
+          transform: scale(0);
+          background-size: 50%;
+          background-image: url('https://s6.picofile.com/d/8392306668/bacc888c-bed7-41a9-bf24-f6ff0718f471/checkmark.svg');
+          background-repeat: no-repeat;
+          background-position: center;
+          transition-delay: 0.2s !important;
+          transition: all 0.25s cubic-bezier(0, 1.05, 0.72, 1.07);
+      }
+  }
+}
+.imput-number-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-content: center;
+  .btn-input-num {
+    width: 40px;
+    height: 40px;
+    border-radius: 0;
+    border-color: #eb9f2d;
+    border-style: solid;
+    color: rgba(236, 221, 193, 0.829);
+    background-color:  #eb9f2d62;
+    font-size: 23px;
+    &:hover {
+      cursor: pointer;
+      background-color:  #5f401062;
+      color: rgba(243, 237, 226, 0.9);
+    }
+  }
+  .imput-number{
+    -webkit-appearance: none;
+    border-radius: 0px;
+    -moz-appearance: none;
+    appearance: none;
+    position: relative;
+    width: 34px;
+    height: 38px;
+    padding: 0;
+    background-color:  #eb9f2d62;
+    color: rgba(240, 228, 205, 0.897);
+    border: 1px solid #eada00;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    text-align: center;
+  
+    transition: all 0.2s ease-out;
+  }
+  
+  .imput-number:focus {
+    background-color: rgb(196, 150, 124);
+    border: 1px solid #9c7830;
+    outline: none;
+    color: rgba(66, 55, 55, 0.877);
+  }
+  
+  .imput-number::-webkit-inner-spin-button,
+  .imput-number::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  
+  .imput-number{
+    -moz-appearance: textfield;
+  }
+  
+}

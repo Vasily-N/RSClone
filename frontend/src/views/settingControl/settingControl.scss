@@ -1,0 +1,39 @@
+@use '../common.scss' as common;
+
+
+.box {
+	display: flex;
+}
+div {
+	color: white
+}
+
+label {
+	color:white
+}
+
+.setting__control{
+	color:saddlebrown;
+}
+:global(.add__value) {
+	color: pink;
+  }
+
+:global(.color) {
+	color: pink;
+  }
+  :global(.setting__class) {
+	display: flex;
+	margin: 15px;
+	align-items: center;
+  }
+  :global(.value__seting) {
+	margin: 0 10px;
+	padding: 5px;
+	border: 2px solid white;
+  }
+
+   :global(.fon) {
+	width: 100vh;
+	height: 100vh;
+  }
